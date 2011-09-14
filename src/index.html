@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="css/enterprise.css">
+</head>
+<body>
+    <script>
+        var releaseMode = true;
+        dojoConfig = releaseMode ? {} : {
+            modulePaths : {
+                rishson : "../../../rishson"
+            }
+        };
+    </script>
+    <script src="js/dojo/dojo-release-1.6.1-src/dojo/dojo.js"></script>
+    <script>dojo.require("rishson.enterprise.Bootstrap");</script>
+</body>
+</html>
