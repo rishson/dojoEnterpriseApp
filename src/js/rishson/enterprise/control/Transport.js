@@ -1,5 +1,7 @@
 dojo.provide('rishson.enterprise.control.Transport');
 
+dojo.require('dojo.cookie');
+
 /**
  * @class
  * @name rishson.enterprise.control.Transport
@@ -72,9 +74,17 @@ dojo.declare('rishson.enterprise.control.Transport', null, {
      * @return {Object} simple map object with the basic set of POST params in tag : value format
      */
     createBasePostParams : function (request) {
+        var postContent = {};
         var postParams = request.getParams();
-        postParams.push(this.sidParamName, this._sessionId);    //add CSRF token to all requests
-        return postParams;
+        var sidParamObj = {};
+        sidParamObj[this.sidParamName] = this._sessionId;
+        postParams.push(sidParamObj);    //add CSRF token to all requests
+
+        //unwrap the param objects into a single object
+        dojo.forEach(postParams, function (param) {
+            dojo.mixin(param, postContent);
+        });
+        return postContent;
     }
 
 

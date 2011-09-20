@@ -1,5 +1,6 @@
 dojo.provide('rishson.enterprise.control.ServiceRequest');
 
+dojo.require('rishson.enterprise.control.Request');
 dojo.require('rishson.enterprise.util.ObjectValidator');
 
 dojo.declare('rishson.enterprise.control.ServiceRequest', [rishson.enterprise.control.Request], {

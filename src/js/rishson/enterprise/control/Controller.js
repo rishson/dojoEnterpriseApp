@@ -19,15 +19,15 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
 
     /**
      * @constructor
-     * @param {Object} params Must contain the following:
-     *  transport {Object} an implementation of rishson.enterprise.control.Transport
+     * @param {Object} transport an implementation of rishson.enterprise.control.Transport
      */
-    constructor : function (params) {
+    constructor : function (transport) {
         var criteria = [{paramName : 'transport', paramType : 'object'}];
         var validator = new rishson.enterprise.util.ObjectValidator(criteria);
 
-        if (validator.validate(params)) {
-            dojo.mixin(this, params);
+        var wrappedParams = {transport : transport};   //wrap transport into an object, so we can validate and mixin
+        if (validator.validate(wrappedParams)) {
+            dojo.mixin(this, wrappedParams);
 
             //decorate the transport with the response and error handling functions in this class
             this.transport.addResponseFunctions(this.handleResponse, this.handleError);

@@ -1,5 +1,6 @@
 dojo.provide('rishson.enterprise.control.XhrTransport');
 
+dojo.require('rishson.enterprise.control.Transport');
 dojo.require('rishson.enterprise.util.ObjectValidator');
 
 /**

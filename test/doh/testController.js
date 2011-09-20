@@ -1,14 +1,14 @@
-/Declare out the name of the test module to make dojo's module loader happy.
+//Declare out the name of the test module to make dojo's module loader happy.
 dojo.provide("test.doh.testController");
 
 dojo.require('rishson.enterprise.control.Controller');
 dojo.require('rishson.enterprise.control.XhrTransport');
 dojo.require('rishson.enterprise.control.ServiceRequest');
-dojo.require('rishson.enterprise.control.RestRequest');
+//dojo.require('rishson.enterprise.control.RestRequest');
 
 doh.register("Controller tests", [
     {
-        name: "constructor tests",
+        name: "Constructor tests",
         setUp: function(){
             //control layer initialisation - create a valid Transport implementation
             xhrTransport = new rishson.enterprise.control.XhrTransport({baseUrl : 'http://www.example.com/some_context/'});
@@ -37,8 +37,8 @@ doh.register("Controller tests", [
             controller = new rishson.enterprise.control.Controller(xhrTransport);
 
             //check that the transport has been decorated with handler functions
-            doh.assertEquals(controller.handleResponse, controller.transport.handleResponseFunc);
-            doh.assertEquals(controller.handleError, controller.transport.handleErrorFunc);
+            doh.assertEqual(controller.handleResponse, controller.transport.handleResponseFunc);
+            doh.assertEqual(controller.handleError, controller.transport.handleErrorFunc);
         },
         tearDown: function(){
         }
@@ -48,6 +48,7 @@ doh.register("Controller tests", [
         setUp: function(){
             //control layer initialisation
             xhrTransport = new rishson.enterprise.control.XhrTransport({baseUrl : 'http://www.example.com/some_context/'});
+            controller = new rishson.enterprise.control.Controller(xhrTransport);
 
             myCallback = function(data) {
                 console.debug("Data received in callback");
@@ -58,7 +59,7 @@ doh.register("Controller tests", [
                 //example of a valid WebService call
                 var someServiceCall = new rishson.enterprise.control.ServiceRequest({service : 'user',
                     method : 'create',
-                    params : {username : 'andy'},
+                    params : [{username : 'andy'}],
                     callback : myCallback,
                     scope : this});
 
@@ -75,24 +76,10 @@ doh.register("Controller tests", [
 
 ]);
 
-
-var myCallback = function(data) {
-    console.debug("Data received in callback");
-};
-
-//example of a WebService call
-var someServiceCall = new rishson.enterprise.control.ServiceRequest({service : 'user',
-    method : 'create',
-    params : {username : 'andy'},
-    callback : myCallback,
-    scope : this});
-
-controller.send(someServiceCall);
-
 //example of a REST call
-var someRestCall = new rishson.enterprise.control.RestRequest({verb : 'post',
-    data : {username : 'andy'},
-    callback : myCallback,
-    scope : this});
+//var someRestCall = new rishson.enterprise.control.RestRequest({verb : 'post',
+//    data : {username : 'andy'},
+//    callback : myCallback,
+//    scope : this});
 
-controller.send(someRestCall);
+//controller.send(someRestCall);
