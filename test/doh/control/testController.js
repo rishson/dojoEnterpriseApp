@@ -1,5 +1,5 @@
 //Declare out the name of the test module to make dojo's module loader happy.
-dojo.provide("test.doh.testController");
+dojo.provide("test.doh.control.TestController");
 
 dojo.require('rishson.enterprise.control.Controller');
 dojo.require('rishson.enterprise.control.XhrTransport');

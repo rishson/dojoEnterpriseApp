@@ -82,7 +82,7 @@ dojo.declare('rishson.enterprise.control.Transport', null, {
 
         //unwrap the param objects into a single object
         dojo.forEach(postParams, function (param) {
-            dojo.mixin(param, postContent);
+            dojo.mixin(postContent, param);
         });
         return postContent;
     }

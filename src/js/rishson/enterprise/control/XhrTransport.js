@@ -60,7 +60,7 @@ dojo.declare('rishson.enterprise.control.XhrTransport', [rishson.enterprise.cont
 
         //do xhrPost
         var def = dojo.xhrPost({
-            url: this.basrUrl + request.toUrl(),
+            url: this.baseUrl + request.toUrl(),
             content : postParams,
             handleAs: "json",
             timeout : this.requestTimeout
