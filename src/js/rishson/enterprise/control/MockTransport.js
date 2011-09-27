@@ -1,5 +1,7 @@
 dojo.provide('rishson.enterprise.control.MockTransport');
 
+dojo.require('dojo.io.script');
+
 dojo.require('rishson.enterprise.control.Transport');
 dojo.require('rishson.enterprise.util.ObjectValidator');
 
@@ -17,7 +19,7 @@ dojo.declare('rishson.enterprise.control.MockTransport', [rishson.enterprise.con
      * @type {String}
      * @description a relative path to a directory structure that contains canned responses
      */
-    basePath : '../../../../../test/data/',
+    basePath : '/test/data/',
 
     /**
      * @field
@@ -31,6 +33,23 @@ dojo.declare('rishson.enterprise.control.MockTransport', [rishson.enterprise.con
      * @constructor
      */
     constructor : function () {
+        /**
+        Check for the various File API support.
+        if (window.File && window.FileReader && window.FileList && window.Blob) {
+        } else {
+            console.error('The File APIs are not fully supported in this browser.');
+        }
+
+        function onInitFs(fs) {
+            this.fs = fs;
+        }
+
+        function errorHandler(e){
+            console.error(e);
+        }
+
+        window.requestFileSystem(window.PERSISTENT, 1024*1024, onInitFs, errorHandler);
+        **/
     },
 
     /**
@@ -42,16 +61,49 @@ dojo.declare('rishson.enterprise.control.MockTransport', [rishson.enterprise.con
      */
     send : function (request) {
         var isServiceRequest = false;
+        var filename;
+        var params;
+        params = request.getParams();
+        dojo.forEach(params, function(param){
+            if(param.filename){
+                filename = param.filename + '.json';
+            }
+        });
         if(request.declaredClass === 'rishson.enterprise.control.ServiceRequest'){
             isServiceRequest = true;
-            this.basePath += 'serviceResponses/' + request.toUrl(); // request url is in the from service/method
+            this.basePath += 'serviceResponses/';
         }
         else{
             this.basePath += 'restResponses';
         }
 
+        var response = this._getFile(this.basePath + request.toUrl() + '/' + filename);
+        this.handleResponseFunc(request, response);
+    },
 
+    _getFile : function(filePath) {
+        var path = document.location.pathname;
+        var dir = path.substr(0, path.indexOf('/dojoEnterpriseApp')+18);
+        callback = function(data){
+            console.debug(data);
+        };
+        filePath = dir + filePath;
 
+        
+
+        /**this.fs.root.getFile(filePath, {}, function(fileEntry) {
+            Get a File object representing the file,
+            then use FileReader to read its contents.
+            fileEntry.file(function(file) {
+
+                var fileReader = new FileReader();
+                fileReader.onload = function(testData) {
+                    return testData;
+                };
+                fileReader.readAsText(filePath);
+            });
+        });
+         **/
     }
 
 });
