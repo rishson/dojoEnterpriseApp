@@ -60,13 +60,13 @@ dojo.declare('rishson.enterprise.control.MockTransport', [rishson.enterprise.con
      * @param {rishson.enterprise.control.Request} request to send to the server
      */
     send : function (request) {
-        var isServiceRequest = false;
-        var filename;
+        var isServiceRequest = false;   //is the request a web service request or a rest request
+        var testFuncName;   //name of the function to call on the TestMethod module
         var params;
         params = request.getParams();
         dojo.forEach(params, function(param){
-            if(param.filename){
-                filename = param.filename + '.json';
+            if(param.funcName){
+                testFuncName = param.funcName;  //the name of the function to call
             }
         });
         if(request.declaredClass === 'rishson.enterprise.control.ServiceRequest'){
@@ -77,8 +77,40 @@ dojo.declare('rishson.enterprise.control.MockTransport', [rishson.enterprise.con
             this.basePath += 'restResponses';
         }
 
-        var response = this._getFile(this.basePath + request.toUrl() + '/' + filename);
+        var namespace = 'test.data.';
+        if(isServiceRequest) {
+            namespace += 'serviceResponses.';
+        } else {
+            namespace += 'restResponses.';
+        }
+        namespace += request.toUrl().replace('/', '.'); //the full namespace of the TestMethod module to load
+
+        dojo.require(namespace);    //get the TestModule
+        var testMethod = this._stringToFunction(namespace);
+        var testMethodClass = new testMethod(); //create an instance of the TestMethod class
+
+        var response = {payload : testMethodClass[testFuncName]()}; //put the response envelope on and call the test method
         this.handleResponseFunc(request, response);
+    },
+
+    _stringToFunction : function(str) {
+      var arr = str.split(".");
+
+      var fn = (window || this);
+      for (var i = 0, len = arr.length; i < len; i++) {
+        fn = fn[arr[i]];
+      }
+
+      if (typeof fn !== "function") {
+        throw new Error("function not found");
+      }
+      return  fn;
+    },
+
+
+    _getTestDataModule : function(request) {
+        var namespace = 'test.data.serviceResponses' + request.toUrl().replace('/', '.');
+
     },
 
     _getFile : function(filePath) {
@@ -89,7 +121,30 @@ dojo.declare('rishson.enterprise.control.MockTransport', [rishson.enterprise.con
         };
         filePath = dir + filePath;
 
-        
+        var def = dojo.xhrGet({
+            url: 'file://' + filePath,
+            handleAs: "json"
+        });
+        def.then(function(response){
+                return response;
+            },
+            function err(e){
+                console.error(e);
+            }
+        );
+
+        /**var jsonpArgs = {
+            url: "file://" + filePath,
+            callbackParamName: "callback",
+            load: function(data) {
+                return data;
+            },
+            error: function(error) {
+                console.error(error);
+            }
+        };
+        dojo.io.script.get(jsonpArgs);
+        **/
 
         /**this.fs.root.getFile(filePath, {}, function(fileEntry) {
             Get a File object representing the file,

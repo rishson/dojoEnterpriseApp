@@ -2,7 +2,7 @@
 dojo.provide("test.doh.control.TestController");
 
 dojo.require('rishson.enterprise.control.Controller');
-dojo.require('rishson.enterprise.control.XhrTransport');
+dojo.require('rishson.enterprise.control.MockTransport');
 dojo.require('rishson.enterprise.control.ServiceRequest');
 //dojo.require('rishson.enterprise.control.RestRequest');
 
@@ -11,7 +11,7 @@ doh.register("Controller tests", [
         name: "Constructor tests",
         setUp: function(){
             //control layer initialisation - create a valid Transport implementation
-            xhrTransport = new rishson.enterprise.control.XhrTransport({baseUrl : 'http://www.example.com/some_context/'});
+            mockTransport = new rishson.enterprise.control.MockTransport();
         },
         runTest: function(){
             var constructorFailed = false;
@@ -34,7 +34,7 @@ doh.register("Controller tests", [
             doh.assertTrue(constructorFailed);
 
             //valid construction
-            controller = new rishson.enterprise.control.Controller(xhrTransport);
+            controller = new rishson.enterprise.control.Controller(mockTransport);
 
             //check that the transport has been decorated with handler functions
             doh.assertEqual(controller.handleResponse, controller.transport.handleResponseFunc);
@@ -47,19 +47,22 @@ doh.register("Controller tests", [
         name: "Web service request tests",
         setUp: function(){
             //control layer initialisation
-            xhrTransport = new rishson.enterprise.control.XhrTransport({baseUrl : 'http://www.example.com/some_context/'});
-            controller = new rishson.enterprise.control.Controller(xhrTransport);
-
+            mockTransport = new rishson.enterprise.control.MockTransport();
+            controller = new rishson.enterprise.control.Controller(mockTransport);
+    
             myCallback = function(data) {
-                console.debug("Data received in callback");
+                console.group("Data received in callback");
+                console.debug(data);
+                console.groupEnd();
+                doh.assertTrue(data.hello === 'world');
             };
         },
         runTest: function(){
             try{
                 //example of a valid WebService call
-                var someServiceCall = new rishson.enterprise.control.ServiceRequest({service : 'user',
-                    method : 'create',
-                    params : [{username : 'andy'}],
+                var someServiceCall = new rishson.enterprise.control.ServiceRequest({service : 'testService',
+                    method : 'testMethod',
+                    params : [{funcName : 'validResponse'}],
                     callback : myCallback,
                     scope : this});
 
