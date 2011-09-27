@@ -10,6 +10,7 @@ doh.register("Controller tests", [
     {
         name: "Constructor tests",
         setUp: function(){
+            dojo.cookie("JSESSIONID", '1234567890');
             //control layer initialisation - create a valid Transport implementation
             mockTransport = new rishson.enterprise.control.MockTransport();
         },

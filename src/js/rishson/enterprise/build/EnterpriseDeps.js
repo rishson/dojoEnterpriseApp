@@ -18,21 +18,9 @@ dojo.require("dijit.layout._LayoutWidget");
 dojo.require("dijit.form._FormWidget");
 */
 
-dojo.require("dojo.date");
-dojo.require("dojo.data.ItemFileReadStore");
-dojo.require("dojo.date.locale");
 dojo.require("dojo.i18n");
 
-dojo.require("dijit.Dialog");
-dojo.require("dijit.Toolbar");
-dojo.require("dijit.form.Button");
-dojo.require("dijit.form.TextBox");
-dojo.require("dijit.form.ValidationTextBox");
-dojo.require("dijit.layout.BorderContainer");
-dojo.require("dijit.layout.ContentPane");
-
 dojo.require("dojox.analytics.plugins.consoleMessages");
-dojo.require("dojox.widget.Standby");
 
 /*Enterprise dependencies - package up all of Enterprise into 1 file*/
 dojo.require("rishson.enterprise.control.Controller");  //pulls in util.ObjectValidator

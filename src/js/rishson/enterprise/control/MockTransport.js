@@ -60,7 +60,6 @@ dojo.declare('rishson.enterprise.control.MockTransport', [rishson.enterprise.con
      * @param {rishson.enterprise.control.Request} request to send to the server
      */
     send : function (request) {
-        var isServiceRequest = false;   //is the request a web service request or a rest request
         var testFuncName;   //name of the function to call on the TestMethod module
         var params;
         params = request.getParams();
@@ -69,30 +68,45 @@ dojo.declare('rishson.enterprise.control.MockTransport', [rishson.enterprise.con
                 testFuncName = param.funcName;  //the name of the function to call
             }
         });
-        if(request.declaredClass === 'rishson.enterprise.control.ServiceRequest'){
-            isServiceRequest = true;
-            this.basePath += 'serviceResponses/';
-        }
-        else{
-            this.basePath += 'restResponses';
-        }
 
+        /*get the full namespace of the module to provide the response
+          The namespace is in the form test.data.[typeOfResponse].[request.url]
+          e.g. for a service request:
+          test.data.serviceResponses.someService.SomeMethod
+          for a rest service:
+          test.data.restResponses.someService.SomeEndpoint
+        */
         var namespace = 'test.data.';
-        if(isServiceRequest) {
-            namespace += 'serviceResponses.';
-        } else {
-            namespace += 'restResponses.';
+        switch (request.declaredClass) {
+            case 'rishson.enterprise.control.ServiceRequest' :
+                namespace += 'serviceResponses';
+                break;
+            case 'rishson.enterprise.control.RestRequest' :
+                namespace += 'restResponses';
+            break;
         }
-        namespace += request.toUrl().replace('/', '.'); //the full namespace of the TestMethod module to load
+        namespace += '.' + request.toUrl().replace('/', '.'); //the full namespace of the TestMethod module to load
+
+        //capitalise the module name
+        var indexOfClassName = namespace.lastIndexOf('.') + 1;
+        namespace = namespace.slice(0, indexOfClassName) +
+            namespace.charAt(indexOfClassName).toUpperCase() + namespace.slice(indexOfClassName + 1);
+
 
         dojo.require(namespace);    //get the TestModule
-        var testMethod = this._stringToFunction(namespace);
+        var testMethod = this._stringToFunction(namespace); //get the module prototype from the DOM
         var testMethodClass = new testMethod(); //create an instance of the TestMethod class
 
         var response = {payload : testMethodClass[testFuncName]()}; //put the response envelope on and call the test method
         this.handleResponseFunc(request, response);
     },
 
+    /**
+     * Get a namespaced function from the DOM
+     * @private
+     * @param str {String} the name of a class in the DOM
+     * @return {Function} the function from the DOM
+     */
     _stringToFunction : function(str) {
       var arr = str.split(".");
 
@@ -104,13 +118,7 @@ dojo.declare('rishson.enterprise.control.MockTransport', [rishson.enterprise.con
       if (typeof fn !== "function") {
         throw new Error("function not found");
       }
-      return  fn;
-    },
-
-
-    _getTestDataModule : function(request) {
-        var namespace = 'test.data.serviceResponses' + request.toUrl().replace('/', '.');
-
+      return fn;
     },
 
     _getFile : function(filePath) {
