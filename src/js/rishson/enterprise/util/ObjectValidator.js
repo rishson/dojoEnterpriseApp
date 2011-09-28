@@ -23,7 +23,7 @@ dojo.declare('rishson.enterprise.util.ObjectValidator', null, {
      * @param {Array} validationCriteria contains all the validation criteria to examine
      */
     constructor : function (validationCriteria) {
-        dojo.mixin(this, validationCriteria);
+       this.validationCriteria = validationCriteria;
     },
 
     /**

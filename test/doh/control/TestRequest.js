@@ -47,6 +47,11 @@ doh.register("Request base class tests", [
                 toUrlShouldFail = true;
             }
             doh.assertTrue(toUrlShouldFail, 'Unexpected successful call to toUrl on Service');
+
+            doh.assertEqual(request.getParams(), []);  //there should be no default params
+            var testParam = {hello : 'world'};
+            request.setParam(testParam);
+            doh.assertTrue(request.getParams().length, 1);  //we should have a new param in the array
         },
         tearDown: function(){
         }

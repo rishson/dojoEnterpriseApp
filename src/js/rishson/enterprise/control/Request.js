@@ -38,9 +38,9 @@ dojo.declare('rishson.enterprise.control.Request', null, {
      *  callbackScope {Object} a scope in which to call the callback function
      */
     constructor : function (params) {
-        var criteria = {validationCriteria : []};
-        criteria.validationCriteria.push({paramName : 'callback', paramType : 'function'});
-        criteria.validationCriteria.push({paramName : 'callbackScope', paramType : 'object'});
+        var criteria = [];
+        criteria.push({paramName : 'callback', paramType : 'function'});
+        criteria.push({paramName : 'callbackScope', paramType : 'object'});
         var validator = new rishson.enterprise.util.ObjectValidator(criteria);
 
         if (validator.validate(params)) {

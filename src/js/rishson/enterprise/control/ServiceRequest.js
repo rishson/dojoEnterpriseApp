@@ -29,9 +29,9 @@ dojo.declare('rishson.enterprise.control.ServiceRequest', [rishson.enterprise.co
      */
     constructor : function (params) {
         var criteria = [];
-        var validator = new rishson.enterprise.util.ObjectValidator(criteria);
         criteria.push({paramName : 'service', paramType : 'string'});
         criteria.push({paramName : 'method', paramType : 'string'});
+        var validator = new rishson.enterprise.util.ObjectValidator(criteria);
 
         if (validator.validate(params)) {
             dojo.mixin(this, params);
