@@ -1,7 +1,7 @@
 # DojoEnterpriseApp
 -------
 
-This application is an abstracted application framework for large web applications that use the [Dojo toolkit] (www.dojotoolkit.org).
+DojoEnterpriseApp is an abstracted application framework for large web applications that use the [Dojo toolkit] (www.dojotoolkit.org).
 
 The directory structure and build scripts are taken from the excellent dojo-boilerplate by [Rebecca Murphey] (www.github.com/rmurphey).
 

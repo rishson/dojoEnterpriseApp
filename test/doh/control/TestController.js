@@ -60,9 +60,9 @@ doh.register("Controller tests", [
         },
         runTest: function(){
             try{
-                //example of a valid WebService call
+                //example of a valid WebService call to call a mathod specifically designed to test a Controller
                 var someServiceCall = new rishson.enterprise.control.ServiceRequest({service : 'testService',
-                    method : 'testMethod',
+                    method : 'ControllerTestMethod',
                     params : [{funcName : 'validResponse'}],
                     callback : myCallback,
                     scope : this});

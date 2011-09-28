@@ -15,14 +15,6 @@ dojo.declare('rishson.enterprise.control.MockTransport', [rishson.enterprise.con
 
     /**
      * @field
-     * @name rishson.enterprise.control.MockTransport.basePath
-     * @type {String}
-     * @description a relative path to a directory structure that contains canned responses
-     */
-    basePath : '/test/data/',
-
-    /**
-     * @field
      * @name rishson.enterprise.control.MockTransport.requestTimeout
      * @type {Number}
      * @description the number of milliseconds that a <code>rishson.enterprise.control.Request</code> can take before the call is aborted.
@@ -83,7 +75,9 @@ dojo.declare('rishson.enterprise.control.MockTransport', [rishson.enterprise.con
                 break;
             case 'rishson.enterprise.control.RestRequest' :
                 namespace += 'restResponses';
-            break;
+                break;
+            default :
+                throw ('Unknown request type supplied: ' + request.declaredClass);
         }
         namespace += '.' + request.toUrl().replace('/', '.'); //the full namespace of the TestMethod module to load
 
@@ -91,7 +85,6 @@ dojo.declare('rishson.enterprise.control.MockTransport', [rishson.enterprise.con
         var indexOfClassName = namespace.lastIndexOf('.') + 1;
         namespace = namespace.slice(0, indexOfClassName) +
             namespace.charAt(indexOfClassName).toUpperCase() + namespace.slice(indexOfClassName + 1);
-
 
         dojo.require(namespace);    //get the TestModule
         var testMethod = this._stringToFunction(namespace); //get the module prototype from the DOM

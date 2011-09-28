@@ -38,10 +38,10 @@ dojo.declare('rishson.enterprise.control.Request', null, {
      *  callbackScope {Object} a scope in which to call the callback function
      */
     constructor : function (params) {
-        var criteria = [];
+        var criteria = {validationCriteria : []};
+        criteria.validationCriteria.push({paramName : 'callback', paramType : 'function'});
+        criteria.validationCriteria.push({paramName : 'callbackScope', paramType : 'object'});
         var validator = new rishson.enterprise.util.ObjectValidator(criteria);
-        criteria.push({paramName : 'callback', paramType : 'function'});
-        criteria.push({paramName : 'callbackScope', paramType : 'object'});
 
         if (validator.validate(params)) {
             dojo.mixin(this, params);
@@ -58,7 +58,7 @@ dojo.declare('rishson.enterprise.control.Request', null, {
      * @description Converts the <code>rishson.enterprise.control.Request</code> derived class into a String representing a URL.
      */
     toUrl : function () {
-        console.error('toUrl must be implemented in derived classes');
+        throw('toUrl must be implemented in derived classes');
     },
 
     /**
