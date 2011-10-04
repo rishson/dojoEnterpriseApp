@@ -28,9 +28,10 @@ dojo.declare('rishson.enterprise.view.AppContainer', [rishson.enterprise.widget.
     postCreate : function () {
         console.debug(this.declaredClass + " : postCreate");
 
+        //additions to the subList
         dojo.subscribe(this.subList.WIDGET_INITIALISED, this, "_handleWidgetInitialisation");
 
-        //additions to our publist should go here
+        //additions to our pubList
 
         this.inherited(arguments);  //rishson.enterprise.widget._Widget
     },
