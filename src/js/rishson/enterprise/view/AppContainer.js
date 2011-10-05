@@ -17,8 +17,12 @@ dojo.require('dijit.layout.ContentPane');
 dojo.declare('rishson.enterprise.view.AppContainer', [rishson.enterprise.widget._Widget, dijit.layout._LayoutWidget,
     dijit._Templated, dijit._Container], {
 
-    templateString : dojo.cache("rishson.enterprise.view.appContainer", "/AppContainer.html"),
+    templateString : dojo.cache("rishson.enterprise.view", "appContainer/AppContainer.html"),
     widgetsInTemplate : true,
+
+    constructor : function () {
+        console.debug('');
+    },
 
     /**
      * @function
@@ -38,11 +42,31 @@ dojo.declare('rishson.enterprise.view.AppContainer', [rishson.enterprise.widget.
 
     /**
      * @function
+     * @name rishson.enterprise.view.AppContainer
+     * @override dijit._Container
+     */
+    startup : function () {
+        this.mainContainer.startup();
+        this.inherited(arguments);
+    },
+
+    /**
+     * @function
+     * @name rishson.enterprise.view.AppContainer
+     * @override dijit.layout._LayoutWidget
+     */
+    resize : function() {
+        this.mainContainer.resize();
+        this.inherited(arguments);
+    },
+
+    /**
+     * @function
      * @private
      * @param initialisedWidgetId {Object} the string id of the widget that has just been initialised.
      * @description Handle a widget becoming initialised.
      */
-    _handleWidgetInitialisation : function(initialisedWidgetId) {
+    _handleWidgetInitialisation : function (initialisedWidgetId) {
 
     }
 

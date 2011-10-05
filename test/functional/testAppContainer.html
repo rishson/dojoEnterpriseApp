@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>AppContainer test page</title>
+
+    <style type="text/css">
+
+        @import "../../src/js/dojo/dojo-release-1.6.1-src/dijit/themes/claro/claro.css";
+        @import "../../src/js/dojo/dojo-release-1.6.1-src/dojo/resources/dojo.css";
+
+        .fixedRegion {
+            border: 1px solid black;
+            height : 300px;
+            width : 500px;
+        }
+    </style>
+    <link rel="stylesheet" href="../../src/js/rishson/enterprise/view/appContainer/AppContainer.css" type="text/css"/>
+
+    <script type="text/javascript">
+        var djConfig = {isDebug : true};
+    </script>
+
+    <script type="text/javascript" src="../../src/js/dojo/dojo-release-1.6.1-src/dojo/dojo.js"></script>
+
+    <script type="text/javascript">
+        dojo.ready(function() {
+            dojo.registerModulePath('rishson', '../../../rishson');
+
+            dojo.require('rishson.enterprise.view.AppContainer');
+        });
+
+        function create() {
+            var placeholder = dojo.byId('placeholder');
+            var widgetToTest = new rishson.enterprise.view.AppContainer({}, placeholder);
+            widgetToTest.startup();
+        }
+    </script>
+</head>
+<body class="claro">
+    <div class="testPageButtonStrip">
+        <button id="create" onclick="create();">Create</button>
+    </div>
+    <div class="fixedRegion">
+        <div id='placeholder'></div>
+    </div>
+</body>
+</html>

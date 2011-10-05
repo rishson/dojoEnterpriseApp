@@ -1,14 +1,19 @@
-div AppContainer AppContainerSubContainer {
+.AppContainer {
     height: 100%;
     width: 100%;
 }
 
-div header {
+.AppContainerSubContainer {
+    height: 100%;
+    width: 100%;
+}
+
+.header {
     height: 40px;
     padding: 5px;
 }
 
-div footer {
+.footer {
     height: 20px;
     padding: 2px;
 }
