@@ -3,17 +3,27 @@
     width: 100%;
 }
 
-.AppContainerSubContainer {
+.AppContainer .AppContainerSubContainer {
     height: 100%;
     width: 100%;
 }
 
-.header {
+.AppContainer .header {
     height: 40px;
     padding: 5px;
+    border-bottom: 1px solid #CCCCCC;
 }
 
-.footer {
+.AppContainer .welcome {
+
+}
+
+.AppContainer .logout {
+    right:0;
+}
+
+.AppContainer .footer {
     height: 20px;
     padding: 2px;
+    border-top: 1px solid #CCCCCC;
 }

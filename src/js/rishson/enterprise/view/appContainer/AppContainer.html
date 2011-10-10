@@ -1,10 +1,15 @@
-<div dojoAttachPoint="containerNode" class="AppContainer">
+<div data-dojo-attach-point="containerNode" class="AppContainer">
 
-    <div dojoAttachPoint="mainContainer" dojoType="dijit.layout.BorderContainer" gutters=false class="AppContainerSubContainer">
+    <div data-dojo-attach-point="mainContainer" data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="gutters:false"
+         class="AppContainerSubContainer">
 
-        <div dojoType="dijit.layout.ContentPane" region="top" class="header"></div>
+        <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'top'" class="header">
+            <div data-dojo-attach-point="welcomeText" class="dijitInline welcomeText"></div>
+            <div data-dojo-attach-point="username" class="dijitInline username"></div>.
+            <div data-dojo-attach-point="logout" class="dijitInline logout"></div>
+        </div>
         <!--Application goes here-->
-        <div dojoType="dijit.layout.ContentPane" region="bottom" class="footer"></div>
+        <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'bottom'" class="footer"></div>
 
     </div>
 </div>

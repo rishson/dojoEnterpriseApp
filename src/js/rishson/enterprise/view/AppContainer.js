@@ -38,6 +38,7 @@ dojo.declare('rishson.enterprise.view.AppContainer', [rishson.enterprise.widget.
         //additions to our pubList
 
         this.inherited(arguments);  //rishson.enterprise.widget._Widget
+        this._i18n();
     },
 
     /**
@@ -58,6 +59,10 @@ dojo.declare('rishson.enterprise.view.AppContainer', [rishson.enterprise.widget.
     resize : function() {
         this.mainContainer.resize();
         this.inherited(arguments);
+    },
+
+    _i18n : function() {
+        this.welcomeText = this._nlsStrings.WELCOME;
     },
 
     /**

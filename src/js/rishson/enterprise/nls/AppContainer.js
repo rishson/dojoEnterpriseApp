@@ -1,0 +1,4 @@
+({
+    WELCOME : 'Welcome, ',
+    LOGOUT : 'Logout'
+})

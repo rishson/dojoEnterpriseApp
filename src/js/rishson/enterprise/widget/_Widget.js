@@ -1,5 +1,6 @@
 dojo.provide("rishson.enterprise.widget._Widget");
 
+dojo.require("dojo.i18n");
 dojo.require("dijit._Widget");
 dojo.require("rishson.enterprise.widget._WidgetInWidgetMixin");
 
@@ -78,6 +79,9 @@ dojo.declare("rishson.enterprise.widget._Widget", [dijit._Widget, rishson.enterp
         dojo.subscribe(this.subList.WIDGET_ENABLE, this, "_enable");
         dojo.subscribe(this.subList.ERROR_CME, this, "_cmeHandler");
         dojo.subscribe(this.subList.ERROR_INVALID, this, "_invalidHandler");
+
+        dojo.requireLocalization("rishson.enterprise", this.declaredClass);
+        this._nlsStrings = dojo.i18n.getLocalization("rishson.enterprise", this.declaredClass);
 
         this.inherited(arguments);  //dijit._Widget
     },
