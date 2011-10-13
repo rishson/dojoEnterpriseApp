@@ -36,7 +36,6 @@ dojo.declare('rishson.enterprise.view.AppContainer', [rishson.enterprise.widget.
      */
     footerText : '',
 
-
     /**
      * @function
      * @name rishson.enterprise.view.AppContainer

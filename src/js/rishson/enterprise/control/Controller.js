@@ -48,11 +48,11 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
      * @constructor
      * @param {Object} transport an implementation of rishson.enterprise.control.Transport
      */
-    constructor : function (transport) {
-        var criteria = [{paramName : 'transport', paramType : 'object'}];
+    constructor : function (transport, logoutRequest) {
+        var criteria = [{paramName : 'transport', paramType : 'object'}, {paramName : 'logoutRequest', paramType : 'object'}];
         var validator = new rishson.enterprise.util.ObjectValidator(criteria);
 
-        var wrappedParams = {transport : transport};   //wrap transport into an object, so we can validate and mixin
+        var wrappedParams = {transport : transport, logoutRequest: logoutRequest};   //wrap transport into an object, so we can validate and mixin
         if (validator.validate(wrappedParams)) {
             dojo.mixin(this, wrappedParams);
 

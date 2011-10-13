@@ -26,17 +26,19 @@
     <script type="text/javascript">
         dojo.ready(function() {
             dojo.registerModulePath('rishson', '../../../rishson');
+            dojo.registerModulePath('test', '../../../../../test');
 
             dojo.require('rishson.enterprise.view.AppContainer');
-            dojo.require('rishson.enterprise.control.Controller');  //so we can test published events
-            dojo.require('rishson.enterprise.control.MockTransport');
+            dojo.require('test.Scaffold');
         });
 
         function create() {
-            mockTransport = new rishson.enterprise.control.MockTransport();
-            controller = new rishson.enterprise.control.Controller(mockTransport);
+            scaffold = new test.Scaffold();
+            controller = scaffold.createController();
+
             var placeholder = dojo.byId('placeholder');
-            var testParams = {username : 'Rishson', footerText : '&copy; 2011 Rishson Enterprises.'};
+            var testParams = {username : 'Rishson',
+                footerText : '&copy; 2011 Rishson Enterprises.'};
             var widgetToTest = new rishson.enterprise.view.AppContainer(testParams, placeholder);
             widgetToTest.startup();
         }
