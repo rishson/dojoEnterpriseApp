@@ -1,5 +1,6 @@
 dojo.provide('rishson.enterprise.control.Controller');
 
+dojo.require('rishson.enterprise.Globals');
 dojo.require('rishson.enterprise.util.ObjectValidator');
 
 /**
@@ -18,6 +19,24 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
     transport : null,
 
     /**
+     * @field
+     * @name rishson.enterprise.widget._Widget._topicNamespace
+     * @type {String}
+     * @private
+     * @description This namespace is prepended to every topic
+     */
+    _topicNamespace : rishson.enterprise.Globals.TOPIC_NAMESPACE,
+
+    /**
+     * @field
+     * @name rishson.enterprise.widget._Widget.subList
+     * @type {Object}
+     * @description Object that contains the list of topics that any derived widget can listen out for
+     */
+    //@todo make this private with get/set so that contents can only be added to
+    subList : {SEND_REQUEST : this._topicNamespace + '/send/request'},
+
+    /**
      * @constructor
      * @param {Object} transport an implementation of rishson.enterprise.control.Transport
      */
@@ -31,6 +50,9 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
 
             //decorate the transport with the response and error handling functions in this class
             this.transport.addResponseFunctions(this.handleResponse, this.handleError);
+
+            //listen out for other classes wanting to send requests to the server
+            dojo.subscribe(this.subList.SEND_REQUEST, this, "send");
         }
         else {
             validator.logErrorToConsole(params, 'Invalid Transport implementation passed to the Controller.');

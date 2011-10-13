@@ -2,6 +2,7 @@ dojo.provide("rishson.enterprise.widget._Widget");
 
 dojo.require("dojo.i18n");
 dojo.require("dijit._Widget");
+dojo.require('rishson.enterprise.Globals');
 dojo.require("rishson.enterprise.widget._WidgetInWidgetMixin");
 
 /**
@@ -21,7 +22,7 @@ dojo.declare("rishson.enterprise.widget._Widget", [dijit._Widget, rishson.enterp
      * @private
      * @description This namespace is prepended to every topic name used by a derived widget
      */
-    _topicNamespace : '/rishson/enterprise/widget',    
+    _topicNamespace : rishson.enterprise.Globals.TOPIC_NAMESPACE,
 
     /**
      * @field
@@ -80,8 +81,11 @@ dojo.declare("rishson.enterprise.widget._Widget", [dijit._Widget, rishson.enterp
         dojo.subscribe(this.subList.ERROR_CME, this, "_cmeHandler");
         dojo.subscribe(this.subList.ERROR_INVALID, this, "_invalidHandler");
 
-        dojo.requireLocalization("rishson.enterprise", this.declaredClass);
-        this._nlsStrings = dojo.i18n.getLocalization("rishson.enterprise", this.declaredClass);
+        var indexOfClassName = this.declaredClass.lastIndexOf('.') + 1;
+        var className = this.declaredClass.slice(indexOfClassName);
+
+        dojo.requireLocalization("rishson.enterprise", className);
+        this._nlsStrings = dojo.i18n.getLocalization("rishson.enterprise", className);
 
         this.inherited(arguments);  //dijit._Widget
     },

@@ -20,9 +20,7 @@ dojo.declare('rishson.enterprise.view.AppContainer', [rishson.enterprise.widget.
     templateString : dojo.cache("rishson.enterprise.view", "appContainer/AppContainer.html"),
     widgetsInTemplate : true,
 
-    constructor : function () {
-        console.debug('');
-    },
+    username : '',
 
     /**
      * @function
@@ -62,7 +60,10 @@ dojo.declare('rishson.enterprise.view.AppContainer', [rishson.enterprise.widget.
     },
 
     _i18n : function() {
-        this.welcomeText = this._nlsStrings.WELCOME;
+        this.dapWelcomeText.innerHTML = this._nlsStrings.WELCOME;
+        this.dapUsername.innerHTML = this.username + '.';
+        this.dapLogout.innerHTML = this._nlsStrings.LOGOUT;
+        this.dapFooterText.innerHTML = this.footerText;
     },
 
     /**

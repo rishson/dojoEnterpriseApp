@@ -32,7 +32,8 @@
 
         function create() {
             var placeholder = dojo.byId('placeholder');
-            var widgetToTest = new rishson.enterprise.view.AppContainer({}, placeholder);
+            var testParams = {username : 'Rishson', footerText : '&copy; 2011 Rishson Enterprises.'};
+            var widgetToTest = new rishson.enterprise.view.AppContainer(testParams, placeholder);
             widgetToTest.startup();
         }
     </script>
