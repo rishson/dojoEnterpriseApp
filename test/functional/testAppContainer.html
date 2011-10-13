@@ -28,9 +28,13 @@
             dojo.registerModulePath('rishson', '../../../rishson');
 
             dojo.require('rishson.enterprise.view.AppContainer');
+            dojo.require('rishson.enterprise.control.Controller');  //so we can test published events
+            dojo.require('rishson.enterprise.control.MockTransport');
         });
 
         function create() {
+            mockTransport = new rishson.enterprise.control.MockTransport();
+            controller = new rishson.enterprise.control.Controller(mockTransport);
             var placeholder = dojo.byId('placeholder');
             var testParams = {username : 'Rishson', footerText : '&copy; 2011 Rishson Enterprises.'};
             var widgetToTest = new rishson.enterprise.view.AppContainer(testParams, placeholder);

@@ -20,7 +20,22 @@ dojo.declare('rishson.enterprise.view.AppContainer', [rishson.enterprise.widget.
     templateString : dojo.cache("rishson.enterprise.view", "appContainer/AppContainer.html"),
     widgetsInTemplate : true,
 
+    /**
+     * @field
+     * @name rishson.enterprise.view.AppContainer.username
+     * @type {String}
+     * @description the Username of the currently logged in user to display in the header
+     */
     username : '',
+
+    /**
+     * @field
+     * @name rishson.enterprise.view.AppContainer.footerText
+     * @type {String}
+     * @description the text to display in the footer
+     */
+    footerText : '',
+
 
     /**
      * @function
@@ -28,13 +43,12 @@ dojo.declare('rishson.enterprise.view.AppContainer', [rishson.enterprise.widget.
      * @override rishson.enterprise.widget._Widget
      */
     postCreate : function () {
-        console.debug(this.declaredClass + " : postCreate");
-
         //additions to the subList
         dojo.subscribe(this.subList.WIDGET_INITIALISED, this, "_handleWidgetInitialisation");
 
         //additions to our pubList
 
+        dojo.connect(this.logout, 'onclick', this, this._handleLogout);
         this.inherited(arguments);  //rishson.enterprise.widget._Widget
         this._i18n();
     },
@@ -74,6 +88,10 @@ dojo.declare('rishson.enterprise.view.AppContainer', [rishson.enterprise.widget.
      */
     _handleWidgetInitialisation : function (initialisedWidgetId) {
 
+    },
+
+    _handleLogout : function () {
+        dojo.publish(rishson.enterprise.Globals.TOPIC_USER_LOGOUT);
     }
 
 });

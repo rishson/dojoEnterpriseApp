@@ -20,6 +20,14 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
 
     /**
      * @field
+     * @name rishson.enterprise.control.Controller.logoutRequest
+     * @type {rishson.enterprise.control.Request}
+     * @description a Request to send to the server when a user wants to logout
+     */
+    logoutRequest : null,
+
+    /**
+     * @field
      * @name rishson.enterprise.widget._Widget._topicNamespace
      * @type {String}
      * @private
@@ -52,7 +60,10 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
             this.transport.addResponseFunctions(this.handleResponse, this.handleError);
 
             //listen out for other classes wanting to send requests to the server
-            dojo.subscribe(this.subList.SEND_REQUEST, this, "send");
+            dojo.subscribe(this.subList.SEND_REQUEST, this, this.send);
+
+            //listen out for user level events
+            dojo.subscribe(rishson.enterprise.Globals.TOPIC_USER_LOGOUT, this, this.handleLogout);
         }
         else {
             validator.logErrorToConsole(params, 'Invalid Transport implementation passed to the Controller.');
@@ -76,7 +87,7 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
 
     /**
      * @function
-     * @name rishson.enterprise.control.Transport.handleResponse
+     * @name rishson.enterprise.control.Controller.handleResponse
      * @description Handles a valid response from a transport.
      * @param {Object} response an object that is the server response
      */
@@ -99,7 +110,7 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
 
     /**
      * @function
-     * @name rishson.enterprise.control.Transport.handleError
+     * @name rishson.enterprise.control.Controller.handleError
      * @description Handles an unexpected (runtime) error response from a transport.
      * @param {Object} response an object that is the server error response
      */
@@ -108,6 +119,16 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
         //if required, dump analytics to server
         //send error to console - might need to remove sensitive data
         //raise error as event
+    },
+
+    /**
+     * @function
+     * @name rishson.enterprise.control.Controller._handleLogout
+     * @private
+     * @description Handles an user logout request.
+     */
+    handleLogout : function() {
+        this.send(this.logoutRequest);
     }
-    
+
 });

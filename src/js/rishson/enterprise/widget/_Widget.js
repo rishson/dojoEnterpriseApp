@@ -68,8 +68,6 @@ dojo.declare("rishson.enterprise.widget._Widget", [dijit._Widget, rishson.enterp
      * @override dijit._Widget
      */
     postCreate : function () {
-        console.debug(this.declaredClass + " : postCreate");
-
         /*create a unique id for every instance of a widget. This is needed for when we publish our events and want to
           publish who we are.
         */
