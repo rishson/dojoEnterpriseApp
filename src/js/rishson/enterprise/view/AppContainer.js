@@ -47,7 +47,7 @@ dojo.declare('rishson.enterprise.view.AppContainer', [rishson.enterprise.widget.
 
         //additions to our pubList
 
-        dojo.connect(this.logout, 'onclick', this, this._handleLogout);
+        dojo.connect(this.dapLogout, 'onclick', this, this._handleLogout);
         this.inherited(arguments);  //rishson.enterprise.widget._Widget
         this._i18n();
     },
@@ -89,6 +89,12 @@ dojo.declare('rishson.enterprise.view.AppContainer', [rishson.enterprise.widget.
 
     },
 
+    /**
+     * @function
+     * @private
+     * @description Log the session out. Send a request to the server to logout.
+     * The server should respond with a re-direct and a server side session invalidation.
+     */
     _handleLogout : function () {
         dojo.publish(rishson.enterprise.Globals.TOPIC_USER_LOGOUT);
     }
