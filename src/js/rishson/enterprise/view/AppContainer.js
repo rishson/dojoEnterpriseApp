@@ -47,7 +47,12 @@ dojo.declare('rishson.enterprise.view.AppContainer', [rishson.enterprise.widget.
 
         //additions to our pubList
 
-        dojo.connect(this.dapLogout, 'onclick', this, this._handleLogout);
+        this.connect(this.dapLogout, 'onclick', this, this._handleLogout);
+        this.connect(this.dapLogout, 'onmouseenter', this, function() {dojo.addClass(this.dapLogout, 'mouseEnter')});
+        this.connect(this.dapLogout, 'onmouseleave', this, function() {dojo.removeClass(this.dapLogout, 'mouseEnter')});
+        this.connect(this.dapUsername, 'onmouseenter', this, function() {dojo.addClass(this.dapUsername, 'mouseEnter headerButton')});
+        this.connect(this.dapUsername, 'onmouseleave', this, function() {dojo.removeClass(this.dapUsername, 'mouseEnter headerButton')});
+
         this.inherited(arguments);  //rishson.enterprise.widget._Widget
         this._i18n();
     },

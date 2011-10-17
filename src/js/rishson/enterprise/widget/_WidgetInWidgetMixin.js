@@ -9,6 +9,26 @@ dojo.provide("rishson.enterprise.widget._WidgetInWidgetMixin");
  */
 dojo.declare('rishson.enterprise.widget._WidgetInWidgetMixin', null, {
 
+    /**
+     * @field
+     * @private
+     * @name rishson.enterprise.widget._WidgetInWidgetMixin._connections
+     * @type {Array}
+     * @description Any dojo.connects should be stored in here so we can do a teardown properly.
+     */
+    _connections : [],
+
+    /**
+     * @function
+     * @name rishson.enterprise.widget._WidgetInWidget.connect
+     * @description Wrapper around dojo.connect that stores all the connects created for a derriving widget
+     * For param info, see dojo.connect
+     **/
+    connect : function (object, event, context, method) {
+        var newConnect = dojo.connect(object, event, context, method);
+        this._connections.push(newConnect);
+    },
+
    /**
      * @function
      * @name rishson.enterprise.widget._WidgetInWidget.adopt
@@ -77,7 +97,7 @@ dojo.declare('rishson.enterprise.widget._WidgetInWidgetMixin', null, {
         console.debug(this.widgetName + " : destroy");
         // summary: override the default destroy function to account for programatically added children.
         dojo.forEach(this._addedItems, this.__kill, this);  //destroy any adopted widgets
-        dojo.forEach(this._notifyConnections || [], dojo.disconnect);   //disconnect from any dojo.connects
+        dojo.forEach(this._connections || [], dojo.disconnect);   //disconnect from any dojo.connects
         this.inherited(arguments);  //call dijit._Widget to actually destroy this widget
     },
 
