@@ -54,7 +54,6 @@ dojo.declare('rishson.enterprise.control.XhrTransport', [rishson.enterprise.cont
     send : function (request) {
 
         var postParams = this.createBasePostParams(request);
-        //do json hijacking mitigation with {}{..}
         //do autoincrement sendID if required
         //profiling can be enabled here
 

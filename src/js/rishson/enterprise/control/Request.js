@@ -32,12 +32,23 @@ dojo.declare('rishson.enterprise.control.Request', null, {
     callbackScope : null,
 
     /**
+     * @field
+     * @name rishson.enterprise.control.Request.topic
+     * @type {String}
+     * @description The name of a topic to publish the response to when it has returned from the server.
+     */
+    topic : null,
+
+    /**
      * @constructor
-     * @param {Object} params Must contain the following:
+     * @param {Object} params Must contain either of the following:
      *  callback {Function} a function to call when a Response is returned from the server in response to this Request
      *  callbackScope {Object} a scope in which to call the callback function
+     *  or
+     *  topic {String} the name of a topic to publish to when the server returns a response
      */
     constructor : function (params) {
+        //see if the request contains a callback
         var criteria = [];
         criteria.push({paramName : 'callback', paramType : 'function'});
         criteria.push({paramName : 'callbackScope', paramType : 'object'});
@@ -47,8 +58,18 @@ dojo.declare('rishson.enterprise.control.Request', null, {
             dojo.mixin(this, params);
         }
         else {
-            validator.logErrorToConsole(params, 'Invalid Request construction.');
-            throw('Invalid Request construction.');
+            //see if the request contains a topic
+            criteria = [];
+            criteria.push({paramName : 'topic', paramType : 'string'});
+            validator = new rishson.enterprise.util.ObjectValidator(criteria);
+
+            if (validator.validate(params)) {
+                dojo.mixin(this, params);
+            }
+            else {
+                validator.logErrorToConsole(params, 'Invalid Request construction.');
+                throw('Invalid Request construction.');
+            }
         }
     },
 

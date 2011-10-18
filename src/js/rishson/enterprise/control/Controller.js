@@ -93,17 +93,26 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
      */
     handleResponse : function (request, response) {
         var scopedCallback;
-        if (request.scope) {
-            scopedCallback = dojo.hitch(request.scope, request.callback);
-        }
-        else {
-            scopedCallback = request.callback;  //if no scope is specified then assume the callback must already be scoped
-        }
+
+        //@todo remove {}&& prefix if added - should we be allowing comment-filtered anymore or is it an antipattern?
 
         if(! response.payload) {
-            console.error('Invalid server response. No envelope specified') ;
+            console.error('Invalid server response. No envelope specified');
+            throw('Invalid server response. No envelope specified');
         }
-        else {
+
+        //if the request has a topic specified then publish the response to the topic
+        if(request.topic) {
+            dojo.publish(request.topic, [response.payload]);
+        }
+        else{
+            //call the request's provide callback with the response - but hitch it's scope first if needs be
+            if (request.scope) {
+                scopedCallback = dojo.hitch(request.scope, request.callback);
+            }
+            else {
+                scopedCallback = request.callback;  //if no scope is specified then assume the callback must already be scoped
+            }
             scopedCallback(response.payload);
         }
     },
