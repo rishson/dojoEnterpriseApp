@@ -60,7 +60,7 @@ doh.register("Controller tests", [
         },
         runTest: function(){
             try{
-                //example of a valid WebService call to call a mathod specifically designed to test a Controller
+                //example of a valid WebService call to call a method specifically designed to test a Controller
                 var someServiceCall = new rishson.enterprise.control.ServiceRequest({service : 'testService',
                     method : 'ControllerTestMethod',
                     params : [{funcName : 'validResponse'}],
@@ -70,7 +70,27 @@ doh.register("Controller tests", [
                 controller.send(someServiceCall);
             }
             catch(e){
-                doh.assertTrue('false', 'Unexpected error occured sending ServiceRequest'); //we should not be here
+                doh.assertTrue('false', 'Unexpected error occurred sending ServiceRequest'); //we should not be here
+            }
+
+            //test the use of topics instead of callbacks for the response handling
+            try{
+                //example of a valid WebService call to call a method specifically designed to test a Controller
+                someServiceCall = new rishson.enterprise.control.ServiceRequest({service : 'testService',
+                    method : 'ControllerTestMethod',
+                    params : [{funcName : 'validResponse'}],
+                    topic : '/test/controller'});
+
+                dojo.subscribe('/test/controller', function (payload){
+                    console.group("Data received in topic");
+                    console.debug(payload);
+                    console.groupEnd();
+                    doh.assertTrue(payload.hello === 'world');
+                });
+                controller.send(someServiceCall);
+            }
+            catch(e){
+                doh.assertTrue('false', 'Unexpected error occurred sending ServiceRequest'); //we should not be here
             }
         },
         tearDown: function(){
