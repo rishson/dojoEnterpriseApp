@@ -18,7 +18,9 @@ The main features are:
   programatically create widgets.
 - a full-page container widget with plugins for common 'enterprise' features such as session management.
 
- Control layer
+
+
+### Control layer
  -------------
 
  You can make a call to the server without having to directly use the lower level XHR code. Since the actual mechanism
@@ -28,7 +30,8 @@ The main features are:
 
  e.g.
 
- //example of calling a WebService on the server
+```javascript
+//example of calling a WebService on the server
  var someServiceCall = new rishson.enterprise.control.ServiceRequest({service : 'testService',
     method : 'TestMethod',
     params : [{exampleParamsName : 'exampleParamValue'}],
@@ -36,7 +39,7 @@ The main features are:
     scope : this});
 
  controller.send(someServiceCall);
-
+```
  Because of this abstraction, we can plug different Transport implementations into our control layer.
  Provided out of the box are XhrTransport (for performing Xhr post calls) and MockTransport (for use in a headless
  unit test configuration with no need for a running web server).
@@ -47,7 +50,8 @@ The main features are:
  you can also provide a topic name instead and the control layer will publish the response to this topic.
 
 
- AppContainer widget
+
+### AppContainer widget
  -------------------
 
  This widget is a placeholder for widgets that do stuff. Essentially, this widget is the full-page app chrome that
