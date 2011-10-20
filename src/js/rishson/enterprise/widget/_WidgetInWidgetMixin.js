@@ -54,8 +54,6 @@ dojo.declare('rishson.enterprise.widget._WidgetInWidgetMixin', null, {
      * @returns {Object} the created Widget instance
      */
     adopt : function (/*Function*/cls, /*Object*/props, /*DomNode*/node) {
-        console.debug(this.widgetName + " : adopt");
-
         var x = new cls(props, node);
         this.__addItem(x);
         return x; // my.Widget
@@ -78,7 +76,6 @@ dojo.declare('rishson.enterprise.widget._WidgetInWidgetMixin', null, {
      * value here and the child will be orphaned and killed.
      */
     orphan : function(/*dijit._Widget*/widget, /*Boolean*/destroy){
-        console.debug(this.widgetName + " : orphan");
         this._addedItems = this._addedItems || [];
         var i = dojo.indexOf(this._addedItems, widget);
         if (i >= 0) {
@@ -94,7 +91,6 @@ dojo.declare('rishson.enterprise.widget._WidgetInWidgetMixin', null, {
      * @description Override the default destroy function to account for programatically added children.
      */
     destroy : function() {
-        console.debug(this.widgetName + " : destroy");
         // summary: override the default destroy function to account for programatically added children.
         dojo.forEach(this._addedItems, this.__kill, this);  //destroy any adopted widgets
         dojo.forEach(this._connections || [], dojo.disconnect);   //disconnect from any dojo.connects
@@ -107,11 +103,10 @@ dojo.declare('rishson.enterprise.widget._WidgetInWidgetMixin', null, {
      * @function
      * @name rishson.enterprise.widget._WidgetInWidget._addItem
      * @private
-     * @description Add any number of programatically created children to this instance for later cleanup.
+     * @description Add any number of programmaticaly created children to this instance for later cleanup.
      * @varargs any number of widgets
      */
     __addItem : function (/* dijit._Widget... */) {
-        console.debug(this.widgetName + " : __addItem");
         this._addedItems = this._addedItems || [];
         this._addedItems.push.apply(this._addedItems, arguments);
     },
@@ -124,8 +119,6 @@ dojo.declare('rishson.enterprise.widget._WidgetInWidgetMixin', null, {
      * @param {Object} w a widget to destroy
      */
     __kill : function (w) {
-        console.debug(this.widgetName + " : __kill");
-
         try {
             if (w && w.destroyRecursive) {
                 w.destroyRecursive();
