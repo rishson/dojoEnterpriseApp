@@ -31,14 +31,22 @@ The main features are:
  e.g.
 
 ```javascript
-//example of calling a WebService on the server
- var someServiceCall = new rishson.enterprise.control.ServiceRequest({service : 'testService',
+//example of calling a WebService on the server and expecting a response on a callaback function
+ var serviceCall = new rishson.enterprise.control.ServiceRequest({service : 'testService',
     method : 'TestMethod',
     params : [{exampleParamsName : 'exampleParamValue'}],
     callback : myCallback,
     scope : this});
 
- controller.send(someServiceCall);
+ controller.send(serviceCall);
+
+//example of calling a RestService on the server and expecting a response to be published to a topic
+ var restCall = new rishson.enterprise.control.RestRequest({url : 'testService',
+    verb : 'create',
+    params : [{exampleParamsName : 'exampleParamValue'}],
+    topic : 'testServiceResponse');
+
+ controller.send(restCall);
 ```
  Because of this abstraction, we can plug different Transport implementations into our control layer.
  Provided out of the box are XhrTransport (for performing Xhr post calls) and MockTransport (for use in a headless
