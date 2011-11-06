@@ -24,7 +24,7 @@ The main features are:
  -------------
 
  You can make a call to the server without having to directly use the lower level XHR code. Since the actual mechanism
- for getting to the server adn parsing the response are abstracted, you can have a clean separation of concerns between the
+ for getting to the server and parsing the response are abstracted, you can have a clean separation of concerns between the
  widgets and the control layer. The control layer knows nothing of the mechanics of performing a request; this is
  delegated to a Transport implementation that is injected into the control layer on construction.
 
@@ -54,8 +54,27 @@ The main features are:
 
  Web Service requests and Rest requests are currently supported.
 
- Although the above example uses scoped callbacks as the mechanism for returning a server response to a callee,
- you can also provide a topic name instead and the control layer will publish the response to this topic.
+For widgets that want to make a request for data, they don't even need to know about XHR, Transports or the control layer.
+Widgets can simply publish their request (along with a topic that the response will be published on):
+
+```javascript
+
+//dojo 1.6 example of calling a RestService on the server and expecting a response to be published to a topic
+ var restCall = new rishson.enterprise.control.RestRequest({url : 'testService',
+    verb : 'create',
+    params : [{exampleParamsName : 'exampleParamValue'}],
+    topic : 'testServiceResponse');
+
+dojo.publish(rishson.enterprise.Globals.SEND_REQUEST, restCall);
+
+//dojo 1.7+ example of calling a RestService on the server and expecting a response to be published to a topic
+ var restCall = new RestRequest({url : 'testService',
+    verb : 'create',
+    params : [{exampleParamsName : 'exampleParamValue'}],
+    topic : 'testServiceResponse');
+
+topic.publish(Globals.SEND_REQUEST, restCall);
+```
 
 
 
