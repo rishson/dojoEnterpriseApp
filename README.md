@@ -23,6 +23,28 @@ The main features are:
 ### Control layer
  -------------
 
+For widgets that want to make a request for data, they don't even need to know about XHR, Transports or the control layer.
+Widgets can simply publish their request (along with a topic that the response will be published on):
+
+```javascript
+
+//dojo 1.6 example of calling a RestService on the server and expecting a response to be published to a topic
+ var restCall = new rishson.enterprise.control.RestRequest({url : 'testService',
+    verb : 'create',
+    params : [{exampleParamsName : 'exampleParamValue'}],
+    topic : 'testServiceResponse');
+
+dojo.publish(rishson.enterprise.Globals.SEND_REQUEST, restCall);
+
+//dojo 1.7+ example of calling a RestService on the server and expecting a response to be published to a topic
+ var restCall = new RestRequest({url : 'testService',
+    verb : 'create',
+    params : [{exampleParamsName : 'exampleParamValue'}],
+    topic : 'testServiceResponse');
+
+topic.publish(Globals.SEND_REQUEST, restCall);
+```
+
  You can make a call to the server without having to directly use the lower level XHR code. Since the actual mechanism
  for getting to the server and parsing the response are abstracted, you can have a clean separation of concerns between the
  widgets and the control layer. The control layer knows nothing of the mechanics of performing a request; this is
@@ -53,29 +75,6 @@ The main features are:
  unit test configuration with no need for a running web server).
 
  Web Service requests and Rest requests are currently supported.
-
-For widgets that want to make a request for data, they don't even need to know about XHR, Transports or the control layer.
-Widgets can simply publish their request (along with a topic that the response will be published on):
-
-```javascript
-
-//dojo 1.6 example of calling a RestService on the server and expecting a response to be published to a topic
- var restCall = new rishson.enterprise.control.RestRequest({url : 'testService',
-    verb : 'create',
-    params : [{exampleParamsName : 'exampleParamValue'}],
-    topic : 'testServiceResponse');
-
-dojo.publish(rishson.enterprise.Globals.SEND_REQUEST, restCall);
-
-//dojo 1.7+ example of calling a RestService on the server and expecting a response to be published to a topic
- var restCall = new RestRequest({url : 'testService',
-    verb : 'create',
-    params : [{exampleParamsName : 'exampleParamValue'}],
-    topic : 'testServiceResponse');
-
-topic.publish(Globals.SEND_REQUEST, restCall);
-```
-
 
 
 ### AppContainer widget
