@@ -30,7 +30,7 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
      * @field
      * @name rishson.enterprise.control.Controller.serviceRegistry
      * @type {Array}
-     * @description an array of SMD endpoints
+     * @description an array of dojox.RpcService(s). THis is populated from a list of SMD definitions
      */
     serviceRegistry : null,
 
@@ -38,7 +38,8 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
      * @field
      * @name rishson.enterprise.control.Controller.grantedAuthorities
      * @type {Array}
-     * @description an array of permission to grant to the currently logged on user
+     * @description an array of permission to grant to the currently logged on user. Permissions willbe coerced to 
+	 * lower case.
      */
     grantedAuthorities : null,
 
@@ -88,6 +89,11 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
 
             dojo.mixin(this, unwrappedParams);
 
+			//convert authorities to lower case so we can do case-insensitive search for authorities
+			dojo.forEach(this.grantedAuthorities, function(authority){
+				authority = authority.toLowerCase();
+			}, this);
+
             //decorate the transport with the response and error handling functions in this class
             this.transport.addResponseFunctions(this.handleResponse, this.handleError);
 
@@ -100,12 +106,22 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
         }
     },
 
+     /**
+     * @function
+     * @name rishson.enterprise.control.Controller.registerWidget
+     * @description When this is called, the COntroller will seeif it has wirings for the widget and will create
+     * the relevant pubs and subs.
+	 * This behaviour is in a separate function so that teh COntroller can be used withour reference to the AppContainer
+     * @param {rishson.enterprise.widget._Widget} a widgets that derrives from _Widget
+     */
+
     registerWidget : function(widget) {
         if(widget.declaredClass === 'rishson.enterprise.view.AppContainer'){
            //listen out for events from the AppContainer
             dojo.subscribe(rishson.enterprise.view.AppContainer.LOGOUT, this, this._handleLogout);
         }
     },
+
     
      /**
      * @function
@@ -166,6 +182,55 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
         //raise error as event
     },
 
+	/**
+     * @function
+     * @name rishson.enterprise.control.Controller.hasGrantedAuthority
+     * @description Handles an user logout request.
+     */
+    hasGrantedAuthority : function(authority) {
+        return dojo.indexOf(this.grantedAuthorities, authority.toLowerCase()) >= 0;
+    },
+
+	/**
+     * @function
+	 * @private
+     * @name rishson.enterprise.control.Controller._instantiateServiceRegistry
+     * @description convert all the given SMDs into dojo.rpc.Service instances.
+     */
+	_instantiateServiceRegistry : function() {
+		var serviceArr = [];		
+		dojo.forEach(this.serviceRegistry, function(SMD) {
+			try {
+				serviceArr.push(new dojox.rpc.Service(SMD));		
+			}
+			catch(e) {
+				console.error("Invalid SMD definition: " + SMD);	
+			}
+		}, this);
+		this.serviceRegistry = serviceArr;	//swap in the service registry
+	},
+
+	/**
+     * @function
+	 * @private
+     * @name rishson.enterprise.control.Controller._validateServices
+     * @description Call the validation function for all services.
+	 * Each service should have a pre-defined test function (__validate) that can be called to validate that the service is up.
+     */
+	_validateServices : function() {
+		dojo.forEach(this.serviceRegistry, function(service) {
+			try {
+				//call the test function
+				//service.__validate();  
+			}
+			catch(e) {
+				console.error("Invalid SMD definition: " + SMD);	
+			}
+		}, this);
+		this.serviceRegistry = serviceArr;	//swap in the service registry
+	},
+
+
     /**
      * @function
      * @name rishson.enterprise.control.Controller._handleLogout
@@ -174,15 +239,6 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
      */
     _handleLogout : function() {
         this.send(this.logoutRequest);
-    },
-
-    /**
-     * @function
-     * @name rishson.enterprise.control.Controller.hasGrantedAuthority
-     * @private
-     * @description Handles an user logout request.
-     */
-    hasGrantedAuthority : function(authority) {
-        return this.grantedAuthorities.indexOf(authority) > 0;
     }
+
 });
