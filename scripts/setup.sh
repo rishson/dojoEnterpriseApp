@@ -5,9 +5,13 @@ set -e
 VERSION="1.6.1"
 
 THISDIR=$(cd $(dirname $0) && pwd)
-OUTDIR="$THISDIR/../src/js/dojo"
+OUTDIR="$THISDIR/../src/js"
 DOJODIR="dojo-release-${VERSION}-src"
 OUTDIR=$(cd "$OUTDIR" &> /dev/null && pwd || echo "")
+
+# create the dojo dir under src/js as this is excluded from the skeleton directory structure by a gitignor
+cd "$OUTDIR"
+mkdir -p -v "dojo"
 
 if which wget >/dev/null; then
 	GET="wget --no-check-certificate -O -"
