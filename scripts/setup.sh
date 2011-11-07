@@ -12,6 +12,7 @@ OUTDIR=$(cd "$OUTDIR" &> /dev/null && pwd || echo "")
 # create the dojo dir under src/js as this is excluded from the skeleton directory structure by a gitignor
 cd "$OUTDIR"
 mkdir -p -v "dojo"
+OUTDIR="$OUTDIR/dojo"
 
 if which wget >/dev/null; then
 	GET="wget --no-check-certificate -O -"

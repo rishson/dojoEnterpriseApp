@@ -20,6 +20,9 @@ dojo.declare('rishson.enterprise.Globals', null, {
      */
     TOPIC_NAMESPACE : '/rishson/enterprise/widget',
 
+	 /**
+     * @constructor
+     */
     constructor : function () {
         this.SEND_REQUEST = this.TOPIC_NAMESPACE + '/request/send';
     }

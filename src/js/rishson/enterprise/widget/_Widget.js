@@ -62,14 +62,16 @@ dojo.declare("rishson.enterprise.widget._Widget", [dijit._Widget, rishson.enterp
      */
     _widgetId : null,
 
+	 /**
+     * @constructor
+     */
     constructor : function() {
         /*create a unique id for every instance of a widget. This is needed for when we publish our events and want to
-          publish who we are. If id is blank then we assume there is only 1 instance of the implementing widget.
-        */
+          publish who we are. If id is blank then we assume there is only 1 instance of the implementing widget.*/
         this._widgetId = this.declaredClass + this.id;
-        /*any derrived widget can publish events on their own namespace so construct the widget namespace from
-        the declared class, but replace the . to be a / so it is standard topic conventions
-         */
+        
+		/*any derrived widget can publish events on their own namespace so construct the widget namespace from
+        the declared class, but replace the . to be a / so it is standard topic conventions*/
         this._topicNamespace = '/' + this.declaredClass.replace(/\./g, '/');
     },
 
