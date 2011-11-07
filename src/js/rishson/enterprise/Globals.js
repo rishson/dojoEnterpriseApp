@@ -21,7 +21,7 @@ dojo.declare('rishson.enterprise.Globals', null, {
     TOPIC_NAMESPACE : '/rishson/enterprise/widget',
 
     constructor : function () {
-        this.TOPIC_USER_LOGOUT = this.TOPIC_NAMESPACE + '/user/logout'
+        this.SEND_REQUEST = this.TOPIC_NAMESPACE + '/request/send';
     }
 });
 

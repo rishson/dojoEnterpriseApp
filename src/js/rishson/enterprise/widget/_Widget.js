@@ -17,12 +17,12 @@ dojo.declare("rishson.enterprise.widget._Widget", [dijit._Widget, rishson.enterp
 
     /**
      * @field
-     * @name rishson.enterprise.widget._Widget._topicNamespace
+     * @name rishson.enterprise.widget._Widget._globalTopicNamespace
      * @type {String}
      * @private
      * @description This namespace is prepended to every topic name used by a derived widget
      */
-    _topicNamespace : rishson.enterprise.Globals.TOPIC_NAMESPACE,
+    _globalTopicNamespace : rishson.enterprise.Globals.TOPIC_NAMESPACE,
 
     /**
      * @field
@@ -31,7 +31,7 @@ dojo.declare("rishson.enterprise.widget._Widget", [dijit._Widget, rishson.enterp
      * @description Object that contains the list of topics that any derived widget can publish
      */
     //@todo make this private with get/set so that contents can only be added to
-    pubList : {WIDGET_INITIALISED : this._topicNamespace + '/widget/initialised'},
+    pubList : {WIDGET_INITIALISED : this._globalTopicNamespace + '/widget/initialised'},
 
     /**
      * @field
@@ -40,9 +40,9 @@ dojo.declare("rishson.enterprise.widget._Widget", [dijit._Widget, rishson.enterp
      * @description Object that contains the list of topics that any derived widget can listen out for
      */
     //@todo make this private with get/set so that contents can only be added to
-    subList : {WIDGET_DISABLE : this._topicNamespace + '/disable',
-            ERROR_CME : this._topicNamespace + '/error/cme',
-            ERROR_INVALID : this._topicNamespace + '/error/invalid'
+    subList : {WIDGET_DISABLE : this._globalTopicNamespace + '/disable',
+            ERROR_CME : this._globalTopicNamespace + '/error/cme',
+            ERROR_INVALID : this._globalTopicNamespace + '/error/invalid'
         },
 
     /**
@@ -62,17 +62,23 @@ dojo.declare("rishson.enterprise.widget._Widget", [dijit._Widget, rishson.enterp
      */
     _widgetId : null,
 
+    constructor : function() {
+        /*create a unique id for every instance of a widget. This is needed for when we publish our events and want to
+          publish who we are. If id is blank then we assume there is only 1 instance of the implementing widget.
+        */
+        this._widgetId = this.declaredClass + this.id;
+        /*any derrived widget can publish events on their own namespace so construct the widget namespace from
+        the declared class, but replace the . to be a / so it is standard topic conventions
+         */
+        this._topicNamespace = '/' + this.declaredClass.replace(/\./g, '/');
+    },
+
     /**
      * @function
      * @name rishson.enterprise.widget._Widget.postCreate
      * @override dijit._Widget
      */
     postCreate : function () {
-        /*create a unique id for every instance of a widget. This is needed for when we publish our events and want to
-          publish who we are.
-        */
-        this._widgetId = this.declaredClass + this.id;
-
         //subscribe to topics that EVERY widget needs to potentially know about
         dojo.subscribe(this.subList.WIDGET_DISABLE, this, "_disable");
         dojo.subscribe(this.subList.WIDGET_ENABLE, this, "_enable");

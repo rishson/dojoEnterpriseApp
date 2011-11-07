@@ -4,6 +4,7 @@ dojo.require('rishson.enterprise.widget._Widget');
 dojo.require('dijit.layout._LayoutWidget');
 dojo.require('dijit._Container');
 dojo.require('dijit._Templated');
+dojo.require('rishson.enterprise.util.ObjectValidator');
 
 //template widgets
 dojo.require('dijit.layout.BorderContainer');
@@ -37,6 +38,23 @@ dojo.declare('rishson.enterprise.view.AppContainer', [rishson.enterprise.widget.
     footerText : '',
 
     /**
+     * @constructor
+     * @param {Object} params contains the username and footerText
+     */
+    constructor : function(params) {
+        var criteria = [{paramName : 'username', paramType : 'string'}, {paramName : 'footerText', paramType : 'string'}];
+        var validator = new rishson.enterprise.util.ObjectValidator(criteria);
+        var unwrappedParams = {username: params.username, footerText: params.footerText};
+        if (validator.validate(unwrappedParams)) {
+            dojo.safeMixin(this, unwrappedParams);
+        }
+        else {
+            validator.logErrorToConsole(params, 'Invalid params passed to the AppContainer.');
+            throw ('Invalid params passed to the AppContainer.');
+        }
+    },
+
+    /**
      * @function
      * @name rishson.enterprise.view.AppContainer
      * @override rishson.enterprise.widget._Widget
@@ -46,6 +64,7 @@ dojo.declare('rishson.enterprise.view.AppContainer', [rishson.enterprise.widget.
         dojo.subscribe(this.subList.WIDGET_INITIALISED, this, "_handleWidgetInitialisation");
 
         //additions to our pubList
+        this.pubList.LOGOUT = this._topicNamespace + '/user/logout';
 
         this.connect(this.dapLogout, 'onclick', this, this._handleLogout);
         this.connect(this.dapLogout, 'onmouseenter', this, function() {dojo.addClass(this.dapLogout, 'mouseEnter')});
@@ -101,7 +120,7 @@ dojo.declare('rishson.enterprise.view.AppContainer', [rishson.enterprise.widget.
      * The server should respond with a re-direct and a server side session invalidation.
      */
     _handleLogout : function () {
-        dojo.publish(rishson.enterprise.Globals.TOPIC_USER_LOGOUT);
+        dojo.publish(this.pubList.LOGOUT);
     }
 
 });

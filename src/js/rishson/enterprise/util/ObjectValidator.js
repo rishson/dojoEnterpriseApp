@@ -34,12 +34,7 @@ dojo.declare('rishson.enterprise.util.ObjectValidator', null, {
      * @returns {Boolean} true if the params are of the required types, else false
      */
     validate : function (params) {
-        dojo.forEach(this.validationCriteria, function (criteria) {
-            if(! this._validateParam(params, criteria)) {
-                return false;
-            }
-        }, this);
-        return true;
+        return this._validate(this.validationCriteria, params);
     },
     
     /**
@@ -51,9 +46,14 @@ dojo.declare('rishson.enterprise.util.ObjectValidator', null, {
      */
     getValidationFailuresAsString : function (params) {
         var errStr = "Validation failures:";
+        var requiredType;
         dojo.forEach(this.validationCriteria, function (criteria) {
             if(! this._validateParam(params, criteria)) {
-                errStr += ' [' + criteria.paramName + ' is not a ' + criteria.paramType + ']';
+                requiredType = 'a ' + criteria.paramType;
+                if(criteria.paramType === 'criteria'){
+                    requiredType = 'correctly populated';
+                }
+                errStr += ' [' + criteria.paramName + ' is not ' + requiredType + ']';
             }
         }, this);
         return errStr;
@@ -74,6 +74,27 @@ dojo.declare('rishson.enterprise.util.ObjectValidator', null, {
 
     /**
      * @function
+     * @name rishson.enterprise.util.ObjectValidator._validate
+     * @private
+     * @description validates all the criteria for basic type safety
+     * @param {Array} params contains parameter data to validate against the criteria given in the constructor
+     * @returns {Boolean} true if the params are of the required types, else false
+     */
+    _validate : function(criteriaArray, params){
+        /*
+            This looks horrid.
+            If a param is invalid then teh loop return TRUE.
+            We use dojo.some to see if any return TRUE (i.e.they failed) and then negate the dojo.some
+         */
+        return ! dojo.some(criteriaArray, function (criteria) {
+            if(! this._validateParam(params, criteria)) {
+                return true;
+            }
+        }, this);
+    },
+
+    /**
+     * @function
      * @private
      * @name rishson.enterprise.util.ObjectValidator._validateParam
      * @description validate each parameter against a type criteria. Only strings, arrays, functions and objects are
@@ -83,15 +104,19 @@ dojo.declare('rishson.enterprise.util.ObjectValidator', null, {
      * @return {Boolean} return true if the parameter is of the type required by the criteria, else false
      */
     _validateParam : function (param, criteria) {
+        var paramValue = param[criteria.paramName];
+
         switch(criteria.paramType) {
             case 'string' :
-                return dojo.isString(param[criteria.paramName]);
+                return dojo.isString(paramValue);
             case 'array' :
-                return dojo.isArray(param[criteria.paramName]);
+                return dojo.isArray(paramValue);
             case 'function' :
-                return dojo.isFunction(param[criteria.paramName]);
+                return dojo.isFunction(paramValue);
             case 'object' :
-                return dojo.isObject(param[criteria.paramName]);
+                return dojo.isObject(paramValue);
+            case 'criteria' :
+                return this._validate(criteria.criteria, paramValue);
             default :
                 return false;
         }

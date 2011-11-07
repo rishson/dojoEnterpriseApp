@@ -8,20 +8,29 @@ dojo.require('rishson.enterprise.control.ServiceRequest');
 dojo.declare('test.Scaffold', null, {
 
     createController : function() {
-        var logoutRequest = this.createRequest();
-        logoutRequest.service = 'userService';
-        logoutRequest.method = 'logout';
-        logoutRequest.params = [{funcName : 'validResponse'}],
+        var mockTransport = new rishson.enterprise.control.MockTransport();
+        var validLoginResponse = {logoutRequest : this.createLogoutRequest(),
+            serviceRegistry : [],
+            grantedAuthorities : []};
+        return new rishson.enterprise.control.Controller(mockTransport, validLoginResponse);
+    },
 
-        mockTransport = new rishson.enterprise.control.MockTransport();
-        controller = new rishson.enterprise.control.Controller(mockTransport, logoutRequest);
-        return controller;
+    createLogoutRequest : function() {
+        return new rishson.enterprise.control.ServiceRequest({callback : function(){},
+            callbackScope : this,
+            service : 'userService',
+            method : 'logout',
+            params : [{funcName : 'validResponse'}]
+        });
     },
 
     createRequest : function() {
-        var validCallback = function(){};
-        var request = new rishson.enterprise.control.ServiceRequest({callback : validCallback, callbackScope : this});
-        return request;
+        return new rishson.enterprise.control.ServiceRequest({callback : function(){},
+            callbackScope : this,
+            service : 'userService',
+            method : 'logout',
+            params : [{funcName : 'validResponse'}]
+        });
     }
 
 });

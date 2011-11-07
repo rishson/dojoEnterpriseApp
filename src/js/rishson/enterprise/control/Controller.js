@@ -28,6 +28,22 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
 
     /**
      * @field
+     * @name rishson.enterprise.control.Controller.serviceRegistry
+     * @type {Array}
+     * @description an array of SMD endpoints
+     */
+    serviceRegistry : null,
+
+    /**
+     * @field
+     * @name rishson.enterprise.control.Controller.grantedAuthorities
+     * @type {Array}
+     * @description an array of permission to grant to the currently logged on user
+     */
+    grantedAuthorities : null,
+
+    /**
+     * @field
      * @name rishson.enterprise.widget._Widget._topicNamespace
      * @type {String}
      * @private
@@ -42,35 +58,55 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
      * @description Object that contains the list of topics that any derived widget can listen out for
      */
     //@todo make this private with get/set so that contents can only be added to
-    subList : {SEND_REQUEST : this._topicNamespace + '/send/request'},
+    subList : {},
 
     /**
      * @constructor
      * @param {Object} transport an implementation of rishson.enterprise.control.Transport
      */
-    constructor : function (transport, logoutRequest) {
-        var criteria = [{paramName : 'transport', paramType : 'object'}, {paramName : 'logoutRequest', paramType : 'object'}];
+    constructor : function (transport, validLoginResponse) {
+        /*validLoginResponse should be in the form:
+            {logoutRequest: rishson.enterprise.control.Request,
+            serviceRegistry : [SMD Objects],
+            grantedAuthorities : [Authority Objects]}*/
+        var criteria = [{paramName : 'transport', paramType : 'object'},
+            {paramName : 'validLoginResponse', paramType : 'criteria', criteria :
+                [{paramName : 'logoutRequest', paramType : 'object'},
+                {paramName : 'serviceRegistry', paramType : 'array'},
+                {paramName : 'grantedAuthorities', paramType : 'array'}]
+            }];
         var validator = new rishson.enterprise.util.ObjectValidator(criteria);
 
-        var wrappedParams = {transport : transport, logoutRequest: logoutRequest};   //wrap transport into an object, so we can validate and mixin
-        if (validator.validate(wrappedParams)) {
-            dojo.mixin(this, wrappedParams);
+        //collect up the params and validate
+        var params = {'transport' : transport, 'validLoginResponse' : validLoginResponse};
+        if(validator.validate(params)) {
+            //unwrap the object contents for validation and to do a mixin
+            var unwrappedParams = {'transport' : transport,
+            'logoutRequest': validLoginResponse.logoutRequest,
+            'serviceRegistry': validLoginResponse.serviceRegistry,
+            'grantedAuthorities': validLoginResponse.grantedAuthorities};
+
+            dojo.mixin(this, unwrappedParams);
 
             //decorate the transport with the response and error handling functions in this class
             this.transport.addResponseFunctions(this.handleResponse, this.handleError);
 
             //listen out for other classes wanting to send requests to the server
-            dojo.subscribe(this.subList.SEND_REQUEST, this, this.send);
-
-            //listen out for user level events
-            dojo.subscribe(rishson.enterprise.Globals.TOPIC_USER_LOGOUT, this, this.handleLogout);
+            dojo.subscribe(rishson.enterprise.Globals.SEND_REQUEST, this, this.send);
         }
         else {
-            validator.logErrorToConsole(params, 'Invalid Transport implementation passed to the Controller.');
-            throw ('Invalid Transport implementation passed to the Controller.');
+            validator.logErrorToConsole(params, 'Invalid params passed to the Controller.');
+            throw ('Invalid params passed to the Controller.');
         }
     },
 
+    registerWidget : function(widget) {
+        if(widget.declaredClass === 'rishson.enterprise.view.AppContainer'){
+           //listen out for events from the AppContainer
+            dojo.subscribe(rishson.enterprise.view.AppContainer.LOGOUT, this, this._handleLogout);
+        }
+    },
+    
      /**
      * @function
      * @name rishson.enterprise.control.Controller.send
@@ -136,8 +172,17 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
      * @private
      * @description Handles an user logout request.
      */
-    handleLogout : function() {
+    _handleLogout : function() {
         this.send(this.logoutRequest);
-    }
+    },
 
+    /**
+     * @function
+     * @name rishson.enterprise.control.Controller.hasGrantedAuthority
+     * @private
+     * @description Handles an user logout request.
+     */
+    hasGrantedAuthority : function(authority) {
+        return this.grantedAuthorities.indexOf(authority) > 0;
+    }
 });

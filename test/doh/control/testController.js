@@ -1,6 +1,8 @@
 //Declare out the name of the test module to make dojo's module loader happy.
 dojo.provide("test.doh.control.TestController");
 
+dojo.require('test.Scaffold');
+
 dojo.require('rishson.enterprise.control.Controller');
 dojo.require('rishson.enterprise.control.MockTransport');
 dojo.require('rishson.enterprise.control.ServiceRequest');
@@ -13,11 +15,21 @@ doh.register("Controller tests", [
             dojo.cookie("JSESSIONID", '1234567890');
             //control layer initialisation - create a valid Transport implementation
             mockTransport = new rishson.enterprise.control.MockTransport();
+            validRequest = {
+                callback : function(){},    //needs to be a function
+                callbackScope : this,   //needs to be an object
+                service : 'hello',  //needs to be a string
+                method : 'world'    //needs to be a string
+            };
+            validLoginResponse = {logoutRequest : new rishson.enterprise.control.Request(validRequest),
+                serviceRegistry : [],
+                grantedAuthorities: []
+            };
         },
         runTest: function(){
             var constructorFailed = false;
             try {
-                //invallid construction - no params passed to constructor
+                //invalid construction - no params passed to constructor
                 var controller = new rishson.enterprise.control.Controller();
             }
             catch(e){
@@ -26,16 +38,68 @@ doh.register("Controller tests", [
             doh.assertTrue(constructorFailed);
 
             try {
-                //invallid construction - transport in params has no transport
-                controller = new rishson.enterprise.control.Controller({invalidParam : null});
+                //invalid construction - transport is null
+                controller = new rishson.enterprise.control.Controller(null, validLoginResponse);
             }
             catch(e){
                 constructorFailed = true;
             }
             doh.assertTrue(constructorFailed);
 
+            try {
+                //invalid construction - validLoginResponse is null
+                controller = new rishson.enterprise.control.Controller(mockTransport, null);
+            }
+            catch(e){
+                constructorFailed = true;
+            }
+            doh.assertTrue(constructorFailed);
+
+            try {
+                //invalid construction - validLoginResponse is not populated
+                controller = new rishson.enterprise.control.Controller(mockTransport, {});
+            }
+            catch(e){
+                constructorFailed = true;
+            }
+            doh.assertTrue(constructorFailed);
+
+            try {
+                //invalid construction - validLoginResponse.grantedAuthorities is null
+                controller = new rishson.enterprise.control.Controller(mockTransport, {logoutRequest : {},
+                    serviceRegistry : [],
+                    grantedAuthorities: null});
+            }
+            catch(e){
+                constructorFailed = true;
+            }
+            doh.assertTrue(constructorFailed);
+
+            try {
+                //invalid construction - validLoginResponse.serviceRegistry is null
+                controller = new rishson.enterprise.control.Controller(mockTransport, {logoutRequest : {},
+                    serviceRegistry : null,
+                    grantedAuthorities: []});
+            }
+            catch(e){
+                constructorFailed = true;
+            }
+            doh.assertTrue(constructorFailed);
+
+            try {
+                //invalid construction - validLoginResponse.logoutRequest is null
+                controller = new rishson.enterprise.control.Controller(mockTransport, {logoutRequest : null,
+                    serviceRegistry : [],
+                    grantedAuthorities: []});
+            }
+            catch(e){
+                constructorFailed = true;
+            }
+            doh.assertTrue(constructorFailed);
+
+
             //valid construction
-            controller = new rishson.enterprise.control.Controller(mockTransport);
+            controller = new rishson.enterprise.control.Controller(mockTransport, validLoginResponse);
 
             //check that the transport has been decorated with handler functions
             doh.assertEqual(controller.handleResponse, controller.transport.handleResponseFunc);
@@ -48,8 +112,8 @@ doh.register("Controller tests", [
         name: "Web service request tests",
         setUp: function(){
             //control layer initialisation
-            mockTransport = new rishson.enterprise.control.MockTransport();
-            controller = new rishson.enterprise.control.Controller(mockTransport);
+            var scaffold = new test.Scaffold();
+            controller = scaffold.createController();
     
             myCallback = function(data) {
                 console.group("Data received in callback");
@@ -65,12 +129,12 @@ doh.register("Controller tests", [
                     method : 'ControllerTestMethod',
                     params : [{funcName : 'validResponse'}],
                     callback : myCallback,
-                    scope : this});
+                    callbackScope : this});
 
                 controller.send(someServiceCall);
             }
             catch(e){
-                doh.assertTrue('false', 'Unexpected error occurred sending ServiceRequest'); //we should not be here
+                doh.assertTrue('false', 'Unexpected error occurred sending callback based ServiceRequest'); //we should not be here
             }
 
             //test the use of topics instead of callbacks for the response handling
@@ -90,7 +154,7 @@ doh.register("Controller tests", [
                 controller.send(someServiceCall);
             }
             catch(e){
-                doh.assertTrue('false', 'Unexpected error occurred sending ServiceRequest'); //we should not be here
+                doh.assertTrue('false', 'Unexpected error occurred sending topic based ServiceRequest'); //we should not be here
             }
         },
         tearDown: function(){
