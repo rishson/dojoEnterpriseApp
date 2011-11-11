@@ -40,7 +40,7 @@ dojo.declare('rishson.enterprise.view.AppContainer', [rishson.enterprise.widget.
     /**
      * @constructor
      * @param {Object} params contains the username and footerText
-     */""
+     */
     constructor : function(params) {
         var criteria = [{paramName : 'username', paramType : 'string'}, {paramName : 'footerText', paramType : 'string'}];
         var validator = new rishson.enterprise.util.ObjectValidator(criteria);
