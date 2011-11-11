@@ -35,6 +35,7 @@ dojo.declare('rishson.enterprise.control.RestRequest', [rishson.enterprise.contr
 
         if (validator.validate(params)) {
             dojo.mixin(this, params);
+			this.type = "rest";
         }
         else {
             validator.logErrorToConsole(params, 'Invalid RestRequest construction.');

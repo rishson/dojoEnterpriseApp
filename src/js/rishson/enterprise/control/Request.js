@@ -40,6 +40,15 @@ dojo.declare('rishson.enterprise.control.Request', null, {
     topic : null,
 
     /**
+     * @field
+     * @name rishson.enterprise.control.Request.type
+     * @type {String}
+     * @description The type of the request, REST, WebService etc..
+     */
+    topic : null,
+
+
+    /**
      * @constructor
      * @param {Object} params Must contain either of the following:
      *  callback {Function} a function to call when a Response is returned from the server in response to this Request

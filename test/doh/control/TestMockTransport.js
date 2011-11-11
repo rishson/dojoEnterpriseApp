@@ -5,6 +5,7 @@ dojo.require('test.Scaffold');
 dojo.require('rishson.enterprise.control.Controller');
 dojo.require('rishson.enterprise.control.MockTransport');
 dojo.require('rishson.enterprise.control.ServiceRequest');
+dojo.require('rishson.enterprise.control.RestRequest');
 
 doh.register("MockTransport tests", [
     {
@@ -15,11 +16,11 @@ doh.register("MockTransport tests", [
         },
         runTest: function(){
             try{
-                myCallback = function(data) {
+                myCallback = function(response) {
                   console.group("Data received in callback");
-                    console.debug(data);
+                    console.debug(response);
                     console.groupEnd();
-                    doh.assertTrue(data.testData === 'someValue');
+                    doh.assertTrue(response.payload.testData === 'someValue');
                 };
 
                 //example of a valid WebService call to call a method specifically designed to test a Controller

@@ -2,6 +2,7 @@ dojo.provide('rishson.enterprise.control.MockTransport');
 
 dojo.require('dojo.io.script');
 
+dojo.require('rishson.enterprise.control.Response');
 dojo.require('rishson.enterprise.control.Transport');
 dojo.require('rishson.enterprise.util.ObjectValidator');
 
@@ -42,16 +43,16 @@ dojo.declare('rishson.enterprise.control.MockTransport', [rishson.enterprise.con
         var namespace = 'test.data.';
         switch (request.declaredClass) {
             case 'rishson.enterprise.control.ServiceRequest' :
-                namespace += 'serviceResponses';
-                break;
+                namespace += 'serviceResponses.' + request.toUrl();
+		        break;
             case 'rishson.enterprise.control.RestRequest' :
-                namespace += 'restResponses';
-                break;
+                namespace += 'restResponses.' + request.toUrl() + '/' + request.verb;
+		       break;
             default :
                 throw ('Unknown request type supplied: ' + request.declaredClass);
         }
-        namespace += '.' + request.toUrl().replace('/', '.'); //the full namespace of the TestMethod module to load
-
+		namespace = namespace.replace('/', '.'); //the full namespace of the TestMethod module to load        
+        
         //capitalise the module name
         var indexOfClassName = namespace.lastIndexOf('.') + 1;
         namespace = namespace.slice(0, indexOfClassName) +
@@ -62,8 +63,9 @@ dojo.declare('rishson.enterprise.control.MockTransport', [rishson.enterprise.con
         var testMethodClass = new testMethod(); //create an instance of the TestMethod class
 		var methodParams = this.createBasePostParams(request);
 		var mockResponse = testMethodClass[testFuncName](methodParams);	//call the test metod
-        var response = {payload : mockResponse}; //put the response envelope on and call the test method
-        this.handleResponseFunc(request, response);
+		var wrappedResponse = new rishson.enterprise.control.Response(mockResponse, 
+			request.type === 'rest');
+        this.handleResponseFunc(request, wrappedResponse);
     },
 
     /**

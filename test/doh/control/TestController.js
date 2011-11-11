@@ -6,7 +6,7 @@ dojo.require('test.Scaffold');
 dojo.require('rishson.enterprise.control.Controller');
 dojo.require('rishson.enterprise.control.MockTransport');
 dojo.require('rishson.enterprise.control.ServiceRequest');
-//dojo.require('rishson.enterprise.control.RestRequest');
+dojo.require('rishson.enterprise.control.RestRequest');
 
 doh.register("Controller tests", [
     {
@@ -115,11 +115,12 @@ doh.register("Controller tests", [
             var scaffold = new test.Scaffold();
             controller = scaffold.createController();
     
-            myCallback = function(data) {
+            myCallback = function(response) {
                 console.group("Data received in callback");
-                console.debug(data);
+                console.debug(response);
                 console.groupEnd();
-                doh.assertTrue(data.testData === 'someValue');
+                doh.assertTrue(response.payload.testData === 'someValue');
+				doh.assertTrue(response.isOk);
             };
         },
         runTest: function(){
@@ -135,6 +136,7 @@ doh.register("Controller tests", [
             }
             catch(e){
                 doh.assertTrue('false', 'Unexpected error occurred sending callback based ServiceRequest'); //we should not be here
+				console.debug(e);
             }
 
             //test the use of topics instead of callbacks for the response handling
@@ -145,11 +147,12 @@ doh.register("Controller tests", [
                     params : [{testData : 'someValue'}],
                     topic : '/test/controller'});
 
-                dojo.subscribe('/test/controller', function (payload){
+                dojo.subscribe('/test/controller', function (response){
                     console.group("Data received in topic");
-                    console.debug(payload);
+                    console.debug(response);
                     console.groupEnd();
-                    doh.assertTrue(payload.testData === 'someValue');
+                    doh.assertTrue(response.payload.testData === 'someValue');
+					doh.assertTrue(response.isOk);
                 });
                 controller.send(someServiceCall);
             }
@@ -159,15 +162,61 @@ doh.register("Controller tests", [
         },
         tearDown: function(){
         }
+    },
+	{
+        name: "Rest service request tests",
+        setUp: function(){
+            //control layer initialisation
+            var scaffold = new test.Scaffold();
+            controller = scaffold.createController();
+    
+            myCallback = function(response) {
+                console.group("Data received in callback");
+                console.debug(response);
+                console.groupEnd();
+                doh.assertTrue(response.payload.testData === 'someValue');
+                doh.assertTrue(response.isOk);
+            };
+        },
+        runTest: function(){
+            try{
+                //example of a valid rest call to call a method specifically designed to test a Controller
+                var someServiceCall = new rishson.enterprise.control.RestRequest({service : 'testService',
+                    verb : 'get',
+                    params : [{testData : 'someValue'}],
+                    callback : myCallback,
+                    callbackScope : this});
 
+                controller.send(someServiceCall);
+            }
+            catch(e){
+                doh.assertTrue('false', 'Unexpected error occurred sending callback based RestRequest'); //we should not be here
+            }
+
+            //test the use of topics instead of callbacks for the response handling
+            try{
+                //example of a valid rest call to call a method specifically designed to test a Controller
+                someServiceCall = new rishson.enterprise.control.RestRequest({service : 'testService',
+                    verb : 'get',
+                    params : [{testData : 'someValue'}],
+                    topic : '/test/controller'});
+
+                dojo.subscribe('/test/controller', function (response){
+                    console.group("Data received in topic");
+                    console.debug(response);
+                    console.groupEnd();
+                    doh.assertTrue(response.payload.testData === 'someValue');
+					doh.assertTrue(response.isOk);
+                });
+                controller.send(someServiceCall);
+            }
+            catch(e){
+                doh.assertTrue('false', 'Unexpected error occurred sending topic based RestRequest'); //we should not be here
+            }
+        },
+        tearDown: function(){
+        }
     }
 
+
 ]);
-
-//example of a REST call
-//var someRestCall = new rishson.enterprise.control.RestRequest({verb : 'post',
-//    data : {username : 'andy'},
-//    callback : myCallback,
-//    scope : this});
-
-//controller.send(someRestCall);

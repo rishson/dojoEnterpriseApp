@@ -1,5 +1,6 @@
 dojo.provide('rishson.enterprise.control.XhrTransport');
 
+dojo.require('rishson.enterprise.control.Response');
 dojo.require('rishson.enterprise.control.Transport');
 dojo.require('rishson.enterprise.util.ObjectValidator');
 
@@ -57,34 +58,51 @@ dojo.declare('rishson.enterprise.control.XhrTransport', [rishson.enterprise.cont
         //do autoincrement sendID if required
         //profiling can be enabled here
 
-        //do xhrPost
-        var def = dojo.xhrPost({
-            url: this.baseUrl + request.toUrl(),
-            content : postParams,
-            handleAs: "json",
-            timeout : this.requestTimeout
-        });
+		//default to post as this is used for service requests as well as rest
+		var xhrFunction = dojo.xhrPost;
+
+		if(request.type === 'rest'){
+			switch (request.verb) {
+				case 'get' :
+					xhrFunction = dojo.xhrGet;
+					break;
+				case 'put' :
+					xhrFunction = dojo.xhrPut;				
+ 					break;
+				case 'delete' :
+					xhrFunction = dojo.xhrDelete;
+					break;
+			}			
+		}
+
+		var def = xhrFunction({
+		    url: this.baseUrl + request.toUrl(),
+		    content : postParams,
+		    handleAs: "json",
+		    timeout : this.requestTimeout
+		});
+		
 
         /* Server responses always resolve to:
            {isError : boolean, payload : {} }
            where isError and payload are mutually exclusive
          */
-        def.then(function(response){
+        def.then(function(response, ioargs){
             //all server responses implement a top level object that indicates if the response is a success or error
-            //in this case, an error is a known server error state - not an unexpected runtime error.
-            if(response.isError) {
-                this.handleErrorFunc(request, response);
-            }
-            else {
-                this.handleResponseFunc(request, response);
-            }
+            //in this case, an error is a known server error state - not an unexpected runtime error.            
+
+			var wrappedResponse = new rishson.enterprise.control.Response(response, 
+				request.type === 'rest',
+				ioargs);
+            this.handleResponseFunc(request, wrappedResponse);
         },
         function(err){
             //unexpected error - something went wrong in the XHR request/response
             //Its OK to send the error to the console as this does not pose a security risk.
             //the failure is freely available using http traffic monitoring so we are not 'leaking' information
             console.error(err);
-
+			
+            this.handleErrorFunc(request, response);
             //you could do further processing such as put the transport in a retry or quiescent state
         });
     }

@@ -35,7 +35,8 @@ dojo.declare('rishson.enterprise.control.ServiceRequest', [rishson.enterprise.co
 
         if (validator.validate(params)) {
             dojo.mixin(this, params);
-        }
+			this.type = "service";        
+		}
         else {
             validator.logErrorToConsole(params, 'Invalid ServiceRequest construction.');
             throw('Invalid ServiceRequest construction.');
