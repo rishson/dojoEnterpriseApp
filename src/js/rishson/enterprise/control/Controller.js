@@ -167,7 +167,7 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
         else{
             //call the request's provide callback with the response - but hitch it's scope first if needs be
             if (request.callbackScope) {
-                scopedCallback = dojo.hitch(request.callBackScope, request.callback);
+                scopedCallback = dojo.hitch(request.callbackScope, request.callback);
             }
             else {
                 scopedCallback = request.callback;  //if no scope is specified then assume the callback must already be scoped

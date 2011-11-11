@@ -20,7 +20,7 @@ dojo.declare('test.Scaffold', null, {
             callbackScope : this,
             service : 'userService',
             method : 'logout',
-            params : [{funcName : 'validResponse'}]
+            params : [{username : 'andy'}]
         });
     },
 
@@ -29,7 +29,7 @@ dojo.declare('test.Scaffold', null, {
             callbackScope : this,
             service : 'userService',
             method : 'logout',
-            params : [{funcName : 'validResponse'}]
+            params : [{username : 'andy'}]
         });
     }
 
