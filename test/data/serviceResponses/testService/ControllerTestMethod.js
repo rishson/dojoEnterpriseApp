@@ -1,11 +1,9 @@
 dojo.provide('test.data.serviceResponses.testService.ControllerTestMethod');
 
 dojo.declare('test.data.serviceResponses.testService.ControllerTestMethod', null, {
-    validResponse : function() {
-        return {hello : 'world'};
+    processRequest : function(params) {
+		//very simple echo reposonse
+        return params;
     },
 
-    invalidResponse : function() {
-        return {};
-    }
 });

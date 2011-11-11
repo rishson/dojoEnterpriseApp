@@ -119,7 +119,7 @@ doh.register("Controller tests", [
                 console.group("Data received in callback");
                 console.debug(data);
                 console.groupEnd();
-                doh.assertTrue(data.hello === 'world');
+                doh.assertTrue(data.testData === 'someValue');
             };
         },
         runTest: function(){
@@ -127,7 +127,7 @@ doh.register("Controller tests", [
                 //example of a valid WebService call to call a method specifically designed to test a Controller
                 var someServiceCall = new rishson.enterprise.control.ServiceRequest({service : 'testService',
                     method : 'ControllerTestMethod',
-                    params : [{funcName : 'validResponse'}],
+                    params : [{testData : 'someValue'}],
                     callback : myCallback,
                     callbackScope : this});
 
@@ -142,14 +142,14 @@ doh.register("Controller tests", [
                 //example of a valid WebService call to call a method specifically designed to test a Controller
                 someServiceCall = new rishson.enterprise.control.ServiceRequest({service : 'testService',
                     method : 'ControllerTestMethod',
-                    params : [{funcName : 'validResponse'}],
+                    params : [{testData : 'someValue'}],
                     topic : '/test/controller'});
 
                 dojo.subscribe('/test/controller', function (payload){
                     console.group("Data received in topic");
                     console.debug(payload);
                     console.groupEnd();
-                    doh.assertTrue(payload.hello === 'world');
+                    doh.assertTrue(payload.testData === 'someValue');
                 });
                 controller.send(someServiceCall);
             }

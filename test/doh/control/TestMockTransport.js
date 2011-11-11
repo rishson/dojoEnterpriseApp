@@ -19,13 +19,13 @@ doh.register("MockTransport tests", [
                   console.group("Data received in callback");
                     console.debug(data);
                     console.groupEnd();
-                    doh.assertTrue(data.hello === 'world');
+                    doh.assertTrue(data.testData === 'someValue');
                 };
 
                 //example of a valid WebService call to call a method specifically designed to test a Controller
                 var someServiceCall = new rishson.enterprise.control.ServiceRequest({service : 'testService',
                     method : 'ControllerTestMethod',
-                    params : [{funcName : 'validResponse'}],
+                    params : [{testData : 'someValue'}],
                     callback : myCallback,
                     callbackScope : this});
 

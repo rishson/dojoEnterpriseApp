@@ -21,28 +21,6 @@ dojo.declare('rishson.enterprise.control.MockTransport', [rishson.enterprise.con
      */
     requestTimeout : 5000,  //defaults to 5 seconds
 
-    /**
-     * @constructor
-     */
-    constructor : function () {
-        /**
-        Check for the various File API support.
-        if (window.File && window.FileReader && window.FileList && window.Blob) {
-        } else {
-            console.error('The File APIs are not fully supported in this browser.');
-        }
-
-        function onInitFs(fs) {
-            this.fs = fs;
-        }
-
-        function errorHandler(e){
-            console.error(e);
-        }
-
-        window.requestFileSystem(window.PERSISTENT, 1024*1024, onInitFs, errorHandler);
-        **/
-    },
 
     /**
      * @function
@@ -52,14 +30,7 @@ dojo.declare('rishson.enterprise.control.MockTransport', [rishson.enterprise.con
      * @param {rishson.enterprise.control.Request} request to send to the server
      */
     send : function (request) {
-        var testFuncName;   //name of the function to call on the TestMethod module
-        var params;
-        params = request.getParams();
-        dojo.forEach(params, function(param){
-            if(param.funcName){
-                testFuncName = param.funcName;  //the name of the function to call
-            }
-        });
+        var testFuncName = 'processRequest';   //name of the function to call on the TestMethod module
 
         /*get the full namespace of the module to provide the response
           The namespace is in the form test.data.[typeOfResponse].[request.url]
@@ -89,8 +60,9 @@ dojo.declare('rishson.enterprise.control.MockTransport', [rishson.enterprise.con
         dojo.require(namespace);    //get the TestModule
         var testMethod = this._stringToFunction(namespace); //get the module prototype from the DOM
         var testMethodClass = new testMethod(); //create an instance of the TestMethod class
-
-        var response = {payload : testMethodClass[testFuncName]()}; //put the response envelope on and call the test method
+		var methodParams = this.createBasePostParams(request);
+		var mockResponse = testMethodClass[testFuncName](methodParams);	//call the test metod
+        var response = {payload : mockResponse}; //put the response envelope on and call the test method
         this.handleResponseFunc(request, response);
     },
 
