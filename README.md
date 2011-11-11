@@ -29,16 +29,16 @@ Widgets can simply publish their request (along with a topic that the response w
 ```javascript
 
 //dojo 1.6 example of calling a RestService on the server and expecting a response to be published to a topic
- var restCall = new rishson.enterprise.control.RestRequest({url : 'testService',
-    verb : 'create',
+ var restCall = new rishson.enterprise.control.RestRequest({service : 'testService',
+    verb : 'put',
     params : [{exampleParamsName : 'exampleParamValue'}],
     topic : 'testServiceResponse');
 
 dojo.publish(rishson.enterprise.Globals.SEND_REQUEST, restCall);
 
 //dojo 1.7+ example of calling a RestService on the server and expecting a response to be published to a topic
- var restCall = new RestRequest({url : 'testService',
-    verb : 'create',
+ var restCall = new RestRequest({service : 'testService',
+    verb : 'delete',
     params : [{exampleParamsName : 'exampleParamValue'}],
     topic : 'testServiceResponse');
 
@@ -63,8 +63,8 @@ topic.publish(Globals.SEND_REQUEST, restCall);
  controller.send(serviceCall);
 
 //example of calling a RestService on the server and expecting a response to be published to a topic
- var restCall = new rishson.enterprise.control.RestRequest({url : 'testService',
-    verb : 'create',
+ var restCall = new rishson.enterprise.control.RestRequest({service : 'testService',
+    verb : 'post',
     params : [{exampleParamsName : 'exampleParamValue'}],
     topic : 'testServiceResponse');
 
@@ -74,7 +74,29 @@ topic.publish(Globals.SEND_REQUEST, restCall);
  Provided out of the box are XhrTransport (for performing Xhr post calls) and MockTransport (for use in a headless
  unit test configuration with no need for a running web server).
 
- Web Service requests and Rest requests are currently supported.
+ Web Service requests and Rest requests are currently supported. For rest, get, delete, post and put are supported.
+ 
+ Responses
+ 
+ The server response is wrapped in a Response object that provides a standard set of response types regardless of 
+ the type of request that was made to the server.
+ 
+```javascript
+dojo.subscribe('/some/topic/passed/to/control/layer', this, function(response) {
+  if(response.isOk) {
+    //do something with the response
+    console.debug(response.payload);
+  }  
+  else if(response.isInvalid) {
+    //our request must have been invalid
+  }
+  else if(response.isConflicted) {
+    //basically a concurrent modification exception
+    console.debug(response.payload);  //should be the latest copy of the resource we tried to mutate
+  }
+});
+```
+ 
 
 
 ### AppContainer widget
