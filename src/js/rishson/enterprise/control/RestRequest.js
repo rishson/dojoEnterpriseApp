@@ -18,6 +18,7 @@ dojo.declare('rishson.enterprise.control.RestRequest', [rishson.enterprise.contr
      * @name rishson.enterprise.control.ServiceRequest.verb
      * @type {String}
      * @description the REST verb to use when making the call
+	 * Can be delete, get, post or put
      */
     verb : null,
 

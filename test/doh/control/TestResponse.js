@@ -3,7 +3,7 @@ dojo.provide("test.doh.control.TestResponse");
 
 dojo.require('rishson.enterprise.control.Response');
 
-doh.register("Response class tests", [
+doh.register("Response tests", [
     {
         name: "Constructor tests",
         setUp: function(){
