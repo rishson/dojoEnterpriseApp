@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>ApplicationWidget test page</title>
+
+    <style type="text/css">
+
+        @import "../../src/js/dojo/dojo-release-1.6.1-src/dijit/themes/claro/claro.css";
+        @import "../../src/js/dojo/dojo-release-1.6.1-src/dojo/resources/dojo.css";
+
+        .fixedRegion {
+            border: 1px solid black;
+            height : 600px;
+            width : 900px;
+        }
+    </style>
+
+    <script type="text/javascript">
+        var djConfig = {isDebug : true};
+    </script>
+
+    <script type="text/javascript" src="../../src/js/dojo/dojo-release-1.6.1-src/dojo/dojo.js"></script>
+
+    <script type="text/javascript">
+        dojo.ready(function() {
+            dojo.registerModulePath('rishson', '../../../rishson');
+
+            dojo.require('rishson.enterprise.widget._ApplicationWidget');
+            dojo.require('rishson.enterprise.widget._Widget');
+        });
+
+    </script>
+</head>
+<body class="claro">
+</body>
+</html>

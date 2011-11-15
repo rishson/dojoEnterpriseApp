@@ -1,5 +1,7 @@
 dojo.provide("rishson.enterprise.widget._ApplicationWidget");
 
+dojo.require('rishson.enterprise.widget._Widget');
+
 /**
  * @class
  * @name rishson.enterprise.widget._ApplicationWidget
@@ -26,7 +28,7 @@ dojo.declare("rishson.enterprise.widget._ApplicationWidget", [rishson.enterprise
  	 * @description widgets injected into this class will be examined to autowire its publish and subscribes.<p>
      * This function should be called for declarativly created widgets.
      */
-	injectWidget : function(widget) {
+	injectWidget : function (widget) {
 		//for declarativly created widgets
 		this._autowirePubs(widget);
 		//this._autowireSubs(widget);
@@ -43,7 +45,7 @@ dojo.declare("rishson.enterprise.widget._ApplicationWidget", [rishson.enterprise
 		//for programatically created widgets
 		var widget = this.inherited(arguments);	//call _Widget.adopt
 		this._autowirePubs(widget);
-		/this._autowireSubs(widget);
+		//this._autowireSubs(widget);
 		return widget;
 	},
 
@@ -54,7 +56,7 @@ dojo.declare("rishson.enterprise.widget._ApplicationWidget", [rishson.enterprise
 	 * @param {rishson.enterprise.widget._Widget} widget a widget that contains a pubList of topics that it can publish.
  	 * @description autowire the subscribed topics from the widget to event handlers in the widget.
      */
-	_autowireSubs : function(widget) {
+	_autowireSubs : function (widget) {
 		//iterate over each subscription of the passed in widget - the application widget need to publish to these		
 		dojo.forEach(widget.subList, function(topic){
 			this.pubList.push(topic);
@@ -67,7 +69,7 @@ dojo.declare("rishson.enterprise.widget._ApplicationWidget", [rishson.enterprise
 			}
 			else {
 				console.error('Autowire failure for topic: ' + topic + '. No handler in widget ' + widget.declaredClass +
-					' named ' handlerFuncName);			
+					' named ' + handlerFuncName);			
 			}
 		}, this);
 	},
@@ -79,8 +81,25 @@ dojo.declare("rishson.enterprise.widget._ApplicationWidget", [rishson.enterprise
 	 * @param {rishson.enterprise.widget._Widget} widget a widget that contains a pubList of topics that it can publish.
  	 * @description autowire the published topics from the widget to event handlers in the Application widget.
      */
-	_autowirePubs : function(widget) {
+	_autowirePubs : function (widget) {
 		//iterate over each published topic of the passed in widget - the application widget need to subscribe to these		
+
+		for(var topic in widget.pubList) {
+		    if(widget.pubList.hasOwnProperty(topic)) {
+		    	//capitalise the topic section names and remove slashes
+				var handlerFuncName = '_handle' + this._capitaliseTopic(topic).replace('/', '');
+				//the application widget needs to have _handle[topicName] functions by convention
+				var handlerFunc = this[handlerFuncName];
+				if(handlerFunc) {
+					dojo.subscribe(topic, this, handlerFunc);
+				}
+				else {
+					console.error('Autowire failure for topic: ' + topic + '. No handler: ' + handlerFuncName);			
+				}    
+			}	
+		}
+
+		/*
 		dojo.forEach(widget.pubList, function(topic){
 			//capitalise the topic section names and remove slashes
 			var handlerFuncName = '_handle' + this._capitaliseTopic(topic).replace('/', '');
@@ -93,7 +112,7 @@ dojo.declare("rishson.enterprise.widget._ApplicationWidget", [rishson.enterprise
 				console.error('Autowire failure for topic: ' + topic + '. No handler: ' + handlerFuncName);			
 			}
 		}, this);
-	
+		*/
 	},
 
 	/**
@@ -103,7 +122,7 @@ dojo.declare("rishson.enterprise.widget._ApplicationWidget", [rishson.enterprise
 	 * @param {String} topic a name of a topic to capitalise.
  	 * @description capitalise the first letter of a topic.
      */
-	_capitaliseTopicName(topic) {
+	_capitaliseTopicName : function (topic) {
 		/* e.g. /hello/i/am/a/topic would become Hello/I/Am/A/Topic
 		/\b[a-z]/g		
 		*/
