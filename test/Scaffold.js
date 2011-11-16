@@ -11,7 +11,8 @@ dojo.declare('test.Scaffold', null, {
         var mockTransport = new rishson.enterprise.control.MockTransport();
         var validLoginResponse = {logoutRequest : this.createLogoutRequest(),
             serviceRegistry : [],
-            grantedAuthorities : []};
+            grantedAuthorities : [],
+			returnRequest : true};
         return new rishson.enterprise.control.Controller(mockTransport, validLoginResponse);
     },
 

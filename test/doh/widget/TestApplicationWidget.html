@@ -29,13 +29,13 @@
 					{
 						name: "Pub/sub tests",
 						setUp: function(){
-							dojo.declare('childWidget', [rishson.enterprise.widget._Widget], {
+							childWidget = dojo.declare('my.ChildWidget', [rishson.enterprise.widget._Widget], {
 								constructor : function(params) {
 									this.pubList.SOME_TOPIC = '/some/topicName';			
 								}			
 							});
 
-							dojo.declare('parentWidget', [rishson.enterprise.widget._ApplicationWidget], {
+							appWidget = dojo.declare('my.ParentWidget', [rishson.enterprise.widget._ApplicationWidget], {
 								constructor : function(params) {
 								},
 	
@@ -46,11 +46,11 @@
 								}			
 							});
 
-							var myChildWidget = new childWidget();
-							var myApplicationWidget = new applicationWidget();
 						},
 						runTest: function(){
-							myApplicationWidget.injectWidget(myChildWidget);
+							var myAppWidget = new my.ParentWidget();
+							var myChildWidget = new my.ChildWidget();							
+							myAppWidget.injectWidget(myChildWidget);
 
 							dojo.publish(myChildWidget.pubList.SOME_TOPIC, ['hello world']);
 			

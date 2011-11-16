@@ -24,10 +24,10 @@ dojo.declare('rishson.enterprise.widget._WidgetInWidgetMixin', null, {
      * @description Wrapper around dojo.connect that stores all the connects created for a derriving widget
      * For param info, see dojo.connect
      **/
-    connect : function (object, event, context, method) {
+    /*connect : function (object, event, context, method) {
         var newConnect = dojo.connect(object, event, context, method);
         this._connections.push(newConnect);
-    },
+    },*/
 
    /**
      * @function

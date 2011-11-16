@@ -45,6 +45,14 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
 
     /**
      * @field
+     * @name rishson.enterprise.control.Controller.returnRequest
+     * @type {Boolean}
+     * @description should the Request be returned to the callee when a Response is created
+     */
+    returnRequest : false,
+
+    /**
+     * @field
      * @name rishson.enterprise.widget._Widget._topicNamespace
      * @type {String}
      * @private
@@ -69,7 +77,8 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
         /*validLoginResponse should be in the form:
             {logoutRequest: rishson.enterprise.control.Request,
             serviceRegistry : [SMD Objects],
-            grantedAuthorities : [Authority Objects]}*/
+            grantedAuthorities : [Authority Objects]}
+		*/
         var criteria = [{paramName : 'transport', paramType : 'object'},
             {paramName : 'validLoginResponse', paramType : 'criteria', criteria :
                 [{paramName : 'logoutRequest', paramType : 'object'},
@@ -89,6 +98,11 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
 
             dojo.mixin(this, unwrappedParams);
 
+			//this is optional so should not be included in the criteria validation
+			if(validLoginResponse.returnRequest) {
+				this.returnRequest = true;			
+			}
+
 			//convert authorities to lower case so we can do case-insensitive search for authorities
 			dojo.forEach(this.grantedAuthorities, function(authority){
 				if(dojo.isString(authority)){				
@@ -101,8 +115,9 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
 				}	
 			}, this);
 
-            //decorate the transport with the response and error handling functions in this class
-            this.transport.addResponseFunctions(this.handleResponse, this.handleError);
+            //decorate the transport with the response and error handling functions in this class (need hitching)
+            this.transport.addResponseFunctions(dojo.hitch(this, this.handleResponse),
+				dojo.hitch(this.handleError));
 
             //listen out for other classes wanting to send requests to the server
             dojo.subscribe(rishson.enterprise.Globals.SEND_REQUEST, this, this.send);
@@ -156,7 +171,12 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
 
         //if the request has a topic specified then publish the response to the topic
         if(request.topic) {
-            dojo.publish(request.topic, [response]);
+			var topicData = [response];
+			//return the original request along with the response if required
+			if(this.returnRequest) {
+				topicData.push(request);
+			}
+            dojo.publish(request.topic, topicData);
         }
         else{
             //call the request's provide callback with the response - but hitch it's scope first if needs be
@@ -166,7 +186,14 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
             else {
                 scopedCallback = request.callback;  //if no scope is specified then assume the callback must already be scoped
             }
-            scopedCallback(response);
+
+			//return the original request along with the response if required
+			if(this.returnRequest) {
+	            scopedCallback(response, request);
+			}
+			else {
+				scopedCallback(response);		
+			}
         }
     },
 

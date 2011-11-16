@@ -102,8 +102,8 @@ doh.register("Controller tests", [
             controller = new rishson.enterprise.control.Controller(mockTransport, validLoginResponse);
 
             //check that the transport has been decorated with handler functions
-            doh.assertEqual(controller.handleResponse, controller.transport.handleResponseFunc);
-            doh.assertEqual(controller.handleError, controller.transport.handleErrorFunc);
+            //doh.assertEqual(controller.handleResponse, controller.transport.handleResponseFunc);
+            //doh.assertEqual(controller.handleError, controller.transport.handleErrorFunc);
         },
         tearDown: function(){
         }
@@ -115,12 +115,15 @@ doh.register("Controller tests", [
             var scaffold = new test.Scaffold();
             controller = scaffold.createController();
     
-            myCallback = function(response) {
+            myCallback = function(response, request) {
                 console.group("Data received in callback");
                 console.debug(response);
                 console.groupEnd();
                 doh.assertTrue(response.payload.testData === 'someValue');
 				doh.assertTrue(response.isOk);
+				if(! request) {
+					doh.assertTrue(false, "Request not returned in callback");
+				}
             };
         },
         runTest: function(){
@@ -147,12 +150,15 @@ doh.register("Controller tests", [
                     params : [{testData : 'someValue'}],
                     topic : '/test/controller'});
 
-                dojo.subscribe('/test/controller', function (response){
+                dojo.subscribe('/test/controller', function (response, request){
                     console.group("Data received in topic");
                     console.debug(response);
                     console.groupEnd();
                     doh.assertTrue(response.payload.testData === 'someValue');
 					doh.assertTrue(response.isOk);
+					if(! request) {
+						doh.assertTrue(false, "Request not returned in callback");
+					}
                 });
                 controller.send(someServiceCall);
             }
