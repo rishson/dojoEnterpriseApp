@@ -27,6 +27,16 @@ dojo.declare('rishson.enterprise.control.XhrTransport', [rishson.enterprise.cont
      */
     requestTimeout : 5000,  //defaults to 5 seconds
 
+
+	/**
+     * @field
+     * @name rishson.enterprise.control.XhrTransport.mappedStatusCodes
+	 * @private
+     * @type {Array}
+     * @description The non 200 series statusCodes that are handled in a rishson.enterprise.control.Response.
+     */
+	_mappedStatusCodes : [400, 403, 409],
+
     /**
      * @constructor
      * @param {Object} params Must contain the following:
@@ -52,14 +62,45 @@ dojo.declare('rishson.enterprise.control.XhrTransport', [rishson.enterprise.cont
      * @override Transport.send
      * @param {rishson.enterprise.control.Request} request to send to the server
      */
-    send : function (request) {
-
-        var postParams = this.createBasePostParams(request);
+    send : function (request) {	
+        var postParams = dojo.toJson(this.createBasePostParams(request));
         //do autoincrement sendID if required
         //profiling can be enabled here
 
 		//default to post as this is used for service requests as well as rest
-		var xhrFunction = dojo.xhrPost;
+		var xhrFunction;
+
+  	   //Can't use 'then' in Dojo 1.6 if you need the ioArgs. See #12126 on dojo trac
+        var xhrParams = {
+		    url: this.baseUrl + request.toUrl(),
+		    content : postParams,
+		    handleAs: "json",
+            headers : {'Content-Type' : "application/json"},
+		    timeout : this.requestTimeout,
+            load : dojo.hitch(this, function(response, ioargs){	
+			    var wrappedResponse = new rishson.enterprise.control.Response(response,
+				    request.type === 'rest',
+				    ioargs);
+                this.handleResponseFunc(request, wrappedResponse);
+            }),
+            error : function(err, ioArgs){
+				if(this._mappedStatusCodes.indexOf(ioArgs.statusCode) > -1) {
+					var wrappedResponse = new rishson.enterprise.control.Response(response,
+					    request.type === 'rest',
+					    ioargs);
+	                this.handleResponseFunc(request, wrappedResponse);
+				}
+				else {
+	                //unhandled error - something went wrong in the XHR request/response that we dont cope with
+    	            //Its OK to send the error to the console as this does not pose a security risk.	
+    	            //the failure is freely available using http traffic monitoring so we are not 'leaking' information
+    	            console.error(err);
+
+    	            this.handleErrorFunc(request, response);
+    	            //you could do further processing such as put the transport in a retry or quiescent state
+				}
+            }
+        };
 
 		if(request.type === 'rest'){
 			switch (request.verb) {
@@ -68,26 +109,23 @@ dojo.declare('rishson.enterprise.control.XhrTransport', [rishson.enterprise.cont
 					break;
 				case 'put' :
 					xhrFunction = dojo.xhrPut;				
+                    xhrParams.putData = postParams;
+                    delete(xhrParams.content);
  					break;
 				case 'delete' :
 					xhrFunction = dojo.xhrDelete;
 					break;
+                case 'post' :
+					xhrFunction = dojo.xhrPost;
+                    xhrParams.postData = postParams;
+                    delete(xhrParams.content);
+					break;
 			}			
 		}
 
-		var def = xhrFunction({
-		    url: this.baseUrl + request.toUrl(),
-		    content : postParams,
-		    handleAs: "json",
-		    timeout : this.requestTimeout
-		});
-		
+		var def = xhrFunction(xhrParams);
 
-        /* Server responses always resolve to:
-           {isError : boolean, payload : {} }
-           where isError and payload are mutually exclusive
-         */
-        def.then(function(response, ioargs){
+        /*def.then(function(response, ioargs){
             //all server responses implement a top level object that indicates if the response is a success or error
             //in this case, an error is a known server error state - not an unexpected runtime error.            
 
@@ -104,7 +142,7 @@ dojo.declare('rishson.enterprise.control.XhrTransport', [rishson.enterprise.cont
 			
             this.handleErrorFunc(request, response);
             //you could do further processing such as put the transport in a retry or quiescent state
-        });
+        });*/
     }
 
 });

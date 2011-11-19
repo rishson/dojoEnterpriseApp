@@ -59,12 +59,13 @@ dojo.declare('rishson.enterprise.control.Response', null, {
      * @constructor
      * @param {Object} params the server response
 	 * @param {booelan} wasRestRequest was the server request a REST request
+	 * @param {Object} ioArgs the HTTP response header
      */
-    constructor : function (response, wasRestRequest) {
+    constructor : function (response, wasRestRequest, ioArgs) {
 
         //@todo remove {}&& prefix if added - should we be allowing comment-filtered anymore or is it an antipattern?
 		if(wasRestRequest) {
-			this._createFromRestResponse(response);    
+			this._createFromRestResponse(response, ioArgs);    
 		}
 		else {
 			//service responses should not have a blank payload
@@ -76,9 +77,9 @@ dojo.declare('rishson.enterprise.control.Response', null, {
 		}
 	},
 
-	_createFromRestResponse : function(response) {
+	_createFromRestResponse : function(response, ioArgs) {
 		
-		switch(response.ioArgs.statusCode) {
+		switch(ioArgs.statusCode) {
 			case 200:
 				this.isOk = true;
 				break;
@@ -92,7 +93,7 @@ dojo.declare('rishson.enterprise.control.Response', null, {
 				this.isConflicted = true;
 				break;
 		}
-		this.payload = response.payload;		
+		this.payload = response;		
 	}
  
 });

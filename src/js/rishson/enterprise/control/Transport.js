@@ -78,8 +78,10 @@ dojo.declare('rishson.enterprise.control.Transport', null, {
         var postParams = request.getParams() || {};
         var sidParamObj = {};
         sidParamObj[this.sidParamName] = this._sessionId;
-        postParams.push(sidParamObj);    //add CSRF token to all requests
-
+   
+		if(sidObjectParam) {
+			postParams.push(sidParamObj);    //add CSRF token to all requests
+		}
         //unwrap the param objects into a single object
         dojo.forEach(postParams, function (param) {
             dojo.mixin(postContent, param);

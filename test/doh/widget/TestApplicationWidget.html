@@ -29,13 +29,17 @@
 					{
 						name: "Pub/sub tests",
 						setUp: function(){
-							childWidget = dojo.declare('my.ChildWidget', [rishson.enterprise.widget._Widget], {
+							
+
+						},
+						runTest: function(){
+							var childWidget = dojo.declare(null, [rishson.enterprise.widget._Widget], {
 								constructor : function(params) {
 									this.pubList.SOME_TOPIC = '/some/topicName';			
 								}			
 							});
 
-							appWidget = dojo.declare('my.ParentWidget', [rishson.enterprise.widget._ApplicationWidget], {
+							var appWidget = dojo.declare(null, [rishson.enterprise.widget._ApplicationWidget], {
 								constructor : function(params) {
 								},
 	
@@ -45,11 +49,9 @@
 									doh.assertTrue(data[0] === 'hello world');
 								}			
 							});
-
-						},
-						runTest: function(){
-							var myAppWidget = new my.ParentWidget();
-							var myChildWidget = new my.ChildWidget();							
+							
+							var myAppWidget = new appWidget();
+							var myChildWidget = new childWidget();							
 							myAppWidget.injectWidget(myChildWidget);
 
 							dojo.publish(myChildWidget.pubList.SOME_TOPIC, ['hello world']);
