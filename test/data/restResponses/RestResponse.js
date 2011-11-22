@@ -6,9 +6,7 @@ dojo.declare('test.data.restResponses.RestResponse', null, {
 
 		dojo.mixin(this, params);
 		if(!ioArgs){
-			this.ioArgs = {
-				statusCode : 200
-			};
+			this.ioArgs = {xhr : {status : 200}};
 		}
 	}
 

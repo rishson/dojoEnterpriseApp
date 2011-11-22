@@ -55,6 +55,15 @@ dojo.declare('rishson.enterprise.control.Response', null, {
     payload : null,
 
 
+	/**
+     * @field
+     * @name rishson.enterprise.control.Response.mappedStatusCodes
+	 * @private
+     * @type {Array}
+     * @description The status codes that are handled in a rishson.enterprise.control.Response.
+     */
+	mappedStatusCodes : [200, 400, 403, 409],
+
     /**
      * @constructor
      * @param {Object} params the server response
@@ -79,7 +88,7 @@ dojo.declare('rishson.enterprise.control.Response', null, {
 
 	_createFromRestResponse : function(response, ioArgs) {
 		
-		switch(ioArgs.statusCode) {
+		switch(ioArgs.xhr.status) {
 			case 200:
 				this.isOk = true;
 				break;
@@ -93,7 +102,10 @@ dojo.declare('rishson.enterprise.control.Response', null, {
 				this.isConflicted = true;
 				break;
 		}
-		this.payload = response;		
+		
+		//if the rest response just has data in its body, then make it a payload. If a payload is specified in the
+		//response already then just add to this class.
+		this.payload = response.payload || response;		
 	}
  
 });

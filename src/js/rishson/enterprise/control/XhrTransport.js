@@ -28,15 +28,6 @@ dojo.declare('rishson.enterprise.control.XhrTransport', [rishson.enterprise.cont
     requestTimeout : 5000,  //defaults to 5 seconds
 
 
-	/**
-     * @field
-     * @name rishson.enterprise.control.XhrTransport.mappedStatusCodes
-	 * @private
-     * @type {Array}
-     * @description The non 200 series statusCodes that are handled in a rishson.enterprise.control.Response.
-     */
-	_mappedStatusCodes : [400, 403, 409],
-
     /**
      * @constructor
      * @param {Object} params Must contain the following:
@@ -77,26 +68,28 @@ dojo.declare('rishson.enterprise.control.XhrTransport', [rishson.enterprise.cont
 		    handleAs: "json",
             headers : {'Content-Type' : "application/json"},
 		    timeout : this.requestTimeout,
-            load : dojo.hitch(this, function(response, ioargs){	
+			load : dojo.hitch(this, function(response, ioArgs){	
 			    var wrappedResponse = new rishson.enterprise.control.Response(response,
 				    request.type === 'rest',
-				    ioargs);
+				    ioArgs);
                 this.handleResponseFunc(request, wrappedResponse);
             }),
-            error : function(err, ioArgs){
-				if(this._mappedStatusCodes.indexOf(ioArgs.statusCode) > -1) {
-					var wrappedResponse = new rishson.enterprise.control.Response(response,
-					    request.type === 'rest',
-					    ioargs);
+            error : function(response, ioArgs){
+				var wrappedResponse = new rishson.enterprise.control.Response(response,
+					request.type === 'rest',
+					ioArgs);
+				//do we think that this 'error' is a valid response, e.g. a 400 REST response?				
+				if(wrappedResponse.mappedStatusCodes.indexOf(ioArgs.xhr.status) > -1) {
 	                this.handleResponseFunc(request, wrappedResponse);
 				}
 				else {
-	                //unhandled error - something went wrong in the XHR request/response that we dont cope with
-    	            //Its OK to send the error to the console as this does not pose a security risk.	
-    	            //the failure is freely available using http traffic monitoring so we are not 'leaking' information
-    	            console.error(err);
-
-    	            this.handleErrorFunc(request, response);
+	                /*Unhandled error - something went wrong in the XHR request/response that we dont cope with.
+    	             *This can happen for a timeout or an unhandled status code.
+					 *Its OK to send the error to the console as this does not pose a security risk.	
+    	             *The failure is freely available using http traffic monitoring so we are not 'leaking' information
+					 */    	            
+					console.error(err);
+    	            this.handleErrorFunc(request, err);
     	            //you could do further processing such as put the transport in a retry or quiescent state
 				}
             }

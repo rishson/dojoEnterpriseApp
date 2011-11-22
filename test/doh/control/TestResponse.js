@@ -20,8 +20,8 @@ doh.register("Response tests", [
             doh.assertTrue(constructorFailed);
 
             try {
-                //invalid construction - response passed in is empty
-                response = new rishson.enterprise.control.Response({response : {}, wasRestRequest : true});
+                //invalid construction - response passed in is empty for a non-REST request
+                response = new rishson.enterprise.control.Response({}, false);
             }
             catch(e){
                 constructorFailed = true;
@@ -29,9 +29,8 @@ doh.register("Response tests", [
             doh.assertTrue(constructorFailed, 'Unexpected successful construction of Response');
 
 			try {
-                //invalid construction - response contains no ioArgs
-				var invalidResponse = {payload : {}};	
-                response = new rishson.enterprise.control.Response({response : invalidResponse, wasRestRequest : true});
+                //invalid construction - no ioArgs for a REST request
+                response = new rishson.enterprise.control.Response({}, true, null);
             }
             catch(e){
                 constructorFailed = true;
@@ -40,9 +39,17 @@ doh.register("Response tests", [
 
 
             try {
-                //invalid construction - response contains invalid statusCode
-				var invalidResponse = {payload : {}, ioArgs : {statusCode : xxx}};	
-                response = new rishson.enterprise.control.Response({response : invalidResponse, wasRestRequest : true});
+                //invalid construction - response contains invalid status code
+                response = new rishson.enterprise.control.Response({}, true, {xhr : {status : 123}});
+            }
+            catch(e){
+                constructorFailed = true;
+            }
+            doh.assertTrue(constructorFailed, 'Unexpected successful construction of Response');
+
+            try {
+                //invalid construction - response contains no payload for service response
+                response = new rishson.enterprise.control.Response({something : 'invalid'}, false, {xhr : {status : 123}});
             }
             catch(e){
                 constructorFailed = true;
@@ -51,28 +58,29 @@ doh.register("Response tests", [
 
 
 			try {
-                //valid construction 
-				var validResponse = {payload : {}, isOk : true};	
+                //valid construction of REST response
+				var emptyPayload = {};
+                response = new rishson.enterprise.control.Response(emptyPayload, true, {xhr : {status : 200}});
+            }
+            catch(e){
+	            doh.assertTrue(false, 'Unsuccessful construction of Response for REST request');
+            }
+			doh.assertTrue(response.payload == emptyPayload);
+            doh.assertTrue(response.isOk);
+            doh.assertFalse(response.isConflicted);
+
+			try {
+                //valid construction of Web Service response
+				var validResponse = {payload : {someParam : 'someValue'}, isOk : true};
                 response = new rishson.enterprise.control.Response(validResponse, false);
             }
             catch(e){
-	            doh.assertTrue(constructorFailed, 'Unexpected unsuccessful construction of Response');
+	            doh.assertTrue(false, 'Unsuccessful construction of Response for Service resquest');
             }
 			doh.assertTrue(response.payload == validResponse.payload);
             doh.assertTrue(response.isOk);
             doh.assertFalse(response.isConflicted);
 
-            try {
-                //valid construction - transport in params has no transport
-				validResponse = {payload : {}, ioArgs : {statusCode : 200}};	
-                response = new rishson.enterprise.control.Response(validResponse, true);
-            }
-            catch(e){
-	            doh.assertTrue(false, 'Unexpected unsuccessful construction of Response');
-            }
-			doh.assertTrue(response.payload == validResponse.payload);
-            doh.assertTrue(response.isOk);
-            doh.assertFalse(response.isConflicted);
         },
         tearDown: function(){
         }

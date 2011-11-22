@@ -75,12 +75,10 @@ dojo.declare('rishson.enterprise.control.Transport', null, {
      */
     createBasePostParams : function (request) {
         var postContent = {};
-        var postParams = request.getParams() || {};
-        var sidParamObj = {};
-        sidParamObj[this.sidParamName] = this._sessionId;
-   
-		if(sidObjectParam) {
-			postParams.push(sidParamObj);    //add CSRF token to all requests
+        var postParams = request.getParams() || {};	//allow for empty request content, e.g. a REST DELETE
+		//if we have managed to resolve the current sessionId, tehn this can be used in double-cookie submission.
+		if(this._sessionId) {
+			postParams[this.sidParamName] = this._sessionId;	//add CSRF taken to all requests
 		}
         //unwrap the param objects into a single object
         dojo.forEach(postParams, function (param) {

@@ -201,9 +201,10 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
      * @function
      * @name rishson.enterprise.control.Controller.handleError
      * @description Handles an unexpected (runtime) error response from a transport.
-     * @param {Object} response an object that is the server error response
+     * @param {Object} request an object that is the original reuest to the server
+     * @param {Object} err an object that is the server error response
      */
-    handleError : function (request, response) {
+    handleError : function (request, err) {
         //our generic error handling code goes here
         //if required, dump analytics to server
         //send error to console - might need to remove sensitive data

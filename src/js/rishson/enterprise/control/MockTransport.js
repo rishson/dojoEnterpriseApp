@@ -64,7 +64,8 @@ dojo.declare('rishson.enterprise.control.MockTransport', [rishson.enterprise.con
 		var methodParams = this.createBasePostParams(request);
 		var mockResponse = testMethodClass[testFuncName](methodParams);	//call the test metod
 		var wrappedResponse = new rishson.enterprise.control.Response(mockResponse, 
-			request.type === 'rest');
+			request.type === 'rest',
+			mockResponse.ioArgs);
         this.handleResponseFunc(request, wrappedResponse);
     },
 
