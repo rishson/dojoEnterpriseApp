@@ -15,7 +15,6 @@ dojo.declare('rishson.enterprise.Globals', null, {
      * @field
      * @name rishson.enterprise.Globals.TOPIC_NAMESPACE
      * @type {String}
-     * @private
      * @description This namespace is prepended to every topic name
      */
     TOPIC_NAMESPACE : '/rishson/enterprise/widget',

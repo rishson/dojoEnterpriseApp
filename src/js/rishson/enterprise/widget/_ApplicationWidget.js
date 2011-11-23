@@ -19,7 +19,7 @@ dojo.require('rishson.enterprise.widget._Widget');
  *<p>
  * At this point, all the topic in mychildWidget.pubList are wired to event handlers in myApplicationWidget.
  */
-dojo.declare("rishson.enterprise.widget._ApplicationWidget", [rishson.enterprise.widget._Widget], {
+dojo.declare("rishson.enterprise.widget._ApplicationWidget", rishson.enterprise.widget._Widget, {
 
 	/**
      * @function

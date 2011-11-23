@@ -67,7 +67,7 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
      * @description Object that contains the list of topics that any derived widget can listen out for
      */
     //@todo make this private with get/set so that contents can only be added to
-    subList : {},
+    subList : null,
 
     /**
      * @constructor
@@ -95,6 +95,8 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
             'logoutRequest': validLoginResponse.logoutRequest,
             'serviceRegistry': validLoginResponse.serviceRegistry,
             'grantedAuthorities': validLoginResponse.grantedAuthorities};
+
+			this.subList = {};
 
             dojo.mixin(this, unwrappedParams);
 

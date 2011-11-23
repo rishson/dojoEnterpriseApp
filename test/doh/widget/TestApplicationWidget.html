@@ -33,13 +33,16 @@
 
 						},
 						runTest: function(){
-							var childWidget = dojo.declare(null, [rishson.enterprise.widget._Widget], {
+
+							rishson.enterprise.nls = {AppWidget : {}};
+
+							var childWidget = dojo.declare(null, rishson.enterprise.widget._Widget, {
 								constructor : function(params) {
-									this.pubList.SOME_TOPIC = '/some/topicName';			
+									this.pubList.SOME_TOPIC = this._topicNamespace + '/some/topicName';			
 								}			
 							});
 
-							var appWidget = dojo.declare(null, [rishson.enterprise.widget._ApplicationWidget], {
+							var appWidget = dojo.declare(null, rishson.enterprise.widget._ApplicationWidget, {
 								constructor : function(params) {
 								},
 	

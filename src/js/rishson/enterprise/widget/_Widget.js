@@ -30,8 +30,7 @@ dojo.declare("rishson.enterprise.widget._Widget", [dijit._Widget, rishson.enterp
      * @type {Object}
      * @description Object that contains the list of topics that any derived widget can publish
      */
-    //@todo make this private with get/set so that contents can only be added to
-    pubList : {WIDGET_INITIALISED : this._globalTopicNamespace + '/widget/initialised'},
+    pubList : null,
 
     /**
      * @field
@@ -39,11 +38,7 @@ dojo.declare("rishson.enterprise.widget._Widget", [dijit._Widget, rishson.enterp
      * @type {Object}
      * @description Object that contains the list of topics that any derived widget can listen out for
      */
-    //@todo make this private with get/set so that contents can only be added to
-    subList : {WIDGET_DISABLE : this._globalTopicNamespace + '/disable',
-            ERROR_CME : this._globalTopicNamespace + '/error/cme',
-            ERROR_INVALID : this._globalTopicNamespace + '/error/invalid'
-        },
+    subList : null,
 
     /**
      * @field
@@ -73,6 +68,12 @@ dojo.declare("rishson.enterprise.widget._Widget", [dijit._Widget, rishson.enterp
 		/*any derrived widget can publish events on their own namespace so construct the widget namespace from
         the declared class, but replace the . to be a / so it is standard topic conventions*/
         this._topicNamespace = '/' + this.declaredClass.replace(/\./g, '/');
+		
+		this.pubList = {WIDGET_INITIALISED : this._globalTopicNamespace + '/widget/initialised'};
+		this.subList = {WIDGET_DISABLE : this._globalTopicNamespace + '/disable',
+            ERROR_CME : this._globalTopicNamespace + '/error/cme',
+            ERROR_INVALID : this._globalTopicNamespace + '/error/invalid'
+        };
     },
 
     /**

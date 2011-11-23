@@ -13,7 +13,7 @@ dojo.declare('rishson.enterprise.control.Request', null, {
      * @type {Array}
      * @description An array that contains the parameters to send to the server.
      */
-    params : [],
+    params : null,
 
     /**
      * @field
@@ -45,8 +45,7 @@ dojo.declare('rishson.enterprise.control.Request', null, {
      * @type {String}
      * @description The type of the request, REST, WebService etc..
      */
-    topic : null,
-
+    type : null,
 
     /**
      * @constructor
@@ -80,6 +79,7 @@ dojo.declare('rishson.enterprise.control.Request', null, {
                 throw('Invalid Request construction.');
             }
         }
+		this.params = [];
     },
 
     /**

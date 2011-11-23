@@ -58,7 +58,7 @@ dojo.declare('rishson.enterprise.control.Response', null, {
 	/**
      * @field
      * @name rishson.enterprise.control.Response.mappedStatusCodes
-	 * @private
+	 * @static
      * @type {Array}
      * @description The status codes that are handled in a rishson.enterprise.control.Response.
      */

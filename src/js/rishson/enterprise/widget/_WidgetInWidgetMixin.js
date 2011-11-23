@@ -16,7 +16,7 @@ dojo.declare('rishson.enterprise.widget._WidgetInWidgetMixin', null, {
      * @type {Array}
      * @description Any dojo.connects should be stored in here so we can do a teardown properly.
      */
-    _connections : [],
+    _connections : null,
 
     /**
      * @function
@@ -25,7 +25,10 @@ dojo.declare('rishson.enterprise.widget._WidgetInWidgetMixin', null, {
      * For param info, see dojo.connect
      **/
     /*connect : function (object, event, context, method) {
-        var newConnect = dojo.connect(object, event, context, method);
+		if(! this._connections) {
+			this._connections = [];	
+		}        
+		var newConnect = dojo.connect(object, event, context, method);
         this._connections.push(newConnect);
     },*/
 
