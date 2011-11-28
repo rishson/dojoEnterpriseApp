@@ -210,6 +210,7 @@ dojo.declare('rishson.enterprise.control.Controller', null, {
         //our generic error handling code goes here
         //if required, dump analytics to server
         //send error to console - might need to remove sensitive data
+		throw "Error occured during server call: " + err;
         //raise error as event
     },
 

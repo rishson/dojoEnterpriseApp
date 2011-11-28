@@ -105,7 +105,9 @@ dojo.declare('rishson.enterprise.control.Response', null, {
 		
 		//if the rest response just has data in its body, then make it a payload. If a payload is specified in the
 		//response already then just add to this class.
-		this.payload = response.payload || response;		
+		if(response) {		
+			this.payload = response.payload || response;		
+		}
 	}
  
 });

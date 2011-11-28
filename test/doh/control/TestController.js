@@ -170,7 +170,7 @@ doh.register("Controller tests", [
         }
     },
 	{
-        name: "Rest service request tests",
+        name: "Rest service GET tests",
         setUp: function(){
             //control layer initialisation
             var scaffold = new test.Scaffold();
@@ -205,9 +205,9 @@ doh.register("Controller tests", [
                 someServiceCall = new rishson.enterprise.control.RestRequest({service : 'testService',
                     verb : 'get',
                     params : [{testData : 'someValue', status : 200}],
-                    topic : '/test/controller'});
+                    topic : '/test/controller/200'});
 
-                dojo.subscribe('/test/controller', function (response, request){
+                dojo.subscribe('/test/controller/200', function (response, request){
                     console.group("Data received in topic");
                     console.debug(response);
                     console.groupEnd();
@@ -226,7 +226,7 @@ doh.register("Controller tests", [
                 someServiceCall = new rishson.enterprise.control.RestRequest({service : 'testService',
                     verb : 'get',
                     params : [{testData : 'someValue', status : 123}],
-                    topic : '/test/controller'});
+                    topic : '/test/controller/123'});
 
                 controller.send(someServiceCall);
             }
@@ -306,6 +306,144 @@ doh.register("Controller tests", [
 
 
 
+        },
+        tearDown: function(){
+        }
+    },
+		{
+        name: "Rest service DELETE tests",
+        setUp: function(){
+            //control layer initialisation
+            var scaffold = new test.Scaffold();
+            controller = scaffold.createController();
+    
+            myCallback = function(response) {
+                console.group("Data received in callback");
+                console.debug(response);
+                console.groupEnd();
+                doh.assertFalse(response.payload);
+                doh.assertTrue(response.isOk);
+            };
+        },
+        runTest: function(){
+            try{
+                //example of a valid rest call to call a method specifically designed to test a Controller
+                var someServiceCall = new rishson.enterprise.control.RestRequest({service : 'testService',
+                    verb : 'delete',
+                    params : [{testData : 'someValue', status : 200}],
+                    callback : myCallback,
+                    callbackScope : this});
+
+                controller.send(someServiceCall);
+            }
+            catch(e){
+                doh.assertTrue(false, 'Unexpected error occurred sending callback based RestRequest'); //we should not be here
+            }
+
+            //test the use of topics instead of callbacks for the response handling
+            try{
+                //example of a valid rest call to call a method specifically designed to test a Controller
+                someServiceCall = new rishson.enterprise.control.RestRequest({service : 'testService',
+                    verb : 'delete',
+                    params : [{testData : 'someValue', status : 200}],
+                    topic : '/test/controller/delete/200'});
+
+                dojo.subscribe('/test/controller/delete/200', function (response, request){
+                    console.group("Data received in topic");
+                    console.debug(response);
+                    console.groupEnd();
+                    doh.assertFalse(response.payload);
+					doh.assertTrue(response.isOk);
+					doh.assertEqual(someServiceCall, request);	//check that the request is passed back unmodified
+                });
+                controller.send(someServiceCall);
+            }
+            catch(e){
+                doh.assertTrue(false, 'Unexpected error occurred sending topic based RestRequest'); //we should not be here
+            }
+
+			try{
+                //example of a valid rest call to call a method specifically designed to test a Controller
+                someServiceCall = new rishson.enterprise.control.RestRequest({service : 'testService',
+                    verb : 'delete',
+                    params : [{testData : 'someValue', status : 123}],
+                    topic : '/test/controller/delete/123'});
+
+                controller.send(someServiceCall);
+            }
+            catch(e){
+                var shouldErrorOn123 = true;
+            }
+			doh.assertTrue(shouldErrorOn123, "Unexpected acceptance of status 123 for REST response.");
+
+			try{
+                //example of a valid rest call to call a method specifically designed to test a Controller
+                someServiceCall = new rishson.enterprise.control.RestRequest({service : 'testService',
+                    verb : 'delete',
+                    params : [{testData : 'someValue', status : 400}],
+                    topic : '/test/controller/delete/400'});
+
+                dojo.subscribe('/test/controller/delete/400', function (response){
+                    console.group("Data received in topic");
+                    console.debug(response);
+                    console.groupEnd();
+                    doh.assertFalse(response.payload);
+					doh.assertFalse(response.isOk);
+					doh.assertTrue(response.isInvalid);
+					doh.assertFalse(response.isUnauthorised);
+					doh.assertFalse(response.isConflicted);
+                });
+                controller.send(someServiceCall);
+            }
+            catch(e){
+                doh.assertTrue(false, 'Unexpected error testing 400 status'); //we should not be here
+            }
+
+			try{
+                //example of a valid rest call to call a method specifically designed to test a Controller
+                someServiceCall = new rishson.enterprise.control.RestRequest({service : 'testService',
+                    verb : 'delete',
+                    params : [{testData : 'someValue', status : 403}],
+                    topic : '/test/controller/delete/403'});
+
+                dojo.subscribe('/test/controller/delete/403', function (response){
+                    console.group("Data received in topic");
+                    console.debug(response);
+                    console.groupEnd();
+                    doh.assertFalse(response.payload);
+					doh.assertFalse(response.isOk);
+					doh.assertFalse(response.isInvalid);
+					doh.assertTrue(response.isUnauthorised);
+					doh.assertFalse(response.isConflicted);
+                });
+                controller.send(someServiceCall);
+            }
+            catch(e){
+                doh.assertTrue(false, 'Unexpected error testing 403 status'); //we should not be here
+            }
+
+			try{
+                //example of a valid rest call to call a method specifically designed to test a Controller
+                someServiceCall = new rishson.enterprise.control.RestRequest({service : 'testService',
+                    verb : 'delete',
+                    params : [{testData : 'someValue', status : 409}],
+                    topic : '/test/controller/delete/409'});
+
+                dojo.subscribe('/test/controller/delete/409', function (response){
+                    console.group("Data received in topic");
+                    console.debug(response);
+                    console.groupEnd();
+                    doh.assertFalse(response.payload);
+					doh.assertFalse(response.isOk);
+					doh.assertFalse(response.isInvalid);
+					doh.assertFalse(response.isUnauthorised);
+					doh.assertTrue(response.isConflicted);
+                });
+                controller.send(someServiceCall);
+            }
+            catch(e){
+                doh.assertTrue(false, 'Unexpected error testing 409 status'); //we should not be here
+            }
         },
         tearDown: function(){
         }

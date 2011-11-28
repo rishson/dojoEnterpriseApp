@@ -63,10 +63,22 @@ dojo.declare('rishson.enterprise.control.MockTransport', [rishson.enterprise.con
         var testMethodClass = new testMethod(); //create an instance of the TestMethod class
 		var methodParams = this.createBasePostParams(request);
 		var mockResponse = testMethodClass[testFuncName](methodParams);	//call the test metod
-		var wrappedResponse = new rishson.enterprise.control.Response(mockResponse, 
-			request.type === 'rest',
+		
+		if(request.type === 'rest') {
+			var wrappedResponse = new rishson.enterprise.control.Response(mockResponse.payload, 
+			true,
 			mockResponse.ioArgs);
-        this.handleResponseFunc(request, wrappedResponse);
+			if(dojo.indexOf(wrappedResponse.mappedStatusCodes, mockResponse.ioArgs.xhr.status) === -1) {
+				this.handleErrorFunc(request, wrappedResponse);
+			} else {
+				this.handleResponseFunc(request, wrappedResponse);
+			}
+		} else {
+			var wrappedResponse = new rishson.enterprise.control.Response(mockResponse, 
+			false,
+			mockResponse.ioArgs);
+    	    this.handleResponseFunc(request, wrappedResponse);
+		}		
     },
 
     /**
