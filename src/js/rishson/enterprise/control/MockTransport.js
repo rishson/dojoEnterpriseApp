@@ -51,7 +51,7 @@ dojo.declare('rishson.enterprise.control.MockTransport', [rishson.enterprise.con
             default :
                 throw ('Unknown request type supplied: ' + request.declaredClass);
         }
-		namespace = namespace.replace('/', '.'); //the full namespace of the TestMethod module to load        
+		namespace = namespace.replace(/\//g, '.'); //the full namespace of the TestMethod module to load        
         
         //capitalise the module name
         var indexOfClassName = namespace.lastIndexOf('.') + 1;
