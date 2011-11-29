@@ -74,10 +74,14 @@ dojo.declare('rishson.enterprise.control.MockTransport', [rishson.enterprise.con
 				this.handleResponseFunc(request, wrappedResponse);
 			}
 		} else {
-			var wrappedResponse = new rishson.enterprise.control.Response(mockResponse, 
-			false,
-			mockResponse.ioArgs);
-    	    this.handleResponseFunc(request, wrappedResponse);
+			try {
+				var wrappedResponse = new rishson.enterprise.control.Response(mockResponse, 
+				false,
+				mockResponse.ioArgs);
+    	    	this.handleResponseFunc(request, wrappedResponse);
+			} catch (err) {
+				this.handleErrorFunc(request, wrappedResponse);
+			}			
 		}		
     },
 

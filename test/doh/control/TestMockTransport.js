@@ -26,7 +26,7 @@ doh.register("MockTransport tests", [
                 //example of a valid WebService call to call a method specifically designed to test a Controller
                 var someServiceCall = new rishson.enterprise.control.ServiceRequest({service : 'testService',
                     method : 'ControllerTestMethod',
-                    params : [{testData : 'someValue'}],
+                    params : [{testData : 'someValue', status : 200}],
                     callback : myCallback,
                     callbackScope : this});
 

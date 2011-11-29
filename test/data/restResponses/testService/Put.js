@@ -7,15 +7,15 @@ dojo.declare('test.data.restResponses.testService.Put', [test.data.restResponses
 		switch (params.status) {
 			case 200 :
 				//very simple echo reposonse
-        		return new test.data.restResponses.RestResponse({payload : params});
+        		return new test.data.restResponses.RestResponse();
 			case 400 :
-        		return new test.data.restResponses.RestResponse({payload : params}, {xhr : {status : 400}});
+        		return new test.data.restResponses.RestResponse(null, {xhr : {status : 400}});
 			case 403 :
-        		return new test.data.restResponses.RestResponse({payload : params}, {xhr : {status : 403}});
+        		return new test.data.restResponses.RestResponse(null, {xhr : {status : 403}});
 			case 409 :
-        		return new test.data.restResponses.RestResponse({payload : params}, {xhr : {status : 409}});
+        		return new test.data.restResponses.RestResponse(null, {xhr : {status : 409}});
 			case 123 :
-        		return new test.data.restResponses.RestResponse({payload : params}, {xhr : {status : 123}});
+        		return new test.data.restResponses.RestResponse(null, {xhr : {status : 123}});
 		}
     },
 
