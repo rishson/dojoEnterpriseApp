@@ -4,9 +4,10 @@ define([
     "rishson/control/Transport",
     "rishson/util/ObjectValidator",
     "dojo/_base/declare", // declare
+    "dojo/_base/array", // indexOf
     "dojo/_base/xhr", // get, etc.
     "require" // context-sensitive require
-], function(script, Response, Transport, ObjectValidator, declare, require){
+], function(script, Response, Transport, ObjectValidator, declare, arrayUtil, xhr, require){
 
     /**
      * @class
@@ -67,7 +68,7 @@ define([
                     var wrappedResponse = new Response(mockResponse.payload, 
                     true,
                     mockResponse.ioArgs);
-                    if(dojo.indexOf(wrappedResponse.mappedStatusCodes, mockResponse.ioArgs.xhr.status) === -1) {
+                    if(arrayUtil.indexOf(wrappedResponse.mappedStatusCodes, mockResponse.ioArgs.xhr.status) === -1) {
                         self.handleErrorFunc(request, wrappedResponse);
                     } else {
                         self.handleResponseFunc(request, wrappedResponse);

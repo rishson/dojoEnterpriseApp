@@ -7,7 +7,7 @@ define([
     "dojo/_base/declare", // declare
     "dojo/topic", // publish/subscribe
     "dojox/rpc/Service"
-], function(Globals, ObjectValidator, AppContainer, lang, arrayUtil, declare){
+], function(Globals, ObjectValidator, AppContainer, lang, arrayUtil, declare, topic, Service){
 
     /**
      * @class
@@ -112,8 +112,8 @@ define([
                 }
                 
                 //convert authorities to lower case so we can do case-insensitive search for authorities
-                dojo.forEach(this.grantedAuthorities, function(authority){
-                    if(dojo.isString(authority)){				
+                arrayUtil.forEach(this.grantedAuthorities, function(authority){
+                    if(lang.isString(authority)){				
                         authority = authority.toLowerCase();
                     }
                     else {
@@ -190,7 +190,7 @@ define([
             else{
                 //call the request's provide callback with the response - but hitch it's scope first if needs be
                 if (request.callbackScope) {
-                    scopedCallback = dojo.hitch(request.callbackScope, request.callback);
+                    scopedCallback = lang.hitch(request.callbackScope, request.callback);
                 }
                 else {
                     scopedCallback = request.callback;  //if no scope is specified then assume the callback must already be scoped
