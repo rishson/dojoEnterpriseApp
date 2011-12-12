@@ -21,7 +21,7 @@ define([
      * @name rishson.view.AppContainer
      * @description This is the topmost widget that is designed to contain your application.
      */
-    declare('rishson.view.AppContainer', [_Widget, _LayoutWidget,
+    return declare('rishson.view.AppContainer', [_Widget, _LayoutWidget,
             _TemplatedMixin, _WidgetsInTemplateMixin, _Container], {
     
         templateString : template,
