@@ -92,8 +92,8 @@ define([
                          * It's OK to send the error to the console as this does not pose a security risk.	
                          * The failure is freely available using http traffic monitoring so we are not 'leaking' information
                          */
-                        console.error(err);
-                        this.handleErrorFunc(request, err);
+                        console.error(response);
+                        this.handleErrorFunc(request, response);
                         //you could do further processing such as put the transport in a retry or quiescent state
                     }
                 }
@@ -127,7 +127,7 @@ define([
                     //the failure is freely available using http traffic monitoring so we are not 'leaking' information
                     console.error(err);
               
-                    this.handleErrorFunc(request, response);
+                    this.handleErrorFunc(request, err);
                     //you could do further processing such as put the transport in a retry or quiescent state
                 });*/
         }
