@@ -5,25 +5,23 @@
 		<title>doh.robot AppContainer Test</title>
 
 		<style>
-			@import "../../../util/doh/robot/robot.css";
+			@import "../../../../util/doh/robot/robot.css";
 		</style>
 
 		<!-- required: dojo.js -->
-		<script type="text/javascript" src="../../../src/js/dojo/dojo-release-1.6.1-src/dojo/dojo.js"
-			djConfig="isDebug: true"></script>
-
+		<script type="text/javascript" src="../../../../dojo/dojo.js"
+			data-dojo-config="isDebug: true, async: true"></script>
 
 		<script type="text/javascript">
-            dojo.registerModulePath('rishson', '../../../rishson');
-
-			dojo.require('rishson.enterprise.view.AppContainer');
-
-			dojo.require("dojo.window");
-			dojo.require("dijit.robotx");
-
-			dojo.ready(function(){
+			require([
+				"doh",
+				"rishson/view/AppContainer",
+				"dojo/window",
+				"dijit/robotx",
+				"dojo/domReady!"
+			], function(doh, AppContainer, win){
 				doh.robot.initRobot('../../functional/testAppContainer.html');
-
+				
 				doh.register("AppContainer tests", [	
 					{
 						name: "Create tests",
@@ -34,7 +32,7 @@
 						tearDown: function(){
 						}
 					}
-
+				
 				]);
 				doh.run();
 			});

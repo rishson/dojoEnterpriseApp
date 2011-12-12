@@ -5,26 +5,28 @@
 		<title>doh.robot ApplicationWidget Test</title>
 
 		<style>
-			@import "../../../util/doh/robot/robot.css";
+			@import "../../../../util/doh/robot/robot.css";
 		</style>
 
 		<!-- required: dojo.js -->
-		<script type="text/javascript" src="../../../src/js/dojo/dojo-release-1.6.1-src/dojo/dojo.js"
-			djConfig="isDebug: true"></script>
+		<script type="text/javascript" src="../../../../dojo/dojo.js"
+			data-dojo-config="isDebug: true, async: true"></script>
 
 
 		<script type="text/javascript">
-            dojo.registerModulePath('rishson', '../../../rishson');
 
-			dojo.require('rishson.enterprise.widget._Widget');
-			dojo.require('rishson.enterprise.widget._ApplicationWidget');
-
-			dojo.require("dojo.window");
-			dojo.require("dijit.robotx");
-
-			dojo.ready(function(){
+			require([
+				"doh",
+				"rishson/widget/_Widget",
+				"rishson/widget/_ApplicationWidget",
+				"dojo/_base/declare", // declare
+				"dojo/topic", // publish/subscribe
+				"dojo/window",
+				"dijit/robotx",
+				"dojo/domReady!"
+			], function(doh, _Widget, _ApplicationWidget, topic, win){
 				doh.robot.initRobot('../../functional/testApplicationWidget.html');
-
+				
 				doh.register("_ApplicationWidget tests", [	
 					{
 						name: "Pub/sub tests",
@@ -33,13 +35,13 @@
 						},
 						runTest: function(){
 
-							var childWidget = dojo.declare(null, rishson.enterprise.widget._Widget, {
+							var childWidget = declare(null, _Widget, {
 								constructor : function(params) {
 									this.pubList.SOME_TOPIC = this._topicNamespace + '/some/topicName';			
 								}			
 							});
 
-							var appWidget = dojo.declare(null, rishson.enterprise.widget._ApplicationWidget, {
+							var appWidget = declare(null, _ApplicationWidget, {
 								constructor : function(params) {
 								},
 	
@@ -51,12 +53,12 @@
 							});
 							
 							var myAppWidget = new appWidget();
-							var myChildWidget = new childWidget();							
+							var myChildWidget = new childWidget();
 							myAppWidget.injectWidget(myChildWidget);
 
-							dojo.publish(myChildWidget.pubList.SOME_TOPIC, ['hello world']);
+							topic.publish(myChildWidget.pubList.SOME_TOPIC, 'hello world');
 			
-							doh.assertTrue(horribleGlobalScopeHack, 'Autowire faied.');
+							doh.assertTrue(horribleGlobalScopeHack, 'Autowire failed.');
 						},
 						tearDown: function(){
 						}
