@@ -1,11 +1,14 @@
-dojo.provide('test.data.restResponses.RestResponse');
-
-dojo.declare('test.data.restResponses.RestResponse', null, {
-
-	constructor : function(params, ioArgs) {
-
-		dojo.mixin(this, params);
-		this.ioArgs = ioArgs || {xhr : {status : 200}};
-	}
-
+define([
+    "dojo/_base/declare",
+    "dojo/_base/lang"
+], function(declare, lang){
+    
+    return declare('test.data.restResponses.RestResponse', null, {
+    
+        constructor : function(params, ioArgs) {
+            lang.mixin(this, params);
+            this.ioArgs = ioArgs || {xhr : {status : 200}};
+        }
+    
+    });
 });
