@@ -35,3 +35,6 @@ mkdir "scripts"
 
 cp -r "$LIB_PATH/src" .
 cp -r "$SCRIPT_DIR/build.sh" "$SCRIPT_DIR/setup.sh" scripts
+
+# Translate scripts to app-specific scripts
+sed -i 's/\(PROJECT_DIR="\)$1\("\)/\1$(dirname $SCRIPT_DIR)\2/' "scripts/setup.sh"
