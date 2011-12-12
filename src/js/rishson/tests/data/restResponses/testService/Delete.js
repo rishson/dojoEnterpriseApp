@@ -1,8 +1,8 @@
 define([
     "dojo/_base/declare",
     "test/data/restResponses/RestResponse"
-], function(declare){
-    return declare('test.data.restResponses.testService.Delete', [test.data.restResponses.RestResponse], {
+], function(declare, RestResponse){
+    return declare('test.data.restResponses.testService.Delete', RestResponse, {
         processRequest : function(params) {
             var status = params.status;
             if (status == 200) {
