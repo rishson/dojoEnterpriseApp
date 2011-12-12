@@ -1,37 +1,38 @@
-dojo.provide('test.Scaffold');
+define([
+    "dojo/_base/declare",
+    "rishson/control/Controller",
+    "rishson/control/MockTransport",
+    "rishson/control/ServiceRequest"
+], function(declare, Controller, MockTransport, ServiceRequest){
 
-dojo.require('rishson.enterprise.control.Controller');
-dojo.require('rishson.enterprise.control.MockTransport');
-dojo.require('rishson.enterprise.control.ServiceRequest');
-
-
-dojo.declare('test.Scaffold', null, {
-
-    createController : function() {
-        var mockTransport = new rishson.enterprise.control.MockTransport();
-        var validLoginResponse = {logoutRequest : this.createLogoutRequest(),
-            serviceRegistry : [],
-            grantedAuthorities : [],
-			returnRequest : true};
-        return new rishson.enterprise.control.Controller(mockTransport, validLoginResponse);
-    },
-
-    createLogoutRequest : function() {
-        return new rishson.enterprise.control.ServiceRequest({callback : function(){},
-            callbackScope : this,
-            service : 'userService',
-            method : 'logout',
-            params : [{username : 'andy'}]
-        });
-    },
-
-    createRequest : function() {
-        return new rishson.enterprise.control.ServiceRequest({callback : function(){},
-            callbackScope : this,
-            service : 'userService',
-            method : 'logout',
-            params : [{username : 'andy'}]
-        });
-    }
-
+    return declare('test.Scaffold', null, {
+    
+        createController : function() {
+            var mockTransport = new MockTransport();
+            var validLoginResponse = {logoutRequest : this.createLogoutRequest(),
+                serviceRegistry : [],
+                grantedAuthorities : [],
+                returnRequest : true};
+            return new Controller(mockTransport, validLoginResponse);
+        },
+    
+        createLogoutRequest : function() {
+            return new ServiceRequest({callback : function(){},
+                callbackScope : this,
+                service : 'userService',
+                method : 'logout',
+                params : [{username : 'andy'}]
+            });
+        },
+    
+        createRequest : function() {
+            return new ServiceRequest({callback : function(){},
+                callbackScope : this,
+                service : 'userService',
+                method : 'logout',
+                params : [{username : 'andy'}]
+            });
+        }
+    
+    });
 });
