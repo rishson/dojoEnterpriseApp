@@ -3,15 +3,25 @@
 <head>
     <meta charset="utf-8">
     <title></title>
-    <link rel="stylesheet" href="js/app/resources/app.css">
+    <link rel="stylesheet/less" href="js/app/resources/app.less">
 </head>
-<body>
+<body class="claro">
+	<div class="appContainer"></div>
+
+    <!-- Inclusion of LESS. The following two lines will be removed in production. -->
+    <script>var less = { env: "development" };</script>
+    <script src="js/less/dist/less-1.1.6.min.js"></script>
+
     <script>
-        dojoConfig = {
-            async: true
+        var dojoConfig = {
+			async: true,
+			isDebug: true,
+			aliases: [
+				["domReady", "dojo/domReady"]
+			]
         };
     </script>
     <script src="js/dojo/dojo.js"></script>
-    <script>require("rishson/Bootstrap");</script>
+	<script>require(["wire!app/loader"]);</script>
 </body>
 </html>
