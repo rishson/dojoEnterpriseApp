@@ -5,25 +5,25 @@ set -e
 DOJO_VERSION="1.7.0"
 WHEN_VERSION="0.10.2"
 WIRE_VERSION="0.7.3"
+LESS_COMMIT="9e48460eff"
 
-SCRIPT_PATH="$(readlink -f $0)"
-SCRIPT_NAME="$(basename $SCRIPT_PATH)"
-SCRIPT_DIR="$(dirname $SCRIPT_PATH)"
+SCRIPT_DIR="$(cd $(dirname -- $0) && pwd -P)"
+SCRIPT_NAME="$(basename -- $0)"
 
 function usage {
 	echo "Usage: $SCRIPT_NAME PROJECT_DIRECTORY"
 }
 
-PROJECT_DIR="$1"
-
-if [ -z "$PROJECT_DIR" ]; then
+if [ -z "$1" ]; then
 	usage
 	exit 1
-elif [ ! -d $PROJECT_DIR ]; then
+elif [ ! -d "$1" ]; then
 	echo "PROJECT_DIRECTORY must be a directory that exists"
 	usage
 	exit 1
 fi
+
+PROJECT_DIR="$(cd \"$1\" && pwd -P)"
 
 if which wget >/dev/null; then
 	GET="wget --no-check-certificate -O -"
@@ -53,3 +53,10 @@ echo "Fetching wire $WIRE_VERSION"
 $GET "https://github.com/briancavalier/wire/tarball/$WIRE_VERSION" | tar -C "$TARGET_DIR" --strip-components 1 -xzf - "*/wire*"
 rm -rf "$TARGET_DIR/test"
 echo "wire.js extracted to $TARGET_DIR"
+
+echo "Fetching LESS $LESS_COMMIT"
+git clone https://github.com/cloudhead/less.js.git "$TARGET_DIR/less"
+cd "$TARGET_DIR/less"
+git checkout -q $LESS_COMMIT
+rm -rf .git
+echo "LESS cloned to $TARGET_DIR"
