@@ -37,7 +37,7 @@ define([
          */
         adopt : function (/*Function*/cls, /*Object*/props, /*DomNode*/node) {
             var x = new cls(props, node);
-            this.__addItem(x);
+            this._supportingWidgets.push(x);
             return x; // my.Widget
         },
     
@@ -58,38 +58,24 @@ define([
          * value here and the child will be orphaned and killed.
          */
         orphan : function(/*dijit._Widget*/widget, /*Boolean*/destroy){
-            this._addedItems = this._addedItems || [];
-            var i = arrayUtil.indexOf(this._addedItems, widget);
+            var i = arrayUtil.indexOf(this._supportingWidgets, widget);
             if (i >= 0) {
-                this._addedItems.splice(i, 1);
+                this._supportingWidgets.splice(i, 1);
             }
             destroy && this.__kill(widget);
-        },
-    
-        /**
-         * @function
-         * @name rishson.widget._WidgetInWidget.destroy
-         * @override : dijit._widget
-         * @description Override the default destroy function to account for programatically added children.
-         */
-        destroy : function() {
-            // summary: override the default destroy function to account for programatically added children.
-            arrayUtil.forEach(this._addedItems, this.__kill, this);  //destroy any adopted widgets
-            this.inherited(arguments);  //call dijit._Widget to actually destroy this widget
         },
     
         //private functions-------------------------------------------------------------------------------------------------
     
         /**
          * @function
-         * @name rishson.widget._WidgetInWidget._addItem
+         * @name rishson.widget._WidgetInWidget.__addItem
          * @private
          * @description Add any number of programmaticaly created children to this instance for later cleanup.
          * @varargs any number of widgets
          */
         __addItem : function (/* dijit._Widget... */) {
-            this._addedItems = this._addedItems || [];
-            this._addedItems.push.apply(this._addedItems, arguments);
+            this._supportingWidgets.push.apply(this._supportingWidgets, arguments);
         },
     
         /**
