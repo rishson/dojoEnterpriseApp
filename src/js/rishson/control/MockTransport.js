@@ -63,9 +63,10 @@ define([
                 var testMethodClass = new testMethod(); //create an instance of the TestMethod class
                 var methodParams = self.createBasePostParams(request);
                 var mockResponse = testMethodClass[testFuncName](methodParams);	//call the test method
+                var wrappedResponse;
                 
                 if(request.type === 'rest') {
-                    var wrappedResponse = new Response(mockResponse.payload, 
+                    wrappedResponse = new Response(mockResponse.payload, 
                     true,
                     mockResponse.ioArgs);
                     if(arrayUtil.indexOf(wrappedResponse.mappedStatusCodes, mockResponse.ioArgs.xhr.status) === -1) {
@@ -75,7 +76,7 @@ define([
                     }
                 } else {
                     try {
-                        var wrappedResponse = new Response(mockResponse, false,
+                        wrappedResponse = new Response(mockResponse, false,
                             mockResponse.ioArgs);
                         self.handleResponseFunc(request, wrappedResponse);
                     } catch (err) {
@@ -88,7 +89,7 @@ define([
         _getFile : function(filePath) {
             var path = document.location.pathname;
             var dir = path.substr(0, path.indexOf('/dojoEnterpriseApp')+18);
-            callback = function(data){
+            var callback = function(data){
                 console.debug(data);
             };
             filePath = dir + filePath;
