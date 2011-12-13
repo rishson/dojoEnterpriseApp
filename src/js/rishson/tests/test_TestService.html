@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TestService Test</title>
+        <script type="text/javascript" src="../../dojo/dojo.js"
+            data-dojo-config="isDebug: true, async: true"></script>
+        <script type="text/javascript">
+            require([
+                "doh",
+                "dojo/_base/xhr",
+                "dojo/_base/Deferred",
+                "dojo/DeferredList",
+                "rishson/tests/TestService",
+                "dojo/domReady!"
+            ], function(doh, xhr, Deferred, DeferredList, TestService){
+                // register services used by tests
+                var ts1 =  new TestService({
+                    baseUrl: "/service1/",
+                    handlers: [
+                        [/^foo$/, function(method, args, hasBody){
+                            // return arguments for inspection by tests
+                            return {
+                                method: method,
+                                args: args,
+                                hasBody: hasBody
+                            };
+                        }],
+                        ["^bar/([a-z]+)$", function(frag, method){
+                            if (method != "GET") {
+                                this.unsupportedMethod(method);
+                            }
+                            return frag;
+                        }]
+                    ]
+                });
+                var ts2 = new TestService({
+                    baseUrl: "/service2/",
+                    timeout: 1000, // longer default timeout
+                    handlers: [
+                        [/^foo$/, function(){
+                            // return a string to distinguish 2nd TestService
+                            return "service2 foo";
+                        }],
+                        ["^bar/([a-z]+)$", function(frag, method){
+                            if (method != "GET") {
+                                this.unsupportedMethod(method);
+                            }
+                            return frag;
+                        }, 2000] // even longer timeout
+                    ]
+                });
+                
+                doh.register("TestService Tests", [
+                    {
+                        name: "Test basic service functionality",
+                        runTest: function(){
+                            return xhr.get({
+                                url: "/service1/foo",
+                                load: function(response){
+                                    if (response.method != "GET") {
+                                        // generate error to reject Deferred
+                                        throw new Error(
+                                            "Unexpected response from /service1/foo");
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    {
+                        name: "Test capture group in URL RegExp",
+                        runTest: function(){
+                            return xhr.get({
+                                url: "/service1/bar/something",
+                                load: function(response){
+                                    if (response != "something") {
+                                        // generate error to reject Deferred
+                                        throw new Error(
+                                            "Unexpected response from /service1/bar");
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    {
+                        name: "Test unsupportedMethod",
+                        runTest: function(){
+                            var dfd = new Deferred();
+                            xhr.post({
+                                url: "/service1/bar/something",
+                                failOk: true, // suppress expected error message
+                                load: function(response){
+                                    dfd.reject(new Error(
+                                        "POST to /service1/bar should fail"));
+                                },
+                                error: function(err){
+                                    if (err.message == "Unsupported method: POST") {
+                                        dfd.resolve(true);
+                                    } else {
+                                        dfd.reject(new Error(
+                                            "POST to /service1/bar did not fail with expected error"));
+                                    }
+                                }
+                            });
+                            return dfd;
+                        }
+                    },
+                    {
+                        name: "Test unhandled URL",
+                        runTest: function(){
+                            var dfd = new Deferred();
+                            xhr.get({
+                                url: "/service1/nope",
+                                failOk: true,
+                                load: function(response){
+                                    // generate error to reject Deferred
+                                    dfd.reject(new Error(
+                                        "/service1/nope should fail"));
+                                },
+                                error: function(err){
+                                    if (err.message.substr(0, 14) == "Unhandled URL:") {
+                                        dfd.resolve(true);
+                                    } else {
+                                        dfd.reject(new Error(
+                                            "/service1/nope did not fail with expected error"));
+                                    }
+                                }
+                            });
+                            return dfd;
+                        }
+                    },
+                    {
+                        name: "Test isolation of separate TestServices",
+                        runTest: function(){
+                            return xhr.get({
+                                url: "/service2/foo",
+                                load: function(response){
+                                    if (response != "service2 foo") {
+                                        // generate error to reject Deferred
+                                        throw new Error(
+                                            "Unexpected response from /service2/foo");
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    {
+                        name: "Test service-scope custom timeout",
+                        timeout: 2000, // give enough time for test to run
+                        runTest: function(){
+                            var dfd = new doh.Deferred(),
+                                results = [];
+                            
+                            xhr.get({
+                                url: "/service2/foo",
+                                timeout: 750, // < 1000, will fail
+                                failOk: true, // suppress expected error message
+                                load: function(response){
+                                    console.error("750ms timeout should fail");
+                                },
+                                error: function(err){
+                                    results.push(true);
+                                }
+                            });
+                            var dfdLong = xhr.get({
+                                url: "/service2/foo",
+                                timeout: 1250, // > 1000, will succeed
+                                load: function(){
+                                    results.push(true);
+                                }
+                            });
+                            
+                            setTimeout(function(){
+                                if (results.length == 2) {
+                                    dfd.callback(true);
+                                } else {
+                                    dfd.errback(new Error(
+                                        "Service-scope custom timeout test failed"));
+                                }
+                            }, 1500);
+                            return dfd;
+                        }
+                    },
+                    {
+                        name: "Test handler-scope custom timeout",
+                        timeout: 3000, // give enough time for test to run
+                        runTest: function(){
+                            var dfd = new doh.Deferred(),
+                                results = [];
+                            
+                            xhr.get({
+                                url: "/service2/bar",
+                                timeout: 1250, // < 2000, will fail
+                                failOk: true, // suppress expected error message
+                                load: function(response){
+                                    console.error("1500ms timeout should fail");
+                                },
+                                error: function(err){
+                                    results.push(true);
+                                }
+                            });
+                            var dfdLong = xhr.get({
+                                url: "/service2/bar",
+                                timeout: 2250, // > 2000, will succeed
+                                load: function(){
+                                    results.push(true);
+                                }
+                            });
+                            
+                            setTimeout(function(){
+                                if (results.length == 2) {
+                                    dfd.callback(true);
+                                } else {
+                                    dfd.errback(new Error(
+                                        "Handler-scope custom timeout test failed"));
+                                }
+                            }, 2500);
+                            return dfd;
+                        }
+                    }
+                ]);
+                doh.run();
+            });
+        </script>
+    </head>
+    <body>
+    </body>
+</html>

@@ -32,7 +32,7 @@ define([
             },
             function(error, dfd){
                 // error
-                if(!dfd.ioArgs.args.failOK){
+                if(!dfd.ioArgs.args.failOk){
                     console.error(error);
                 }
                 return error;
@@ -55,8 +55,8 @@ define([
         //   An optional 3rd array item can specify a delay (in ms) to wait
         //   before running the handler.
         //   Handler functions run in the scope of the TestService instance, and
-        //   are passed the parameters normally passed to the xhr function
-        //   (method, args, hasBody)
+        //   are passed any matches from capturing groups, followed by the
+        //   parameters normally passed to the xhr function (method, args, hasBody)
         // * delay: delay (in ms) to wait before firing handlers by default.
         //   If unspecified, defaults to 500ms.
         
