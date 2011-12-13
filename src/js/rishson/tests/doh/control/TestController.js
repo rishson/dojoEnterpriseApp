@@ -9,7 +9,7 @@ define([
     "rishson/control/ServiceRequest",
     "rishson/control/RestRequest"
 ], function(doh, topic, cookie,
-        Controller, MockTransport, Request, ServiceRequest, RestRequest){
+        Scaffold, Controller, MockTransport, Request, ServiceRequest, RestRequest){
 
     doh.register("Controller tests", [
         {

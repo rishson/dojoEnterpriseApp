@@ -44,7 +44,7 @@ define([
               for a rest service:
               test.data.restResponses.someService.SomeEndpoint
             */
-            var namespace = 'test/data/';
+            var namespace = '../tests/data/';
             if (request.declaredClass == 'rishson.control.ServiceRequest') {
                 namespace += 'serviceResponses/' + request.toUrl();
             } else if (request.declaredClass == 'rishson.control.RestRequest') {

@@ -1,6 +1,6 @@
 define([
     "dojo/_base/declare",
-    "test/data/restResponses/RestResponse"
+    "../../RestResponse"
 ], function(declare, RestResponse){
     return declare('test.data.restResponses.testService.testEntity.Get', RestResponse, {
         processRequest : function(params) {
