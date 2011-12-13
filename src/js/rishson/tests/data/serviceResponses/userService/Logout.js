@@ -1,7 +1,7 @@
 define([
     "dojo/_base/declare"
 ], function(declare){
-    return declare('test.data.serviceResponses.userService.Logout', null, {
+    return declare(null, {
         validResponse : function() {
             return {logout : 'sucess'};
         },

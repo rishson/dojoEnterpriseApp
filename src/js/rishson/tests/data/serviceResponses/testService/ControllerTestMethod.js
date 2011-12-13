@@ -1,7 +1,7 @@
 define([
     "dojo/_base/declare"
 ], function(declare){
-    return declare('test.data.serviceResponses.testService.ControllerTestMethod', null, {
+    return declare(null, {
         processRequest : function(params) {
             var status = params.status;
             if (status == 200) {

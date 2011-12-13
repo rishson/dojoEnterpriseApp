@@ -2,7 +2,7 @@ define([
     "dojo/_base/declare",
     "../../RestResponse"
 ], function(declare, RestResponse){
-    return declare('test.data.restResponses.testService.testEntity.Get', RestResponse, {
+    return declare(RestResponse, {
         processRequest : function(params) {
             var status = params.status;
             if (status == 200) {
