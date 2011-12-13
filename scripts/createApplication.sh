@@ -2,10 +2,10 @@
 
 set -e
 
-SCRIPT_DIR="$(cd $(dirname -- $0) && pwd -P)"
-SCRIPT_NAME="$(basename -- $0)"
+SCRIPT_DIR=$(cd $(dirname -- "$0") && pwd -P)
+SCRIPT_NAME=$(basename -- "$0")
 
-LIB_PATH="$(dirname -- $SCRIPT_DIR)"
+LIB_PATH=$(dirname -- "$SCRIPT_DIR")
 PROJECT_NAME="$1"
 
 function usage {
@@ -26,7 +26,7 @@ elif [ ! -d "$2" ]; then
 	usage
 	exit 1
 else
-	TARGET_DIR="$(cd \"$2\" && pwd -P)"
+	TARGET_DIR=$(cd "$2" && pwd -P)
 fi
 
 cd "$TARGET_DIR"

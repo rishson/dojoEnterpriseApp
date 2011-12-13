@@ -7,8 +7,8 @@ WHEN_VERSION="0.10.2"
 WIRE_VERSION="0.7.3"
 LESS_COMMIT="9e48460eff"
 
-SCRIPT_DIR="$(cd $(dirname -- $0) && pwd -P)"
-SCRIPT_NAME="$(basename -- $0)"
+SCRIPT_DIR=$(cd $(dirname -- "$0") && pwd -P)
+SCRIPT_NAME=$(basename -- "$0")
 
 function usage {
 	echo "Usage: $SCRIPT_NAME PROJECT_DIRECTORY"
@@ -23,7 +23,7 @@ elif [ ! -d "$1" ]; then
 	exit 1
 fi
 
-PROJECT_DIR="$(cd \"$1\" && pwd -P)"
+PROJECT_DIR=$(cd "$1" && pwd -P)
 
 if which wget >/dev/null; then
 	GET="wget --no-check-certificate -O -"
