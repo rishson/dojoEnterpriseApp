@@ -7,7 +7,7 @@ define([
         while ((handler = handlers[i++])) {
             match = url.match(handler[0]);
             if(match){
-                return [match, handler[1], handler[2]];
+                return [match, handler];
             }
         }
         return null;
@@ -44,6 +44,20 @@ define([
 
         return def;
     }
+    
+    function xhrTimeout(def){
+        if (def.fired > -1 || def.canceled) { return; } // already fired/aborted
+        
+        // mimic dojo/_base/xhr's timeout behavior
+        var err = new Error("timeout exceeded");
+        err.dojoType = "timeout";
+        // dojo/_base/xhr rejects then cancels, but in that case,
+        // cancel() never gets called directly via Deferred logic,
+        // but the XHR is removed from the "in-flight" array.
+        // Here we just set canceled = true to flag it.
+        def.reject(err);
+        def.canceled = true;
+    }
 
     var TestService = function(options){
         // options supports the following properties:
@@ -79,34 +93,50 @@ define([
                 return args.url.substring(0, baseUrlLength) == baseUrl;
             },
             function(method, args, hasBody){
-                var def = mockXhrDef(args),
+                var xhrHandlers = xhr.contentHandlers,
+                    def = mockXhrDef(args),
                     ioArgs = def.ioArgs,
                     url = args.url.slice(baseUrlLength),
-                    urlHandler = findMatch(handlers, url),
+                    match = findMatch(handlers, url),
+                    urlHandler, // references handler function
                     timeout = options.timeout || 500,
+                    timer, // references setTimeout id
                     callback;
-
-                if (urlHandler) {
+                
+                if (match) {
                     // matching handler found; split out returned array elements
-                    var matches = urlHandler[0];
-                    timeout = urlHandler[2] || timeout;
-                    // reassign handler function to urlHandler
-                    urlHandler = urlHandler[1];
-
+                    var matches = match[0]; // result of RegExp.match
+                    timeout = match[1][2] || timeout; // optional custom timeout
+                    urlHandler = match[1][1]; // handler function
+                    
+                    // also set a timeout to cancel the XHR
+                    // if it goes over its own specified timeout
+                    timer = args.timeout && setTimeout(function(){
+                        xhrTimeout(def);
+                    }, args.timeout);
+                    
                     callback = function(){
-                        if(def.canceled){ return; }
-                        try{
-                            var result = urlHandler.apply(service,
-                                matches.slice(1).concat([method, ioArgs, hasBody]));
+                        if (def.canceled) { return; }
+                        if (timer !== undefined) { clearTimeout(timer); }
+                        try {
+                            var result = ioArgs.xhr.responseText = urlHandler.apply(
+                                    service,
+                                    matches.slice(1).concat([method, ioArgs, hasBody]));
+                            
+                            if (typeof xhrHandlers[ioArgs.handleAs] == "function") {
+                                // allow most default xhr handlers to run
+                                // (all except "xml" rely on xhr.responseText)
+                                result = xhrHandlers[ioArgs.handleAs](ioArgs.xhr);
+                            }
                             def.resolve(result);
-                        }catch(e){
+                        } catch (e) {
                             def.reject(e);
                         }
                     };
                 } else {
                     // no match; reject Deferred indicating as such
                     callback = function(){
-                        if(def.canceled){ return; }
+                        if (def.canceled) { return; }
                         def.reject(new Error("Unhandled URL: " + ioArgs.url));
                     };
                 }
@@ -116,7 +146,7 @@ define([
                 } else {
                     setTimeout(callback, timeout);
                 }
-
+                
                 return def;
             },
             false,
