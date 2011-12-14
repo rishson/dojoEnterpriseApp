@@ -8,11 +8,9 @@
             require([
                 "doh",
                 "dojo/_base/xhr",
-                "dojo/_base/Deferred",
-                "dojo/DeferredList",
                 "rishson/tests/TestService",
                 "dojo/domReady!"
-            ], function(doh, xhr, Deferred, DeferredList, TestService){
+            ], function(doh, xhr, TestService){
                 // register services used by tests
                 var ts1 =  new TestService({
                     baseUrl: "/service1/",
@@ -54,49 +52,63 @@
                     {
                         name: "Test basic service functionality",
                         runTest: function(){
-                            return xhr.get({
+                            var dfd = new doh.Deferred();
+                            xhr.get({
                                 url: "/service1/foo",
                                 load: function(response){
                                     if (response.method != "GET") {
                                         // generate error to reject Deferred
-                                        throw new Error(
-                                            "Unexpected response from /service1/foo");
+                                        dfd.errback(new Error(
+                                            "Unexpected response from /service1/foo"));
+                                    } else {
+                                        dfd.callback(true);
                                     }
+                                },
+                                error: function(err){
+                                    dfd.errback(err);
                                 }
                             });
+                            return dfd;
                         }
                     },
                     {
                         name: "Test capture group in URL RegExp",
                         runTest: function(){
-                            return xhr.get({
+                            var dfd = new doh.Deferred();
+                            xhr.get({
                                 url: "/service1/bar/something",
                                 load: function(response){
                                     if (response != "something") {
                                         // generate error to reject Deferred
-                                        throw new Error(
-                                            "Unexpected response from /service1/bar");
+                                        dfd.errback(new Error(
+                                            "Unexpected response from /service1/bar"));
+                                    } else {
+                                        dfd.callback(true);
                                     }
+                                },
+                                error: function(err){
+                                    dfd.errback(err);
                                 }
                             });
+                            return dfd;
                         }
                     },
                     {
                         name: "Test unsupportedMethod",
                         runTest: function(){
-                            var dfd = new Deferred();
+                            var dfd = new doh.Deferred();
                             xhr.post({
                                 url: "/service1/bar/something",
                                 failOk: true, // suppress expected error message
                                 load: function(response){
-                                    dfd.reject(new Error(
+                                    dfd.errback(new Error(
                                         "POST to /service1/bar should fail"));
                                 },
                                 error: function(err){
                                     if (err.message == "Unsupported method: POST") {
-                                        dfd.resolve(true);
+                                        dfd.callback(true);
                                     } else {
-                                        dfd.reject(new Error(
+                                        dfd.errback(new Error(
                                             "POST to /service1/bar did not fail with expected error"));
                                     }
                                 }
@@ -107,20 +119,20 @@
                     {
                         name: "Test unhandled URL",
                         runTest: function(){
-                            var dfd = new Deferred();
+                            var dfd = new doh.Deferred();
                             xhr.get({
                                 url: "/service1/nope",
                                 failOk: true,
                                 load: function(response){
                                     // generate error to reject Deferred
-                                    dfd.reject(new Error(
+                                    dfd.errback(new Error(
                                         "/service1/nope should fail"));
                                 },
                                 error: function(err){
                                     if (err.message.substr(0, 14) == "Unhandled URL:") {
-                                        dfd.resolve(true);
+                                        dfd.callback(true);
                                     } else {
-                                        dfd.reject(new Error(
+                                        dfd.errback(new Error(
                                             "/service1/nope did not fail with expected error"));
                                     }
                                 }
@@ -130,22 +142,29 @@
                     },
                     {
                         name: "Test isolation of separate TestServices",
+                        timeout: 2000,
                         runTest: function(){
-                            return xhr.get({
+                            var dfd = new doh.Deferred();
+                            xhr.get({
                                 url: "/service2/foo",
                                 load: function(response){
                                     if (response != "service2 foo") {
                                         // generate error to reject Deferred
-                                        throw new Error(
-                                            "Unexpected response from /service2/foo");
+                                        dfd.errback(new Error(
+                                            "Unexpected response from /service2/foo"));
+                                    } else {
+                                        dfd.callback(true);
                                     }
+                                },
+                                error: function(err){
+                                    dfd.errback(err);
                                 }
                             });
                         }
                     },
                     {
                         name: "Test service-scope custom timeout",
-                        timeout: 2000, // give enough time for test to run
+                        timeout: 2000,
                         runTest: function(){
                             var dfd = new doh.Deferred(),
                                 results = [];
@@ -161,7 +180,7 @@
                                     results.push(true);
                                 }
                             });
-                            var dfdLong = xhr.get({
+                            xhr.get({
                                 url: "/service2/foo",
                                 timeout: 1250, // > 1000, will succeed
                                 load: function(){
@@ -169,6 +188,7 @@
                                 }
                             });
                             
+                            // wait enough time for both XHRs to complete
                             setTimeout(function(){
                                 if (results.length == 2) {
                                     dfd.callback(true);
@@ -182,13 +202,13 @@
                     },
                     {
                         name: "Test handler-scope custom timeout",
-                        timeout: 3000, // give enough time for test to run
+                        timeout: 3000,
                         runTest: function(){
                             var dfd = new doh.Deferred(),
                                 results = [];
                             
                             xhr.get({
-                                url: "/service2/bar",
+                                url: "/service2/bar/something",
                                 timeout: 1250, // < 2000, will fail
                                 failOk: true, // suppress expected error message
                                 load: function(response){
@@ -198,14 +218,15 @@
                                     results.push(true);
                                 }
                             });
-                            var dfdLong = xhr.get({
-                                url: "/service2/bar",
+                            xhr.get({
+                                url: "/service2/bar/something",
                                 timeout: 2250, // > 2000, will succeed
                                 load: function(){
                                     results.push(true);
                                 }
                             });
                             
+                            // wait enough time for both XHRs to complete
                             setTimeout(function(){
                                 if (results.length == 2) {
                                     dfd.callback(true);
