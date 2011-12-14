@@ -131,6 +131,10 @@ define([
                                 // (all except "xml" rely on xhr.responseText)
                                 result = xhrHandlers[ioArgs.handleAs](ioArgs.xhr);
                             }
+                            if (!ioArgs.xhr.status) {
+                                // default to OK status for success
+                                ioArgs.xhr.status = 200;
+                            }
                             def.resolve(result);
                         } catch (e) {
                             def.reject(e);
@@ -163,6 +167,10 @@ define([
         },
         unsupportedMethod: function(method){
             throw new Error("Unsupported method: " + method);
+        },
+        setStatus: function(ioArgs, status){
+            // convenience method for mocking a status code onto the XHR object
+            ioArgs.xhr.status = status;
         }
     };
     
