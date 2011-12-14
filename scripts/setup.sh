@@ -1,14 +1,52 @@
 #!/bin/bash
 
-set -e
+set -eP
 
 DOJO_VERSION="1.7.0"
 WHEN_VERSION="0.10.2"
 WIRE_VERSION="0.7.3"
 LESS_COMMIT="9e48460eff"
 
-SCRIPT_DIR=$(cd $(dirname -- "$0") && pwd -P)
-SCRIPT_NAME=$(basename -- "$0")
+# ${x%/*} is equivalent to dirname
+# ${x##*/} is equivalent to basename
+
+function canonical {
+	local P="$1"; shift
+	local DIR=""
+	local NAME=""
+
+	if [ -h "$P" ]; then
+		# if path exists and is a symlink
+		local RL=$(readlink "$P" 2> /dev/null)
+		DIR=$(cd "${P%/*}" && pwd -P)
+		DIR=$(cd "$DIR" && cd "${RL%/*}" && pwd -P)
+		NAME="${RL##*/}"
+	elif [ -e "$P" ]; then
+		# if path exists
+		DIR=$(cd "${P%/*}" && pwd -P)
+		NAME="${P##*/}"
+	else
+		# if path doesn't exist
+		if [ "${P:0:1}" == "/" ]; then
+			# if path starts with "/", strip it
+			NAME="${P:1}"
+		else
+			DIR="$(pwd -P)"
+			if [ "${P:0:2}" == "./" ]; then
+				# if path starts with "./", strip it
+				NAME="${P:2}"
+			else
+				NAME="$P"
+			fi
+		fi
+	fi
+
+	echo "$DIR/$NAME"
+}
+
+SCRIPT_PATH=$(canonical "$0")
+SCRIPT_DIR="${SCRIPT_PATH%/*}"
+SCRIPT_NAME="${SCRIPT_PATH##*/}"
 
 function usage {
 	echo "Usage: $SCRIPT_NAME PROJECT_DIRECTORY"
@@ -23,7 +61,7 @@ elif [ ! -d "$1" ]; then
 	exit 1
 fi
 
-PROJECT_DIR=$(cd "$1" && pwd -P)
+PROJECT_DIR=$(canonical "$1")
 
 if which wget >/dev/null; then
 	GET="wget --no-check-certificate -O -"

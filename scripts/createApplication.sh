@@ -1,11 +1,49 @@
 #!/bin/bash
 
-set -e
+set -eP
 
-SCRIPT_DIR=$(cd $(dirname -- "$0") && pwd -P)
-SCRIPT_NAME=$(basename -- "$0")
+# ${x%/*} is equivalent to dirname
+# ${x##*/} is equivalent to basename
 
-LIB_PATH=$(dirname -- "$SCRIPT_DIR")
+function canonical {
+	local P="$1"; shift
+	local DIR=""
+	local NAME=""
+
+	if [ -h "$P" ]; then
+		# if path exists and is a symlink
+		local RL=$(readlink "$P" 2> /dev/null)
+		DIR=$(cd "${P%/*}" && pwd -P)
+		DIR=$(cd "$DIR" && cd "${RL%/*}" && pwd -P)
+		NAME="${RL##*/}"
+	elif [ -e "$P" ]; then
+		# if path exists
+		DIR=$(cd "${P%/*}" && pwd -P)
+		NAME="${P##*/}"
+	else
+		# if path doesn't exist
+		if [ "${P:0:1}" == "/" ]; then
+			# if path starts with "/", strip it
+			NAME="${P:1}"
+		else
+			DIR="$(pwd -P)"
+			if [ "${P:0:2}" == "./" ]; then
+				# if path starts with "./", strip it
+				NAME="${P:2}"
+			else
+				NAME="$P"
+			fi
+		fi
+	fi
+
+	echo "$DIR/$NAME"
+}
+
+SCRIPT_PATH=$(canonical "$0")
+SCRIPT_DIR="${SCRIPT_PATH%/*}"
+SCRIPT_NAME="${SCRIPT_PATH##*/}"
+
+LIB_PATH="${SCRIPT_DIR%/*}"
 PROJECT_NAME="$1"
 
 function usage {
@@ -26,7 +64,7 @@ elif [ ! -d "$2" ]; then
 	usage
 	exit 1
 else
-	TARGET_DIR=$(cd "$2" && pwd -P)
+	TARGET_DIR=$(canonical "$2")
 fi
 
 cd "$TARGET_DIR"
@@ -38,5 +76,5 @@ cp -r "$LIB_PATH/src" .
 cp -r "$SCRIPT_DIR/build.sh" "$SCRIPT_DIR/setup.sh" scripts
 
 # Translate scripts to app-specific scripts
-sed -i 's/^\(PROJECT_DIR="\).*\("\)$/\1$(dirname $SCRIPT_DIR)\2/' "scripts/setup.sh"
-perl -i -pe 'BEGIN{undef $/;} s/if \[ -z "\$1" \]; then.*?fi\n\n//s' "scripts/setup.sh"
+sed -i 's/^\(PROJECT_DIR="\).*\("\)$/\1${SCRIPT_DIR%\/*}\2/
+/^if \[ -z "\$1" \]; then/,/^fi/d' "scripts/setup.sh"
