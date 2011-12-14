@@ -19,7 +19,9 @@ function canonical {
 	elif [ -e "$P" ]; then
 		# if path exists
 		DIR=$(cd "${P%/*}" && pwd -P)
-		NAME="${P##*/}"
+		if [ "$P" != "." ]; then
+			NAME="${P##*/}"
+		fi
 	else
 		# if path doesn't exist
 		if [ "${P:0:1}" == "/" ]; then
@@ -36,7 +38,11 @@ function canonical {
 		fi
 	fi
 
-	echo "$DIR/$NAME"
+	if [ -z "$DIR" ] || [ -z "$NAME" ]; then
+		echo "$DIR$NAME"
+	else
+		echo "$DIR/$NAME"
+	fi
 }
 
 SCRIPT_PATH=$(canonical "$0")
