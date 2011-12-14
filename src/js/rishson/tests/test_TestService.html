@@ -28,6 +28,13 @@
                                 this.unsupportedMethod(method);
                             }
                             return frag;
+                        }],
+                        ["json", function(method){
+                            return '{"hello":"world"}';
+                        }],
+                        ["nothere", function(method, args){
+                            this.setStatus(args, 404);
+                            return "Not found";
                         }]
                     ]
                 });
@@ -57,7 +64,6 @@
                                 url: "/service1/foo",
                                 load: function(response){
                                     if (response.method != "GET") {
-                                        // generate error to reject Deferred
                                         dfd.errback(new Error(
                                             "Unexpected response from /service1/foo"));
                                     } else {
@@ -79,11 +85,53 @@
                                 url: "/service1/bar/something",
                                 load: function(response){
                                     if (response != "something") {
-                                        // generate error to reject Deferred
                                         dfd.errback(new Error(
                                             "Unexpected response from /service1/bar"));
                                     } else {
                                         dfd.callback(true);
+                                    }
+                                },
+                                error: function(err){
+                                    dfd.errback(err);
+                                }
+                            });
+                            return dfd;
+                        }
+                    },
+                    {
+                        name: "Test using handleAs:'json'",
+                        runTest: function(){
+                            var dfd = new doh.Deferred();
+                            xhr.get({
+                                url: "/service1/json",
+                                handleAs: "json",
+                                load: function(response){
+                                    if (response.hello == "world") {
+                                        dfd.callback(true);
+                                    } else {
+                                        dfd.errback(new Error(
+                                            "Unexpected response from /service1/json"));
+                                    }
+                                },
+                                error: function(err){
+                                    dfd.errback(err);
+                                }
+                            });
+                            return dfd;
+                        }
+                    },
+                    {
+                        name: "Test checking status code",
+                        runTest: function(){
+                            var dfd = new doh.Deferred();
+                            var xhrDfd = xhr.get({
+                                url: "/service1/nothere",
+                                load: function(response){
+                                    if (xhrDfd.ioArgs.xhr.status == 404) {
+                                        dfd.callback(true);
+                                    } else {
+                                        dfd.errback(new Error(
+                                            "Unexpected status code from /service1/nothere"));
                                     }
                                 },
                                 error: function(err){
@@ -124,7 +172,6 @@
                                 url: "/service1/nope",
                                 failOk: true,
                                 load: function(response){
-                                    // generate error to reject Deferred
                                     dfd.errback(new Error(
                                         "/service1/nope should fail"));
                                 },
@@ -149,7 +196,6 @@
                                 url: "/service2/foo",
                                 load: function(response){
                                     if (response != "service2 foo") {
-                                        // generate error to reject Deferred
                                         dfd.errback(new Error(
                                             "Unexpected response from /service2/foo"));
                                     } else {
