@@ -59,7 +59,10 @@ define([
         def.canceled = true;
     }
 
-    var TestService = function(options){
+    var TestService = {}, utils;
+    
+    TestService.register = function(options){
+        // Registers a new test service.
         // options supports the following properties:
         // * baseUrl: used as base URL for registering XHR plugin;
         //   also represents common part of URL to be stripped from all
@@ -86,7 +89,6 @@ define([
             }
         }
 
-        var service = this;
         xhrPlugins.register(
             baseUrl,
             function(method, args){
@@ -119,8 +121,9 @@ define([
                         if (def.canceled) { return; }
                         if (timer !== undefined) { clearTimeout(timer); }
                         try {
+                            // run handler, in context of utils for convenience
                             var result = ioArgs.xhr.responseText = urlHandler.apply(
-                                    service,
+                                    utils,
                                     matches.slice(1).concat([method, ioArgs, hasBody]));
                             
                             if (typeof xhrHandlers[ioArgs.handleAs] == "function") {
@@ -152,15 +155,14 @@ define([
             false,
             true);
     };
-    TestService.prototype = {
+    
+    TestService.utils = utils = {
+        // utility functions, usable by URL handler functions
         unhandledUrl: function(url){
-            this.throwError("Unhandled URL: " + url);
+            throw new Error("Unhandled URL: " + url);
         },
         unsupportedMethod: function(method){
-            this.throwError("Unsupported method: " + method);
-        },
-        throwError: function(text){
-            throw new Error(text);
+            throw new Error("Unsupported method: " + method);
         }
     };
     

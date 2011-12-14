@@ -12,7 +12,7 @@
                 "dojo/domReady!"
             ], function(doh, xhr, TestService){
                 // register services used by tests
-                var ts1 =  new TestService({
+                TestService.register({
                     baseUrl: "/service1/",
                     handlers: [
                         [/^foo$/, function(method, args, hasBody){
@@ -31,7 +31,7 @@
                         }]
                     ]
                 });
-                var ts2 = new TestService({
+                TestService.register({
                     baseUrl: "/service2/",
                     timeout: 1000, // longer default timeout
                     handlers: [
