@@ -2,7 +2,8 @@ define([
 	'dojo/_base/declare',
 	'dijit/_Widget'
 ], function(declare, _Widget){
-	var $$$BASENAME$$$ = declare([_Widget], {
+	var $className$ = declare([_Widget], {
+		"class": "$cssClassName$",
 		constructor: function(args){
 		},
 
@@ -17,5 +18,5 @@ define([
 		}
 	});
 
-	return $$$BASENAME$$$;
+	return $className$;
 });
