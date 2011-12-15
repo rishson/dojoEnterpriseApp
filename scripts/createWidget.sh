@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eP
+set -P
 shopt -s extglob
 
 function dir_name {
@@ -92,6 +92,25 @@ function relpath {
 	printf "$path1"
 }
 
+function confirm_file_overwrite {
+	local FN="$1"; shift
+	local MSG="$1"; shift
+
+	if [ -e "$FN" ]; then
+		echo -n "$MSG"
+		echo -n " Do you want to overwrite it? [yn] "
+		read -s -n 1
+		if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+			echo "Overwriting..."
+		else
+			echo "Skipping..."
+			return 0
+		fi
+	fi
+
+	return 1
+}
+
 SCRIPT_PATH=$(canonical "$0")
 SCRIPT_DIR="${SCRIPT_PATH%/*}"
 SCRIPT_NAME="${SCRIPT_PATH##*/}"
@@ -101,6 +120,15 @@ TEMPLATE_PATH="${SCRIPT_DIR%/*}/templates"
 function usage {
 	echo "Usage: $SCRIPT_NAME WIDGET_NAME [TARGET_DIRECTORY]"
 }
+
+TEMPLATED=0
+while getopts t opt; do
+	case "$opt" in
+		t) TEMPLATED=1 ;;
+		\?) echo "Invalid option: -$OPTARG" >&2 ;;
+	esac
+done
+shift $((OPTIND-1))
 
 PROJECT_DIR="$2"
 
@@ -149,31 +177,34 @@ fi
 WIDGET_FN="$WIDGET_TARGET/$WIDGET_CLASS.js"
 WIDGET_CSS_CLASS=$(echo "$WIDGET_NAME" | sed -e "s#/\([a-z]\)#\u\1#g;s#/\([A-Z]\)#\1#g;s#/_\([A-Za-z]\)#\u\1#g")
 
-if [ -e "$WIDGET_FN" ]; then
-	read -s -p "The module $WIDGET_NAME already exists. Do you want to overwrite it? [yn] " -n 1
-	if [[ ! "$REPLY" =~ ^[Yy]$ ]]; then
-		echo "Skipping..."
-	else
-		echo "Overwriting..."
+if (($TEMPLATED)); then
+	BASE_TEMPLATE_NAME="$TEMPLATE_PATH/TemplatedWidget"
+else
+	BASE_TEMPLATE_NAME="$TEMPLATE_PATH/Widget"
+fi
 
+confirm_file_overwrite "$WIDGET_FN" "The module $WIDGET_NAME already exists."
+if (($?)); then
+	sed -e "s/\\\$className\\\$/$WIDGET_CLASS/
+	s/\\\$cssClassName\\\$/$WIDGET_CSS_CLASS/" "$BASE_TEMPLATE_NAME.js" > "$WIDGET_FN"
+fi
+
+if (($TEMPLATED)); then
+	WIDGET_TEMPLATE_FN="$WIDGET_TARGET/resources/$WIDGET_CLASS.html"
+	confirm_file_overwrite "$WIDGET_TEMPLATE_FN" "The template for $WIDGET_NAME already exists."
+	if (($?)); then
 		sed -e "s/\\\$className\\\$/$WIDGET_CLASS/
-		s/\\\$cssClassName\\\$/$WIDGET_CSS_CLASS/" "$TEMPLATE_PATH/Widget.js" > "$WIDGET_FN"
+		s/\\\$cssClassName\\\$/$WIDGET_CSS_CLASS/" "$BASE_TEMPLATE_NAME.html" > "$WIDGET_TEMPLATE_FN"
 	fi
 fi
 
 WIDGET_CSS_FN="$WIDGET_TARGET/resources/$WIDGET_CLASS.less"
-if [ -e "$WIDGET_CSS_FN" ]; then
-	read -s -p "The stylesheet for $WIDGET_NAME already exists. Do you want to overwrite it? [yn] " -n 1
-	if [[ ! "$REPLY" =~ ^[Yy]$ ]]; then
-		echo "Skipping..."
-	else
-		echo "Overwriting..."
-		sed -e "s/\\\$cssClassName\\\$/$WIDGET_CSS_CLASS/" "$TEMPLATE_PATH/Widget.less" > "$WIDGET_CSS_FN"
-	fi
+confirm_file_overwrite "$WIDGET_CSS_FN" "The stylesheet for $WIDGET_NAME already exists."
+if (($?)); then
+	sed -e "s/\\\$cssClassName\\\$/$WIDGET_CSS_CLASS/" "$TEMPLATE_PATH/Widget.less" > "$WIDGET_CSS_FN"
 fi
 
 APP_LESS="$TARGET_DIR/app/resources/app.less"
-
 if [ -e "$APP_LESS" ]; then
 	REL_PATH=$(relpath "${APP_LESS%/*}" "${WIDGET_CSS_FN%/*}")
 	if [ "$REL_PATH" == "." ]; then
