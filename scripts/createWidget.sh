@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -eP
+shopt -s extglob
 
 function dir_name {
 	local P="$1"; shift
@@ -56,6 +57,41 @@ function canonical {
 	fi
 }
 
+function relpath {
+	path1="$1"; shift
+	path2="$1"; shift
+	orig1="$path1"
+	path1="${path1%/}/"
+	path2="${path2%/}/"
+
+	while :; do
+		if test ! "$path1"; then
+			break
+		fi
+		part1="${path2#$path1}"
+		if test "${part1#/}" = "$part1"; then
+			path1="${path1%/*}"
+			continue
+		fi
+		if test "${path2#$path1}" = "$path2"; then
+			path1="${path1%/*}"
+			continue
+		fi
+		break
+	done
+	part1="$path1"
+	path1="${orig1#$part1}"
+	depth="${path1//+([^\/])/..}"
+	path1="${path2#$path1}"
+	path1="${depth}${path2#$part1}"
+	path1="${path1##+(\/)}"
+	path1="${path1%/}"
+	if test ! "$path1"; then
+		path1=.
+	fi
+	printf "$path1"
+}
+
 SCRIPT_PATH=$(canonical "$0")
 SCRIPT_DIR="${SCRIPT_PATH%/*}"
 SCRIPT_NAME="${SCRIPT_PATH##*/}"
@@ -95,7 +131,7 @@ fi
 WIDGET_NS=$(dir_name "$WIDGET_NAME")
 WIDGET_CLASS="${WIDGET_NAME##*/}"
 
-if [ -n "$WIDGET_NS" ]; then
+if [ "$WIDGET_NS" != "." ]; then
 	WIDGET_TARGET="$TARGET_DIR/$WIDGET_NS"
 else
 	WIDGET_TARGET="$TARGET_DIR"
@@ -106,19 +142,58 @@ if [ -e "$WIDGET_TARGET" ] && [ ! -d "$WIDGET_TARGET" ]; then
 	exit 1
 fi
 
-if [ ! -e "$WIDGET_TARGET" ]; then
-	mkdir -p "$WIDGET_TARGET"
+if [ ! -e "$WIDGET_TARGET/resources" ]; then
+	mkdir -p "$WIDGET_TARGET/resources"
 fi
 
 WIDGET_FN="$WIDGET_TARGET/$WIDGET_CLASS.js"
+WIDGET_CSS_CLASS=$(echo "$WIDGET_NAME" | sed -e "s#/\([a-z]\)#\u\1#g;s#/\([A-Z]\)#\1#g;s#/_\([A-Za-z]\)#\u\1#g")
+
 if [ -e "$WIDGET_FN" ]; then
-	read -s -p "The module $WIDGET_NAME already exists. Do you want to overwrite it? [yn]" -n 1
+	read -s -p "The module $WIDGET_NAME already exists. Do you want to overwrite it? [yn] " -n 1
 	if [[ ! "$REPLY" =~ ^[Yy]$ ]]; then
-		echo
-		exit
+		echo "Skipping..."
+	else
+		echo "Overwriting..."
+
+		sed -e "s/\\\$className\\\$/$WIDGET_CLASS/
+		s/\\\$cssClassName\\\$/$WIDGET_CSS_CLASS/" "$TEMPLATE_PATH/Widget.js" > "$WIDGET_FN"
 	fi
-	echo
-	echo "Overwriting..."
 fi
 
-sed -e "s/\\\$\\\$\\\$BASENAME\\\$\\\$\\\$/$WIDGET_CLASS/" "$TEMPLATE_PATH/Widget.js" > "$WIDGET_FN"
+WIDGET_CSS_FN="$WIDGET_TARGET/resources/$WIDGET_CLASS.less"
+if [ -e "$WIDGET_CSS_FN" ]; then
+	read -s -p "The stylesheet for $WIDGET_NAME already exists. Do you want to overwrite it? [yn] " -n 1
+	if [[ ! "$REPLY" =~ ^[Yy]$ ]]; then
+		echo "Skipping..."
+	else
+		echo "Overwriting..."
+		sed -e "s/\\\$cssClassName\\\$/$WIDGET_CSS_CLASS/" "$TEMPLATE_PATH/Widget.less" > "$WIDGET_CSS_FN"
+	fi
+fi
+
+APP_LESS="$TARGET_DIR/app/resources/app.less"
+
+if [ -e "$APP_LESS" ]; then
+	REL_PATH=$(relpath "${APP_LESS%/*}" "${WIDGET_CSS_FN%/*}")
+	if [ "$REL_PATH" == "." ]; then
+		REL_PATH="${WIDGET_CSS_FN##*/}"
+	else
+		REL_PATH="$REL_PATH/${WIDGET_CSS_FN##*/}"
+	fi
+	REL_PATH="${REL_PATH%\.*}"
+
+	IMPORT_TEXT="@import '$REL_PATH';"
+
+	if [ -z "$(grep "^$IMPORT_TEXT\$" "$APP_LESS")" ]; then
+		# append new @import line to app.less
+		LNUM=$(awk '/^@import/{a=NR}; END{print a}' "$APP_LESS")
+		sed -i -e "$LNUM a @import '$REL_PATH';" "$APP_LESS"
+	fi
+else
+	echo "app.less does not exist; unable to add $WIDGET_NAME stylesheet to it"
+fi
+
+echo
+echo "Successfully created widget $WIDGET_NAME."
+echo "Open $(relpath "${PROJECT_DIR}" "$WIDGET_FN") in your editor to get started."
