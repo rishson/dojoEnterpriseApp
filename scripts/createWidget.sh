@@ -174,6 +174,10 @@ if [ ! -e "$WIDGET_TARGET/resources" ]; then
 	mkdir -p "$WIDGET_TARGET/resources"
 fi
 
+if [ ! -e "$WIDGET_TARGET/nls/es" ]; then
+	mkdir -p "$WIDGET_TARGET/nls/es"
+fi
+
 WIDGET_FN="$WIDGET_TARGET/$WIDGET_CLASS.js"
 WIDGET_CSS_CLASS=$(echo "$WIDGET_NAME" | sed -e "s#/\([a-z]\)#\u\1#g;s#/\([A-Z]\)#\1#g;s#/_\([A-Za-z]\)#\u\1#g")
 
@@ -187,6 +191,18 @@ confirm_file_overwrite "$WIDGET_FN" "The module $WIDGET_NAME already exists."
 if (($?)); then
 	sed -e "s/\\\$className\\\$/$WIDGET_CLASS/
 	s/\\\$cssClassName\\\$/$WIDGET_CSS_CLASS/" "$BASE_TEMPLATE_NAME.js" > "$WIDGET_FN"
+fi
+
+WIDGET_ROOT_NLS="$WIDGET_TARGET/nls/$WIDGET_CLASS.js"
+confirm_file_overwrite "$WIDGET_ROOT_NLS" "The root translation for $WIDGET_NAME alreay exists."
+if (($?)); then
+	cp "$TEMPLATE_PATH/nlsRoot.js" "$WIDGET_ROOT_NLS"
+fi
+
+WIDGET_ES_NLS="$WIDGET_TARGET/nls/es/$WIDGET_CLASS.js"
+confirm_file_overwrite "$WIDGET_ES_NLS" "The Spanish (es) translation for $WIDGET_NAME alreay exists."
+if (($?)); then
+	cp "$TEMPLATE_PATH/nls.js" "$WIDGET_ES_NLS"
 fi
 
 if (($TEMPLATED)); then

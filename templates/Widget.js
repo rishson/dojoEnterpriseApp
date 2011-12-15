@@ -1,9 +1,11 @@
 define([
 	"dojo/_base/declare",
-	"rishson/widget/_Widget"
-], function(declare, _Widget){
+	"rishson/widget/_Widget",
+	"dojo/i18n!./nls/$className$"
+], function(declare, _Widget, l10n){
 	var $className$ = declare([_Widget], {
 		baseClass: "$cssClassName$",
+		l10n: l10n,
 		constructor: function(args){
 		},
 

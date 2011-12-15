@@ -2,11 +2,17 @@ define([
 	'dojo/_base/declare',
 	'rishson/widget/_Widget',
 	'dijit/_TemplatedMixin',
-	'dojo/text!./resources/$className$.html'
-], function(declare, _Widget, _TemplatedMixin, template){
-	var $className$ = declare([_Widget, _TemplatedMixin], {
+	// If you are using widgets from within your template
+	// uncomment the following lines and the uses of
+	// _WidgetsInTemplateMixin later in this file
+	/*'dijit/_WidgetsInTemplateMixin',*/
+	'dojo/text!./resources/$className$.html',
+	"dojo/i18n!./nls/$className$"
+], function(declare, _Widget, _TemplatedMixin, /*_WidgetsInTemplateMixin,*/ template, l10n){
+	var $className$ = declare([_Widget, _TemplatedMixin/*, _WidgetsInTemplateMixin*/], {
 		baseClass: "$cssClassName$",
 		templateString: template,
+		l10n: l10n,
 		constructor: function(args){
 		},
 
