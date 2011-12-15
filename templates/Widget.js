@@ -1,9 +1,9 @@
 define([
-	'dojo/_base/declare',
-	'dijit/_Widget'
+	"dojo/_base/declare",
+	"rishson/widget/_Widget"
 ], function(declare, _Widget){
 	var $className$ = declare([_Widget], {
-		"class": "$cssClassName$",
+		baseClass: "$cssClassName$",
 		constructor: function(args){
 		},
 
@@ -12,7 +12,7 @@ define([
 		},
 
 		startup: function(){
-			if(this.started){ return; }
+			if(this._started){ return; }
 
 			this.inherited(arguments);
 		}
