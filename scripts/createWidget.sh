@@ -222,7 +222,7 @@ if [ -e "$APP_LESS" ]; then
 		sed -i -e "$LNUM a @import '$REL_PATH';" "$APP_LESS"
 	fi
 else
-	echo "app.less does not exist; unable to add $WIDGET_NAME stylesheet to it"
+	echo "app.less does not exist; unable to add $WIDGET_NAME stylesheet to it."
 fi
 
 echo

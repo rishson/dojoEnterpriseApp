@@ -79,8 +79,8 @@ mkdir -p "$PROJECT_DIR/src/js"
 
 cp -r "$LIB_PATH/src/js/app" "$LIB_PATH/src/js/rishson" "$PROJECT_DIR/src/js"
 cp    "$LIB_PATH/src/index.html" "$PROJECT_DIR/src"
-cp -r "$SCRIPT_DIR/build.sh" "$SCRIPT_DIR/setup.sh" "$PROJECT_DIR/scripts"
+cp -r "$SCRIPT_DIR/build.sh" "$PROJECT_DIR/scripts"
 
 # Translate scripts to app-specific scripts
-sed -i 's/^\(PROJECT_DIR="\).*\("\)$/\1${SCRIPT_DIR%\/*}\2/
-/^if \[ -z "\$1" \]; then/,/^fi/d' "$PROJECT_DIR/scripts/setup.sh"
+sed -e 's/^\(PROJECT_DIR="\).*\("\)$/\1${SCRIPT_DIR%\/*}\2/
+/^if \[ -z "\$1" \]; then/,/^fi/d' "$SCRIPT_DIR/setup.sh" > "$PROJECT_DIR/scripts/setup.sh"
