@@ -11,8 +11,8 @@ PROFILEDIR=$(cd $THISDIR/../src/js/rishson/enterprise/build/ && pwd)
 PROFILE="${PROFILEDIR}/EnterpriseProfile.js"
 CSSDIR="$SRCDIR/css"
 
-# this ain't pretty, but the dist director needs to be present if we want to use
-# the constant later on (l.37) as the releaseDir param. This gets around the
+# this ain't pretty, but the dist directory needs to be present if we want to use
+# the constant later on (l.38) as the releaseDir param. This gets around the
 # restriction of having to provide lots of ../../ in the path that are 
 # different for different users
 mkdir -p $THISDIR/../dist/
