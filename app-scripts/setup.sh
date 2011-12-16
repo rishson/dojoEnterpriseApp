@@ -76,12 +76,15 @@ function check_existing {
 
 function confirm_file_overwrite {
 	local NAME="$1"; shift
+	local EXISTING=$(check_existing "$@")
 
 	if (($FORCE_CONFIRM_YES)); then
+		if [ -n "$EXISTING" ]; then
+			rm -rf $EXISTING
+		fi
 		return 1
 	fi
 
-	local EXISTING=$(check_existing "$@")
 	if [ -n "$EXISTING" ]; then
 		echo "The following files from $NAME already exist:"
 		for file in $EXISTING; do
