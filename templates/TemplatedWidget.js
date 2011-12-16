@@ -3,7 +3,7 @@ define([
 	'rishson/widget/_Widget',
 	'dijit/_TemplatedMixin',
 	// If you are using widgets from within your template
-	// uncomment the following lines and the uses of
+	// uncomment the following line and the uses of
 	// _WidgetsInTemplateMixin later in this file
 	/*'dijit/_WidgetsInTemplateMixin',*/
 	'dojo/text!./resources/$className$.html',
