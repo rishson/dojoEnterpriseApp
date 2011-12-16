@@ -73,14 +73,17 @@ else
 	TARGET_DIR=$(canonical "$2")
 fi
 
+if [ -e "$TARGET_DIR/$PROJECT_NAME" ]; then
+	echo "A file or directory named '$PROJECT_NAME' already exists at '$TARGET_DIR'."
+	echo "Please remove it and try again."
+	exit 1
+fi
+
 PROJECT_DIR="$TARGET_DIR/$PROJECT_NAME"
-mkdir -p "$PROJECT_DIR/scripts"
 mkdir -p "$PROJECT_DIR/src/js"
 
 cp -r "$LIB_PATH/src/js/app" "$LIB_PATH/src/js/rishson" "$PROJECT_DIR/src/js"
 cp    "$LIB_PATH/src/index.html" "$PROJECT_DIR/src"
-cp -r "$SCRIPT_DIR/build.sh" "$PROJECT_DIR/scripts"
+cp -r "$LIB_PATH/app-scripts" "$PROJECT_DIR/scripts"
 
-# Translate scripts to app-specific scripts
-sed -e 's/^\(PROJECT_DIR="\).*\("\)$/\1${SCRIPT_DIR%\/*}\2/
-/^if \[ -z "\$1" \]; then/,/^fi/d' "$SCRIPT_DIR/setup.sh" > "$PROJECT_DIR/scripts/setup.sh"
+echo "Created project '$PROJECT_NAME' at '$TARGET_DIR'."

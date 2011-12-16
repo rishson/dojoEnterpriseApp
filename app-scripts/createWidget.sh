@@ -17,46 +17,6 @@ function dir_name {
 # ${x%/*} is equivalent to dirname
 # ${x##*/} is equivalent to basename
 
-function canonical {
-	local P="$1"; shift
-	local DIR=""
-	local NAME=""
-
-	if [ -h "$P" ]; then
-		# if path exists and is a symlink
-		local RL=$(readlink "$P" 2> /dev/null)
-		DIR=$(cd "${P%/*}" && pwd -P)
-		DIR=$(cd "$DIR" && cd "${RL%/*}" && pwd -P)
-		NAME="${RL##*/}"
-	elif [ -e "$P" ]; then
-		# if path exists
-		DIR=$(cd "${P%/*}" && pwd -P)
-		if [ "$P" != "." ]; then
-			NAME="${P##*/}"
-		fi
-	else
-		# if path doesn't exist
-		if [ "${P:0:1}" == "/" ]; then
-			# if path starts with "/", strip it
-			NAME="${P:1}"
-		else
-			DIR="$(pwd -P)"
-			if [ "${P:0:2}" == "./" ]; then
-				# if path starts with "./", strip it
-				NAME="${P:2}"
-			else
-				NAME="$P"
-			fi
-		fi
-	fi
-
-	if [ -z "$DIR" ] || [ -z "$NAME" ]; then
-		echo "$DIR$NAME"
-	else
-		echo "$DIR/$NAME"
-	fi
-}
-
 function relpath {
 	path1="$1"; shift
 	path2="$1"; shift
@@ -92,9 +52,14 @@ function relpath {
 	printf "$path1"
 }
 
+FORCE_CONFIRM_YES=0
 function confirm_file_overwrite {
 	local FN="$1"; shift
 	local MSG="$1"; shift
+
+	if (($FORCE_CONFIRM_YES)); then
+		return 1
+	fi
 
 	if [ -e "$FN" ]; then
 		echo -n "$MSG"
@@ -111,41 +76,71 @@ function confirm_file_overwrite {
 	return 1
 }
 
-SCRIPT_PATH=$(canonical "$0")
-SCRIPT_DIR="${SCRIPT_PATH%/*}"
-SCRIPT_NAME="${SCRIPT_PATH##*/}"
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+SCRIPT_NAME="${0##*/}"
 
-TEMPLATE_PATH="${SCRIPT_DIR%/*}/templates"
+PROJECT_DIR="${SCRIPT_DIR%/*}"
+TEMPLATE_PATH="$SCRIPT_DIR/templates"
 
 function usage {
-	echo "Usage: $SCRIPT_NAME WIDGET_NAME [TARGET_DIRECTORY]"
+	echo "Usage: $SCRIPT_NAME [-ht] [-p PACKAGE_NAME] [SUBDIRECTORY/]CLASS_NAME"
+}
+
+function help_text {
+	usage
+	echo "Create a CLASS_NAME widget and supporting files in PACKAGE_NAME."
+	echo "  If SUBDIRECTORY is specified the subdirectory will be created in"
+	echo "  PACKAGE_NAME and the widget files will be created in the subdirectory."
+	echo
+	echo "  -h                 Display this message"
+	echo "  -t                 Create a templated widget"
+	echo "  -y                 Always overwrite files (don't prompt)"
+	echo "  -p PACKAGE_NAME    Specify the package in which to create the widget"
+	echo "                     (if this option isn't specified, default is 'app')"
+
 }
 
 TEMPLATED=0
-while getopts t opt; do
+PACKAGE="app"
+while getopts ":htyp:" opt; do
 	case "$opt" in
-		t) TEMPLATED=1 ;;
-		\?) echo "Invalid option: -$OPTARG" >&2 ;;
+		h)
+			help_text
+			exit 0
+			;;
+		t)
+			TEMPLATED=1
+			;;
+		y)
+			FORCE_CONFIRM_YES=1
+			;;
+		p)
+			PACKAGE="$OPTARG"
+			;;
+		:)
+			echo "$SCRIPT_NAME: '$OPTARG' requires an argument." >&2
+			usage
+			exit 1
+			;;
+		\?)
+			echo "$SCRIPT_NAME: invalid option -- '$OPTARG'" >&2
+			usage
+			exit 1
+			;;
 	esac
 done
 shift $((OPTIND-1))
 
-PROJECT_DIR="$2"
-
-if [ -z "$2" ]; then
-	PROJECT_DIR=$(pwd -P)
-elif [ ! -d "$2" ]; then
-	echo "TARGET_DIRECTORY must exist"
-	usage
-	exit 1
-else
-	PROJECT_DIR=$(canonical "$2")
-fi
-
 TARGET_DIR="$PROJECT_DIR/src/js"
+PACKAGE_DIR="$TARGET_DIR/$PACKAGE"
 
 if [ ! -d "$TARGET_DIR" ]; then
 	echo "$SCRIPT_NAME only works on rishson projects."
+	exit 1
+fi
+
+if [ ! -d "$PACKAGE_DIR" ]; then
+	echo "The package specified for the widget does not exist or is not a directory: $PACKAGE_DIR"
 	exit 1
 fi
 
@@ -156,19 +151,25 @@ if [ "${WIDGET_NAME:0:1}" == "/" ]; then
 	exit 1
 fi
 
-WIDGET_NS=$(dir_name "$WIDGET_NAME")
-WIDGET_CLASS="${WIDGET_NAME##*/}"
-
-if [ "$WIDGET_NS" != "." ]; then
-	WIDGET_TARGET="$TARGET_DIR/$WIDGET_NS"
-else
-	WIDGET_TARGET="$TARGET_DIR"
-fi
-
-if [ -e "$WIDGET_TARGET" ] && [ ! -d "$WIDGET_TARGET" ]; then
-	echo "The module directory specified for the widget must be a directory."
+if [ -z "$WIDGET_NAME" ]; then
+	echo "A widget classname is required."
+	usage
 	exit 1
 fi
+
+WIDGET_DIR=$(dir_name "$WIDGET_NAME")
+WIDGET_CLASS="${WIDGET_NAME##*/}"
+
+if [ "$WIDGET_DIR" != "." ]; then
+	WIDGET_TARGET="$PACKAGE_DIR/$WIDGET_DIR"
+else
+	WIDGET_TARGET="$PACKAGE_DIR"
+fi
+
+#if [ -e "$WIDGET_TARGET" ] && [ ! -d "$WIDGET_TARGET" ]; then
+	#echo "The module directory specified for the widget must be a directory."
+	#exit 1
+#fi
 
 if [ ! -e "$WIDGET_TARGET/resources" ]; then
 	mkdir -p "$WIDGET_TARGET/resources"

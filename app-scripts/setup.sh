@@ -10,64 +10,41 @@ LESS_COMMIT="9e48460eff"
 # ${x%/*} is equivalent to dirname
 # ${x##*/} is equivalent to basename
 
-function canonical {
-	local P="$1"; shift
-	local DIR=""
-	local NAME=""
-
-	if [ -h "$P" ]; then
-		# if path exists and is a symlink
-		local RL=$(readlink "$P" 2> /dev/null)
-		DIR=$(cd "${P%/*}" && pwd -P)
-		DIR=$(cd "$DIR" && cd "${RL%/*}" && pwd -P)
-		NAME="${RL##*/}"
-	elif [ -e "$P" ]; then
-		# if path exists
-		DIR=$(cd "${P%/*}" && pwd -P)
-		if [ "$P" != "." ]; then
-			NAME="${P##*/}"
-		fi
-	else
-		# if path doesn't exist
-		if [ "${P:0:1}" == "/" ]; then
-			# if path starts with "/", strip it
-			NAME="${P:1}"
-		else
-			DIR="$(pwd -P)"
-			if [ "${P:0:2}" == "./" ]; then
-				# if path starts with "./", strip it
-				NAME="${P:2}"
-			else
-				NAME="$P"
-			fi
-		fi
-	fi
-
-	if [ -z "$DIR" ] || [ -z "$NAME" ]; then
-		echo "$DIR$NAME"
-	else
-		echo "$DIR/$NAME"
-	fi
-}
-
-SCRIPT_PATH=$(canonical "$0")
-SCRIPT_DIR="${SCRIPT_PATH%/*}"
-SCRIPT_NAME="${SCRIPT_PATH##*/}"
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+SCRIPT_NAME="${0##*/}"
 
 function usage {
-	echo "Usage: $SCRIPT_NAME PROJECT_DIRECTORY"
+	echo "Usage: $SCRIPT_NAME [-hy]"
 }
 
-if [ -z "$1" ]; then
+function help_text {
 	usage
-	exit 1
-elif [ ! -d "$1" ]; then
-	echo "PROJECT_DIRECTORY must be a directory that exists"
-	usage
-	exit 1
-fi
+	echo "Download all required packages and place them in 'src/js'."
+	echo
+	echo "  -h                 Display this message"
+	echo "  -y                 Always overwrite files (don't prompt)"
+}
 
-PROJECT_DIR=$(canonical "$1")
+FORCE_CONFIRM_YES=0
+while getopts ":hy" opt; do
+	case "$opt" in
+		h)
+			help_text
+			exit 0
+			;;
+		y)
+			FORCE_CONFIRM_YES=1
+			;;
+		\?)
+			echo "$SCRIPT_NAME: invalid option -- '$OPTARG'" >&2
+			usage
+			exit 1
+			;;
+	esac
+done
+shift $((OPTIND-1))
+
+PROJECT_DIR="${SCRIPT_DIR%/*}"
 
 if which wget >/dev/null; then
 	GET="wget --no-check-certificate -O -"
@@ -99,6 +76,10 @@ function check_existing {
 
 function confirm_file_overwrite {
 	local NAME="$1"; shift
+
+	if (($FORCE_CONFIRM_YES)); then
+		return 1
+	fi
 
 	local EXISTING=$(check_existing "$@")
 	if [ -n "$EXISTING" ]; then
