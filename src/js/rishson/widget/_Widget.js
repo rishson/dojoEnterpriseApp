@@ -72,6 +72,7 @@ define([
         
             this.pubList = {WIDGET_INITIALISED : this._globalTopicNamespace + '/widget/initialised'};
             this.subList = {WIDGET_DISABLE : this._globalTopicNamespace + '/disable',
+                WIDGET_ENABLE : this._globalTopicNamespace + '/enable',
                 ERROR_CME : this._globalTopicNamespace + '/error/cme',
                 ERROR_INVALID : this._globalTopicNamespace + '/error/invalid'
             };
