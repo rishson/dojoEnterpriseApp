@@ -162,14 +162,13 @@ WIDGET_CLASS="${WIDGET_NAME##*/}"
 
 if [ "$WIDGET_DIR" != "." ]; then
 	WIDGET_TARGET="$PACKAGE_DIR/$WIDGET_DIR"
+	TESTS_DIR="$PACKAGE_DIR/tests/$WIDGET_DIR"
 else
 	WIDGET_TARGET="$PACKAGE_DIR"
+	TESTS_DIR="$PACKAGE_DIR/tests"
 fi
 
-#if [ -e "$WIDGET_TARGET" ] && [ ! -d "$WIDGET_TARGET" ]; then
-	#echo "The module directory specified for the widget must be a directory."
-	#exit 1
-#fi
+ROBOT_TESTS_DIR="$TESTS_DIR/robot"
 
 if [ ! -e "$WIDGET_TARGET/resources" ]; then
 	mkdir -p "$WIDGET_TARGET/resources"
@@ -177,6 +176,10 @@ fi
 
 if [ ! -e "$WIDGET_TARGET/nls/es" ]; then
 	mkdir -p "$WIDGET_TARGET/nls/es"
+fi
+
+if [ ! -e "$ROBOT_TESTS_DIR" ]; then
+	mkdir -p "$ROBOT_TESTS_DIR"
 fi
 
 WIDGET_FN="$WIDGET_TARGET/$WIDGET_CLASS.js"
@@ -204,6 +207,23 @@ WIDGET_ES_NLS="$WIDGET_TARGET/nls/es/$WIDGET_CLASS.js"
 confirm_file_overwrite "$WIDGET_ES_NLS" "The Spanish (es) translation for $WIDGET_NAME alreay exists."
 if (($?)); then
 	cp "$TEMPLATE_PATH/nls.js" "$WIDGET_ES_NLS"
+fi
+
+WIDGET_TEST_FN="$TESTS_DIR/$WIDGET_CLASS.html"
+confirm_file_overwrite "$WIDGET_TEST_FN" "The test for $WIDGET_NAME already exists."
+if (($?)); then
+	PATH_TO_JS=$(relpath "${WIDGET_TEST_FN%/*}" "${TARGET_DIR}")
+	sed -e "s/\\\$className\\\$/$WIDGET_CLASS/
+	s#\\\$widgetName\\\$#$PACKAGE/$WIDGET_NAME#
+	s#\\\$pathToJs\\\$#$PATH_TO_JS#" "$TEMPLATE_PATH/test.html" > "$WIDGET_TEST_FN"
+fi
+
+WIDGET_ROBOT_FN="$ROBOT_TESTS_DIR/$WIDGET_CLASS.html"
+confirm_file_overwrite "$WIDGET_ROBOT_FN" "The robot test for $WIDGET_NAME already exists."
+if (($?)); then
+	PATH_TO_JS=$(relpath "${WIDGET_ROBOT_FN%/*}" "${TARGET_DIR}")
+	sed -e "s/\\\$className\\\$/$WIDGET_CLASS/
+	s#\\\$pathToJs\\\$#$PATH_TO_JS#" "$TEMPLATE_PATH/robot.html" > "$WIDGET_ROBOT_FN"
 fi
 
 if (($TEMPLATED)); then
