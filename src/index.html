@@ -1,27 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title></title>
-    <link rel="stylesheet/less" href="js/app/resources/app.less">
+	<meta charset="utf-8">
+	<title></title>
+	<link rel="stylesheet/less" href="js/app/resources/app.less">
 </head>
 <body class="claro">
 	<div class="appContainer"></div>
 
-    <!-- Inclusion of LESS. The following two lines will be removed in production. -->
-    <script>var less = { env: "development" };</script>
-    <script src="js/less/dist/less-1.1.6.min.js"></script>
+	<!-- Inclusion of LESS. The following two lines will be removed in production. -->
+	<script>var less = { env: "development" };</script>
+	<script src="js/less/dist/less-1.1.6.min.js"></script>
 
-    <script>
-        var dojoConfig = {
+	<script>
+		var dojoConfig = {
 			async: true,
 			isDebug: true,
 			aliases: [
 				["domReady", "dojo/domReady"]
 			]
-        };
-    </script>
-    <script src="js/dojo/dojo.js"></script>
+		};
+	</script>
+	<script src="js/dojo/dojo.js"></script>
 	<script>require(["wire!app/loader"]);</script>
 </body>
 </html>
