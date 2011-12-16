@@ -10,7 +10,7 @@
 
 		<!-- required: dojo.js -->
 		<script type="text/javascript" src="../../../../dojo/dojo.js"
-			data-dojo-config="isDebug: true, async: true"></script>
+			djConfig="isDebug: true"></script>
 
 
 		<script type="text/javascript">
@@ -24,7 +24,7 @@
 				"dojo/window",
 				"dijit/robotx",
 				"dojo/domReady!"
-			], function(doh, _Widget, _ApplicationWidget, topic, win){
+			], function(doh, _Widget, _ApplicationWidget, declare, topic, win){
 				doh.robot.initRobot('../../functional/testApplicationWidget.html');
 				
 				doh.register("_ApplicationWidget tests", [	
