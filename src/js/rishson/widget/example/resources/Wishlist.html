@@ -20,29 +20,29 @@
             data-dojo-attach-point="descendingCheck"
             name="${id}_descending">${l10n.Descending}</label>
     </div>
-    <table data-dojo-attach-point="tableNode">
-        <thead>
+    <table class="list" data-dojo-attach-point="tableNode">
+        <thead class="header">
             <tr>
-                <th>${l10n.Name}</th>
-                <th>${l10n.Price}</th>
-                <th>${l10n.DateAdded}</th>
-                <th>${l10n.Actions}</th>
+                <th class="name">${l10n.Name}</th>
+                <th class="price">${l10n.Price}</th>
+                <th class="date">${l10n.DateAdded}</th>
+                <th class="actions">${l10n.Actions}</th>
             </tr>
         </thead>
-        <tbody data-dojo-attach-point="tbodyNode"></tbody>
-        <tfoot>
+        <tbody class="body" data-dojo-attach-point="tbodyNode"></tbody>
+        <tfoot class="footer">
             <tr class="addRow">
-                <th>
+                <td class="name">
                     <input data-dojo-type="dijit.form.ValidationTextBox" id="${id}_nameTextBox"
                         data-dojo-props="required: true" data-dojo-attach-point="nameTextBox">
-                </th>
-                <th>
+                </td>
+                <td class="price">
                     <input data-dojo-type="dijit.form.CurrencyTextBox" id="${id}_priceTextBox"
                         data-dojo-props="required: true, constraints: { places: 2, min: 0 }"
                         data-dojo-attach-point="priceTextBox">
-                </th>
-                <th></th>
-                <th><button class="add" type="button">${l10n.Add}</button></th>
+                </td>
+                <td class="date"></td>
+                <td class="actions"><button class="add" type="button">${l10n.Add}</button></td>
             </tr>
         </tfoot>
     </table>

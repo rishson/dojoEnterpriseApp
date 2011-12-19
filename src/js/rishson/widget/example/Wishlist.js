@@ -144,19 +144,27 @@ define([
                 });
                 
                 // add cells with item fields as text
-                cell = domConstruct.create("td", {}, row);
+                cell = domConstruct.create("td", {
+                    "class": "name"
+                }, row);
                 cell.appendChild(document.createTextNode(item.name));
                 
-                cell = domConstruct.create("td", {}, row);
+                cell = domConstruct.create("td", {
+                    "class": "price"
+                }, row);
                 cell.appendChild(document.createTextNode(
                     currency.format(item.price)));
                 
-                cell = domConstruct.create("td", {}, row);
+                cell = domConstruct.create("td", {
+                    "class": "date"
+                }, row);
                 cell.appendChild(document.createTextNode(
                     dateLocale.format(dateStamp.fromISOString(item.date))));
                 
                 // add cell containing remove button
-                cell = domConstruct.create("td", null, row);
+                cell = domConstruct.create("td", {
+                    "class": "actions"
+                }, row);
                 domConstruct.create("button", {
                     // give a deterministic id for tracing back to item id
                     id: "remove_" + rowId,
