@@ -1,0 +1,65 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Wishlist Tests</title>
+    
+    <link rel="stylesheet" href="../../../../dojo/resources/dojo.css">
+    <link rel="stylesheet" href="../../../../dijit/themes/claro/claro.css">
+    <link rel="stylesheet/less" href="../resources/Wishlist.less">
+</head>
+<body class="claro">
+    <div id="testWidget"></div>
+    <script>var less = { env: "development" };</script>
+    <script src="../../../../less/dist/less-1.1.6.min.js"></script>
+    
+    <script>
+        var dojoConfig = {
+            async: true,
+            isDebug: true,
+            aliases: [
+                ["domReady", "dojo/domReady"]
+            ]
+        };
+    </script>
+    <script src="../../../../dojo/dojo.js"></script>
+    <script>
+        require(["rishson/widget/example/Wishlist", "rishson/tests/TestStore",
+            "doh", "domReady!"],
+        function(Wishlist, TestStore, doh){
+        
+            var fromRobot = location.search == "?robot";
+            
+            if(!fromRobot){
+                // register non-robot automated tests to run
+                doh.register("Wishlist Tests", [
+                    {
+                        name: "Instantiation",
+                        setUp: function(t){
+                        },
+                        runTest: function(t){
+                            t.t(testWidget && testWidget._started,
+                                "Widget should be instantiated and started.");
+                        },
+                        tearDown: function(t){
+                        }
+                    }
+                ]);
+            }
+            
+            var store = window.store = new TestStore({
+                observable: true
+            });
+            
+            var testWidget = new Wishlist({
+                store: store
+            }, "testWidget");
+            testWidget.startup();
+            
+            if(!fromRobot){
+                doh.run();
+            }
+        });
+    </script>
+</body>
+</html>
