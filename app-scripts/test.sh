@@ -19,7 +19,7 @@ SCRIPT_NAME="${0##*/}"
 PROJECT_DIR="${SCRIPT_DIR%/*}"
 
 function usage {
-	echo "Usage: $SCRIPT_NAME [-h] [-b BROWSER] [SUBDIRECTORY/]CLASS_NAME"
+	echo "Usage: $SCRIPT_NAME [-hr] [-p PACKAGE_NAME] [-b BROWSER] [SUBDIRECTORY/]CLASS_NAME"
 }
 
 function invalid_browser {
@@ -168,6 +168,15 @@ fi
 
 if (($ROBOT)); then
 	TESTS_DIR="$TESTS_DIR/robot"
+fi
+
+if [ ! -e "$TESTS_DIR/$WIDGET_CLASS.html" ]; then
+	ROBOT_TEXT=""
+	if (($ROBOT)); then
+		ROBOT_TEXT="robot "
+	fi
+	echo "The ${ROBOT_TEXT}test for '$PACKAGE/$WIDGET_NAME' does not exist."
+	exit 1
 fi
 
 $OPEN "$OPEN_ARGS" "$TESTS_DIR/$WIDGET_CLASS.html"
