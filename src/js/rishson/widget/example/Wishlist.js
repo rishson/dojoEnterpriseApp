@@ -214,7 +214,10 @@ define([
                 result;
             
             // check validity of widgets first (forcing UI update)
-            if (!nameTB.validate() || !priceTB.validate()) { return false; }
+            if (!nameTB.validate() || !priceTB.validate()) { 
+				this._onInvalidClick();
+				return false; 
+			}
             
             result = this.store.add({
                 name: nameTB.get("value"),
@@ -230,7 +233,12 @@ define([
             nameTB.focus();
             
             return result;
-        }
+        },
+		
+		_onInvalidClick: function() {
+			// summary:
+            //      Stub method that fires if the user submits an invalid form
+		}
     });
 
     return Wishlist;
