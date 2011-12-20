@@ -6,6 +6,7 @@ define([
     "dojo/_base/lang",
     "dojo/_base/array", // forEach
     "dojo/on", // for event delegation
+    "dojo/has",
     "dojo/dom", // for byId
     "dojo/dom-construct", // for create, place, destroy
     "dojo/currency", // for formatting currency based on locale
@@ -13,11 +14,12 @@ define([
     "dojo/date/stamp", // for serialization between Date and ISO 8601 string
     "dojo/text!./resources/Wishlist.html", // widget template
     "dojo/i18n!./nls/Wishlist", // widget i18n bundle
+    "dojo/_base/sniff", // adds has tests for UA detection
     // widgets used in template, not referenced directly in module
     "dijit/form/ValidationTextBox",
     "dijit/form/CurrencyTextBox"
 ], function(declare, _Widget, _TemplatedMixin, _WidgetsInTemplateMixin,
-        lang, arrayUtil, on, dom, domConstruct, currency, dateLocale, dateStamp,
+        lang, arrayUtil, on, has, dom, domConstruct, currency, dateLocale, dateStamp,
         template, l10n){
     
     var Wishlist = declare([_Widget, _TemplatedMixin, _WidgetsInTemplateMixin], {
@@ -49,19 +51,29 @@ define([
         },
 
         postCreate: function(){
-            var self = this;
+            var self = this,
+                // IE < 9 doesn't fire/propagate onchange properly
+                event = has("ie") && (has("ie") < 9 || has("quirks")) ?
+                    "click" : "change";
             
             this.inherited(arguments);
             
             // set up delegated event handler for remove/add button clicks
-            on(this.tableNode, "button:click", function(evt){
-                // call _clickHandler on instance, passing clicked button
-                self._clickHandler(this);
+            on(this.tableNode, ".button:click, .button:keydown", function(evt){
+                var keyCode = evt.keyCode;
+                
+                // trigger on mouse clicks or enter/space keypresses
+                if (evt.type == "click" || keyCode == 13 || keyCode == 32) {
+                    // stop default behavior (e.g. following links)
+                    evt.preventDefault();
+                    // call _clickHandler on instance, passing clicked button
+                    self._clickHandler(this);
+                }
             });
             
             // set up delegated event handler for sort control changes
             // TODO: click for old IE?
-            on(this.sortNode, "input:change", lang.hitch(this, "_doQuery"));
+            on(this.sortNode, "input:" + event, lang.hitch(this, "_doQuery"));
             
             // create array referencing radio buttons for getSortOptions
             this.sortRadios = [
@@ -72,12 +84,6 @@ define([
             this._doQuery();
         },
 
-        startup: function(){
-            if(this._started){ return; }
-            
-            this.inherited(arguments);
-        },
-        
         _doQuery: function(){
             // summary:
             //      Performs a query and (re)populates the table body.
@@ -165,11 +171,12 @@ define([
                 cell = domConstruct.create("td", {
                     "class": "actions"
                 }, row);
-                domConstruct.create("button", {
+                domConstruct.create("a", {
                     // give a deterministic id for tracing back to item id
                     id: "remove_" + rowId,
                     innerHTML: l10n.Remove,
-                    type: "button"
+                    "class": "button",
+                    href: "#"
                 }, cell);
                 
                 // insert row into table at appropriate position
@@ -183,14 +190,12 @@ define([
             // target: DOMNode
             //      The button which was clicked
             
-            if (target.className == "add") {
+            if (target.className.indexOf("add") > -1) {
                 this._onAddClick();
             } else {
                 // get ID of store item based on button id
                 // (remove_<widgetID>_row_<ID>)
-                console.log("target:", target, target.id);
                 var id = target.id.substr(12 + this.id.length);
-                console.log("removing ", id);
                 this.store.remove(id);
             }
         },
@@ -215,6 +220,9 @@ define([
             // reset textbox widgets for new entry
             nameTB.reset();
             priceTB.reset();
+            
+            // re-focus name field
+            nameTB.focus();
         }
     });
 
