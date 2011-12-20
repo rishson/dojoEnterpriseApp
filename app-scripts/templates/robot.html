@@ -1,46 +1,46 @@
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
-	<meta charset="utf-8">
-	<title>$className$ Robot Test</title>
-
-	<link rel="stylesheet" href="$pathToJs$/util/doh/robot/robot.css">
-
-	<script>
-		var dojoConfig = {
-			isDebug: true,
-			aliases: [
-				["domReady", "dojo/domReady"]
-			]
-		};
-	</script>
-	<script src="$pathToJs$/dojo/dojo.js"></script>
-	<script>
-		require([
-			"doh",
-			"dojo/window",
-			"dijit/registry",
-			"dijit/robotx",
-			"domReady!"
-		], function(doh, win, registry){
-			doh.robot.initRobot('../$className$.html?robot');
-
-			var testWidget;
-			doh.register("$className$ Tests", [	
-				{
-					name: "Create tests",
-					setUp: function(t){
-						testWidget = registry.byId("testWidget");
-					},
-					runTest: function(t){
-					},
-					tearDown: function(t){
-					}
-				}
-			]);
-
-			doh.run();
-		});
-	</script>
+    <meta charset="utf-8">
+    <title>$className$ Robot Test</title>
+    
+    <link rel="stylesheet" href="$pathToJs$/util/doh/robot/robot.css">
+    
+    <script>
+        var dojoConfig = {
+            isDebug: true,
+            aliases: [
+                ["domReady", "dojo/domReady"]
+            ]
+        };
+    </script>
+    <script src="$pathToJs$/dojo/dojo.js"></script>
+    <script>
+        require([
+            "doh",
+            "dojo/window",
+            "dijit/registry",
+            "dijit/robotx",
+            "domReady!"
+        ], function(doh, win, registry){
+            doh.robot.initRobot("../$className$.html?robot");
+            
+            var testWidget;
+            doh.register("$className$ Tests", [ 
+                {
+                    name: "Create tests",
+                    setUp: function(t){
+                        testWidget = registry.byId("testWidget");
+                    },
+                    runTest: function(t){
+                    },
+                    tearDown: function(t){
+                    }
+                }
+            ]);
+            
+            doh.run();
+        });
+    </script>
 </head>
 </html>
