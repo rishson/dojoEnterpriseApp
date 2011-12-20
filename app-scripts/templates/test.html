@@ -1,55 +1,55 @@
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
-	<meta charset="utf-8">
-	<title>$className$ Tests</title>
-
-	<link rel="stylesheet" href="$pathToJs$/dojo/resources/dojo.css">
-	<link rel="stylesheet" href="$pathToJs$/dijit/themes/claro/claro.css">
-	<link rel="stylesheet/less" href="$pathToCss$/$className$.less">
+    <meta charset="utf-8">
+    <title>$className$ Tests</title>
+    
+    <link rel="stylesheet" href="$pathToJs$/dojo/resources/dojo.css">
+    <link rel="stylesheet" href="$pathToJs$/dijit/themes/claro/claro.css">
+    <link rel="stylesheet/less" href="$pathToCss$/$className$.less">
 </head>
 <body class="claro">
-	<div id="testWidget"></div>
-	<script>var less = { env: "development" };</script>
-	<script src="$pathToJs$/less/dist/less-1.1.6.min.js"></script>
+    <div id="testWidget"></div>
+    <script>var less = { env: "development" };</script>
+    <script src="$pathToJs$/less/dist/less-1.1.6.min.js"></script>
 
-	<script>
-		var dojoConfig = {
-			async: true,
-			isDebug: true,
-			aliases: [
-				["domReady", "dojo/domReady"]
-			]
-		};
-	</script>
-	<script src="$pathToJs$/dojo/dojo.js"></script>
-	<script>
-		require(["$widgetName$", "doh", "domReady!"], function($className$, doh){
-
-			var fromRobot = location.search == "?robot";
-
-			if(!fromRobot){
-				doh.register("$className$ Tests", [
-					{
-						name: "Instantiation",
-						setUp: function(t){
-						},
-						runTest: function(t){
-							t.t(testWidget && testWidget._started, "Widget should be instantiated and started.");
-						},
-						tearDown: function(t){
-						}
-					}
-				]);
-			}
-
-			var testWidget = new $className$({}, "testWidget");
-			testWidget.startup();
-
-			if(!fromRobot){
-				doh.run();
-			}
-		});
-	</script>
+    <script>
+        var dojoConfig = {
+            async: true,
+            isDebug: true,
+            aliases: [
+                ["domReady", "dojo/domReady"]
+            ]
+        };
+    </script>
+    <script src="$pathToJs$/dojo/dojo.js"></script>
+    <script>
+        require(["$widgetName$", "doh", "domReady!"], function($className$, doh){
+            
+            var fromRobot = location.search == "?robot";
+            
+            if(!fromRobot){
+                doh.register("$className$ Tests", [
+                    {
+                        name: "Instantiation",
+                        setUp: function(t){
+                        },
+                        runTest: function(t){
+                            t.t(testWidget && testWidget._started, "Widget should be instantiated and started.");
+                        },
+                        tearDown: function(t){
+                        }
+                    }
+                ]);
+            }
+            
+            var testWidget = new $className$({}, "testWidget");
+            testWidget.startup();
+            
+            if(!fromRobot){
+                doh.run();
+            }
+        });
+    </script>
 </body>
 </html>
