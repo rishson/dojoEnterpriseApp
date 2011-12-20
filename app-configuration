@@ -1,0 +1,7 @@
+DOJO_VERSION=1.7.1
+WHEN_VERSION=0.10.2
+WIRE_VERSION=0.7.3
+LESS_VERSION=1.1.6
+
+# URL that the project's "src" directory will be exposed at
+SRC_URL=$srcUrl$

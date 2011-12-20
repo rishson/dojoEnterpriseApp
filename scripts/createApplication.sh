@@ -50,15 +50,58 @@ SCRIPT_DIR="${SCRIPT_PATH%/*}"
 SCRIPT_NAME="${SCRIPT_PATH##*/}"
 
 LIB_PATH="${SCRIPT_DIR%/*}"
-PROJECT_NAME="$1"
 
 function usage {
-	echo "Usage: $SCRIPT_NAME PROJECT_NAME [TARGET_DIRECTORY]"
+	echo "Usage: $SCRIPT_NAME [-h] [-u SRC_URL] PROJECT_NAME [TARGET_DIRECTORY]"
 }
 
-if [ -z $PROJECT_NAME ]; then
+function help_text {
+	usage
+	echo "Create a Rishson project named PROJECT_NAME in the current"
+	echo "  working directory or, if it is provided, in TARGET_DIRECTORY"
+	echo
+	echo "  -h                 Display this message"
+	echo "  -s                 Run setup.sh after creating the project"
+	echo "  -u                 The URL of this project's 'src' directory"
+	echo "                     (default is http://localhost/PROJECT_NAME/src)"
+}
+
+SRC_URL=""
+RUN_SETUP=0
+while getopts ":hsu:" opt; do
+	case "$opt" in
+		h)
+			help_text
+			exit 0
+			;;
+		s)
+			RUN_SETUP=1
+			;;
+		u)
+			SRC_URL="$OPTARG"
+			;;
+		:)
+			echo "$SCRIPT_NAME: '$OPTARG' requires an argument." >&2
+			usage
+			exit 1
+			;;
+		\?)
+			echo "$SCRIPT_NAME: invalid option -- '$OPTARG'" >&2
+			usage
+			exit 1
+			;;
+	esac
+done
+shift $((OPTIND-1))
+
+PROJECT_NAME="$1"
+if [ -z "$PROJECT_NAME" ]; then
 	usage
 	exit 1
+fi
+
+if [ -z "$SRC_URL" ]; then
+	SRC_URL="http://localhost/$PROJECT_NAME/src"
 fi
 
 TARGET_DIR="$2"
@@ -86,4 +129,17 @@ cp -r "$LIB_PATH/src/js/app" "$LIB_PATH/src/js/rishson" "$PROJECT_DIR/src/js"
 cp    "$LIB_PATH/src/index.html" "$PROJECT_DIR/src"
 cp -r "$LIB_PATH/app-scripts" "$PROJECT_DIR/scripts"
 
+sed -e "s#^\(SRC_URL=\).*\$#\1$SRC_URL#" "$LIB_PATH/app-configuration" > "$PROJECT_DIR/configuration"
+
+
+if (($RUN_SETUP)); then
+	$PROJECT_DIR/scripts/setup.sh
+	echo
+fi
+
 echo "Created project '$PROJECT_NAME' at '$TARGET_DIR'."
+
+if ((!$RUN_SETUP)); then
+	echo
+	echo "Make sure you run 'scripts/setup.sh' from within the project directory before starting."
+fi
