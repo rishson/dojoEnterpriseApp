@@ -76,11 +76,11 @@ define([
                     item = this.data[this.index[id]],
                     idProperty = this.idProperty;
                 
-                console.log("post-processing item: ", item, id);
                 // ensure ID is actually reflected in new item
                 if (typeof item[idProperty] == "undefined") {
                     item[idProperty] = id;
                 }
+                return id;
             };
         })();
         
