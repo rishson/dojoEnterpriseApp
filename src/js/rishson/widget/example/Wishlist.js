@@ -72,7 +72,6 @@ define([
             });
             
             // set up delegated event handler for sort control changes
-            // TODO: click for old IE?
             on(this.sortNode, "input:" + event, lang.hitch(this, "_doQuery"));
             
             // create array referencing radio buttons for getSortOptions
@@ -82,6 +81,11 @@ define([
             
             // run initial query
             this._doQuery();
+        },
+        
+        uninitialize: function(){
+            // unhook any observer that exists upon destruction
+            this._observer && this._observer.cancel();
         },
 
         _doQuery: function(){
@@ -206,12 +210,13 @@ define([
             //      If the store is observable, 
             
             var nameTB = this.nameTextBox,
-                priceTB = this.priceTextBox;
+                priceTB = this.priceTextBox,
+                result;
             
             // check validity of widgets first (forcing UI update)
-            if (!nameTB.validate() || !priceTB.validate()) { return; }
+            if (!nameTB.validate() || !priceTB.validate()) { return false; }
             
-            this.store.add({
+            result = this.store.add({
                 name: nameTB.get("value"),
                 price: priceTB.get("value"),
                 date: dateStamp.toISOString(new Date())
@@ -223,6 +228,8 @@ define([
             
             // re-focus name field
             nameTB.focus();
+            
+            return result;
         }
     });
 
