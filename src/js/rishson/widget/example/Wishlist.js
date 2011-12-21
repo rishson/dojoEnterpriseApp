@@ -179,7 +179,7 @@ define([
                     // give a deterministic id for tracing back to item id
                     id: "remove_" + rowId,
                     innerHTML: l10n.Remove,
-                    "class": "button",
+                    "class": "button remove",
                     href: "#"
                 }, cell);
                 
@@ -215,7 +215,7 @@ define([
             
             // check validity of widgets first (forcing UI update)
             if (!nameTB.validate() || !priceTB.validate()) { 
-                this._onInvalidClick();
+                this._onInvalidAdd();
                 return false;
             }
             
@@ -235,9 +235,10 @@ define([
             return result;
         },
         
-        _onInvalidClick: function() {
+        _onInvalidAdd: function() {
             // summary:
-            //      Stub method that fires if the user submits an invalid form
+            //      Stub method that fires if the user attempts to add an item
+            //      while fields are in an invalid state
         }
     });
 
