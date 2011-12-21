@@ -29,10 +29,13 @@
                             }
                             return frag;
                         }],
-                        ["json", function(method){
+                        [/^json$/, function(method){
+                            // return a response formatted as JSON,
+                            // to test XHR with handleAs: "json"
                             return '{"hello":"world"}';
                         }],
-                        ["nothere", function(method, args){
+                        [/^nothere$/, function(method, args){
+                            // use convenience method to test setting status
                             this.setStatus(args, 404);
                             return "Not found";
                         }]
@@ -40,7 +43,7 @@
                 });
                 TestService.register({
                     baseUrl: "/service2/",
-                    timeout: 1000, // longer default timeout
+                    delay: 1000, // longer default delay
                     handlers: [
                         [/^foo$/, function(){
                             // return a string to distinguish 2nd TestService
@@ -51,7 +54,7 @@
                                 this.unsupportedMethod(method);
                             }
                             return frag;
-                        }, 2000] // even longer timeout
+                        }, 2000] // even longer delay
                     ]
                 });
                 
@@ -258,7 +261,7 @@
                                 timeout: 1250, // < 2000, will fail
                                 failOk: true, // suppress expected error message
                                 load: function(response){
-                                    console.error("1500ms timeout should fail");
+                                    console.error("1250ms timeout should fail");
                                 },
                                 error: function(err){
                                     results.push(true);

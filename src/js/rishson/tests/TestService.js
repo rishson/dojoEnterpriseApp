@@ -74,8 +74,8 @@ define([
         //   Handler functions run in the scope of the TestService instance, and
         //   are passed any matches from capturing groups, followed by the
         //   parameters normally passed to the xhr function (method, args, hasBody)
-        // * delay: delay (in ms) to wait before firing handlers by default.
-        //   If unspecified, defaults to 500ms.
+        // * delay: delay (in ms) to wait before firing handlers by default for
+        //   simulation of asynchronous XHRs.  If unspecified, defaults to 500ms.
         
         var baseUrl = this.baseUrl = options.baseUrl || "/testServices/",
             baseUrlLength = baseUrl.length,
@@ -101,14 +101,14 @@ define([
                     url = args.url.slice(baseUrlLength),
                     match = findMatch(handlers, url),
                     urlHandler, // references handler function
-                    timeout = options.timeout || 500,
+                    delay = options.delay || 500,
                     timer, // references setTimeout id
                     callback;
                 
                 if (match) {
                     // matching handler found; split out returned array elements
                     var matches = match[0]; // result of RegExp.match
-                    timeout = match[1][2] || timeout; // optional custom timeout
+                    delay = match[1][2] || delay; // optional custom delay
                     urlHandler = match[1][1]; // handler function
                     
                     // also set a timeout to cancel the XHR
@@ -151,7 +151,8 @@ define([
                 if (ioArgs.args.sync === true) {
                     callback();
                 } else {
-                    setTimeout(callback, timeout);
+                    // simulate async communication using specified delay
+                    setTimeout(callback, delay);
                 }
                 
                 return def;
