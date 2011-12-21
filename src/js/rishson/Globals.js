@@ -1,9 +1,5 @@
-define([
-    "dojo/_base/declare" // declare
-], function(declare){
+define(["exports"], function(exports){
 
-    // TODO: ditch declare?
-    
     /**
      * @class
      * @name rishson.Globals
@@ -13,27 +9,14 @@ define([
      * where there is no constructor; simply copy the class prototype over to the namespace in the DOM where an instance
      * would reside. Basically, syntactic sugar: my.namespace.SomeClass = my.namespace.SomeClass.prototype;
      */
-    var Globals = declare(null, {
-    
-        /**
-         * @field
-         * @name rishson.Globals.TOPIC_NAMESPACE
-         * @type {String}
-         * @description This namespace is prepended to every topic name
-         */
-        TOPIC_NAMESPACE : '/rishson/enterprise/widget',
-    
-       /**
-         * @constructor
-         */
-        constructor : function () {
-            this.SEND_REQUEST = this.TOPIC_NAMESPACE + '/request/send';
-        }
-    });
-    
-    /**
-     * Create an instance of this class so it is always available without other classes having to instantiate it.
-     */
-    return new Globals();
 
+    /**
+     * @field
+     * @name rishson.Globals.TOPIC_NAMESPACE
+     * @type {String}
+     * @description This namespace is prepended to every topic name
+     */
+    exports.TOPIC_NAMESPACE = "/rishson/enterprise/widget";
+    
+    exports.SEND_REQUEST = exports.TOPIC_NAMESPACE + "/request/send";
 });
