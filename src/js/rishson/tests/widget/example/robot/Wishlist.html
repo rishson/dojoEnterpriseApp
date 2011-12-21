@@ -81,9 +81,9 @@
                 {
                     name: "Attempting to Add an invalid form creates an error",
                     timeout: 60000,
-                    runTest:function(t) {
+                    runTest: function(t) {
                         var def = new doh.Deferred();
-
+                        
                         // Create invalid handler
                         var con = dojo.connect(testWidget, "_onInvalidClick", def.getTestCallback(function() {
                             t.t(true);
@@ -100,9 +100,9 @@
                 {
                     name: "Attempting to Add an invalid form creates an error; valid name, invalid price",
                     timeout: 60000,
-                    runTest:function(t) {
+                    runTest: function(t) {
                         var def = new doh.Deferred();
-
+                        
                         // Create invalid handler
                         var con = dojo.connect(testWidget, "_onInvalidClick", def.getTestCallback(function() {
                             t.t(true);
@@ -129,7 +129,7 @@
                     timeout: 60000,
                     runTest:function(t) {
                         var def = new doh.Deferred();
-
+                        
                         // Create invalid handler
                         var con = dojo.connect(testWidget.store, "add", def.getTestCallback(function(res) {
                             t.t(res);
@@ -174,7 +174,7 @@
                             dojo.disconnect(con);
                         }));
                         
-                        // Resort!
+                        // Re-sort
                         doh.robot.mouseMoveAt(testWidget.sortPriceRadio, 10, 10);
                         doh.robot.mouseClick({ left: true });
                         
@@ -193,15 +193,13 @@
                         // Create invalid handler
                         var con1 = dojo.connect(testWidget.descendingCheck, "onchange", function() {
                             var con = dojo.connect(testWidget, "_observeHandler", def.getTestCallback(function() {
-                                console.warn("Callback! ", firstId, "/", dojo.query("tr", testWidget.tbodyNode)[0].id);
                                 t.t(firstId != dojo.query("tr", testWidget.tbodyNode)[0].id);
                                 dojo.disconnect(con);
                             }));
                             dojo.disconnect(con1);
                         });
                         
-                        // Resort!
-                        console.warn("Clicking!", testWidget.descendingCheck);
+                        // Re-sort
                         doh.robot.mouseMoveAt(testWidget.descendingCheck, 2000, 10, 2, 2);
                         doh.robot.mouseClick({ left: true });
                         
@@ -227,7 +225,7 @@
                             dojo.disconnect(con);
                         });
                         
-                        // Resort!
+                        // Re-sort
                         doh.robot.mouseMoveAt(dojo.query(".button", testWidget.tbodyNode)[0], 2000, 10, 2, 2);
                         doh.robot.mouseClick({ left: true });
                         
