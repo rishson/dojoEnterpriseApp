@@ -42,7 +42,7 @@ define([
 
         constructor: function(args){
             if (!args.store) {
-                throw new Error("WishList requires a store instance to hold items.");
+                throw new Error("Wishlist requires a store instance to hold items.");
             }
             
             // Initialize query to blank object on instance.
@@ -95,10 +95,7 @@ define([
             var results = this.store.query(this.query, {
                     sort: this._getSortOptions()
                 }),
-                self = this;/*,
-                rows = this.tbodyNode.getElementsByTagName("tr"),
-                // rows array is live, so cache length once for loop
-                numRows = rows.length;*/
+                self = this;
             
             // remove existing rows before populating
             domConstruct.empty(this.tbodyNode);
