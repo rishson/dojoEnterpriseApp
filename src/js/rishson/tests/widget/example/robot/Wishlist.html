@@ -20,15 +20,13 @@
         require([
             "doh",
             "dojo/_base/Deferred",
-            "dojo/_base/window",
             "dojo/query",
             "dojo/aspect",
             "dojo/keys",
-            "dijit/registry",
             "dojo/window",
             "dijit/robotx",
             "domReady!"
-        ], function(doh, Deferred, win, query, aspect, keys, registry){
+        ], function(doh, Deferred, query, aspect, keys){
             
             doh.robot.initRobot('../Wishlist.html?robot');
             
@@ -38,7 +36,9 @@
                     name: "Create tests",
                     timeout: 10000,
                     setUp: function(t){
-                        testWidget = dijit.byNode(win.doc.getElementById("testWidget"));
+                        // look up the widget using the global dijit object,
+                        // which is altered by dijit/robotx
+                        testWidget = dijit.byId("testWidget");
                     },
                     runTest: function(t){
                         t.t(testWidget && testWidget._started,
