@@ -18,6 +18,7 @@ var profile = {
     optimize: "shrinksafe",
     stripConsole : "normal",
     layerOptimize : "shrinksafe",
+    cssOptimize : "comments",
     copyTests : false,
     mini: true,
 
