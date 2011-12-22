@@ -1,0 +1,49 @@
+<div>
+    <div class="sort" data-dojo-attach-point="sortNode">
+        <span class="sortBy">${l10n.SortBy}</span>
+        <label><input type="radio" id="${id}_sortName"
+                data-dojo-attach-point="sortNameRadio"
+                name="${id}_sort" value="name" checked>
+            ${l10n.Name}
+        </label>
+        <label><input type="radio" id="${id}_sortPrice"
+                data-dojo-attach-point="sortPriceRadio"
+                name="${id}_sort" value="price">
+            ${l10n.Price}
+        </label>
+        <label><input type="radio" id="${id}_sortNameDate"
+                data-dojo-attach-point="sortDateRadio"
+                name="${id}_sort" value="date">
+            ${l10n.DateAdded}
+        </label>
+        <label><input type="checkbox" id="{$id}_sortDescending"
+            data-dojo-attach-point="descendingCheck"
+            name="${id}_descending">${l10n.Descending}</label>
+    </div>
+    <table class="list" data-dojo-attach-point="tableNode">
+        <thead class="header">
+            <tr>
+                <th class="name">${l10n.Name}</th>
+                <th class="price">${l10n.Price}</th>
+                <th class="date">${l10n.DateAdded}</th>
+                <th class="actions">${l10n.Actions}</th>
+            </tr>
+        </thead>
+        <tbody class="body" data-dojo-attach-point="tbodyNode"></tbody>
+        <tfoot class="footer">
+            <tr class="addRow">
+                <td class="name">
+                    <input data-dojo-type="dijit.form.ValidationTextBox" id="${id}_nameTextBox"
+                        data-dojo-props="required: true" data-dojo-attach-point="nameTextBox">
+                </td>
+                <td class="price">
+                    <input data-dojo-type="dijit.form.CurrencyTextBox" id="${id}_priceTextBox"
+                        data-dojo-props="required: true, constraints: { places: 2, min: 0 }"
+                        data-dojo-attach-point="priceTextBox">
+                </td>
+                <td class="date"></td>
+                <td class="actions"><a class="button add" tabindex="0" href="#">${l10n.Add}</a></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
