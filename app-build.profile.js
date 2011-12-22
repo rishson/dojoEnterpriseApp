@@ -25,6 +25,28 @@ var profile = {
     // This is adapted from the original buildscript, to add considerations for
     // LESS and wire.js
     packages: [
+        { name: "when", location: "when", main: "when", resourceTags: {
+            test: function(filename, mid){
+                return (/^when\/test\//).test(mid) || mid == "when/test";
+            },
+            amd: function(filename, mid){
+                return mid == "when/when" || mid == "when";
+            },
+            copyOnly: function(filename, mid){
+                return mid == "when/package.json";
+            }
+        } },
+        { name: "aop", location: "aop", main: "aop", resourceTags: {
+            test: function(filename, mid){
+                return (/^aop\/test\//).test(mid) || mid == "aop/test";
+            },
+            amd: function(filename, mid){
+                return mid == "aop/aop" || mid == "aop";
+            },
+            copyOnly: function(filename, mid){
+                return mid == "aop/package.json";
+            }
+        } },
         { name: "build", location: "util/build" }
     ],
     transforms: {

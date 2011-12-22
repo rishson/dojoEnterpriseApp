@@ -5,8 +5,9 @@ set -P
 # Default versions
 # These can/will be overridden in $PROJECT_DIR/configuration
 DOJO_VERSION=1.7.1
-WHEN_VERSION=0.10.2
-WIRE_VERSION=0.7.3
+WHEN_VERSION=0.10.3
+AOP_VERSION=0.5.1
+WIRE_VERSION=0.7.4
 LESS_VERSION=1.1.6
 
 # ${x%/*} is equivalent to dirname
@@ -130,6 +131,19 @@ if (($?)); then
 	mkdir "$WHEN_DIR"
 	$GET "https://github.com/briancavalier/when.js/tarball/$WHEN_VERSION" | tar -C "$WHEN_DIR" --strip-components 1 -xzf -
 	echo "when.js extracted"
+fi
+
+echo
+
+echo "Setting up aop.js"
+echo "=================="
+AOP_DIR="$TARGET_DIR/aop"
+confirm_file_overwrite "aop.js" "$AOP_DIR"
+if (($?)); then
+	echo "Fetching aop.js $AOP_VERSION"
+	mkdir "$AOP_DIR"
+	$GET "https://github.com/briancavalier/aop.js/tarball/$AOP_VERSION" | tar -C "$AOP_DIR" --strip-components 1 -xzf -
+	echo "aop.js extracted"
 fi
 
 echo

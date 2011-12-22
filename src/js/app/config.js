@@ -12,6 +12,7 @@ var dojoConfig = {
         { name: "dojox", location: "dojox" },
         { name: "doh", location: "util/doh" },
         { name: "when", location: "when", main: "when" },
+        { name: "aop", location: "aop", main: "aop" },
         { name: "wire", location: "wire", main: "wire" },
         { name: "rishson", location: "rishson" },
         { name: "app", location: "app" }
