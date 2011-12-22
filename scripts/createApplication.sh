@@ -2,6 +2,17 @@
 
 set -eP
 
+function dir_name {
+	local P="$1"; shift
+	local N="${P%/*}"
+
+	if [ -n "$P" ] && [ "$P" == "$N" ]; then
+		N="."
+	fi
+
+	echo "$N"
+}
+
 # ${x%/*} is equivalent to dirname
 # ${x##*/} is equivalent to basename
 
@@ -13,12 +24,12 @@ function canonical {
 	if [ -h "$P" ]; then
 		# if path exists and is a symlink
 		local RL=$(readlink "$P" 2> /dev/null)
-		DIR=$(cd "${P%/*}" && pwd -P)
-		DIR=$(cd "$DIR" && cd "${RL%/*}" && pwd -P)
+		DIR=$(cd "$(dir_name "$P")" && pwd -P)
+		DIR=$(cd "$DIR" && cd "$(dir_name "$RL")" && pwd -P)
 		NAME="${RL##*/}"
 	elif [ -e "$P" ]; then
 		# if path exists
-		DIR=$(cd "${P%/*}" && pwd -P)
+		DIR=$(cd "$(dir_name "$P")" && pwd -P)
 		if [ "$P" != "." ]; then
 			NAME="${P##*/}"
 		fi
@@ -113,7 +124,7 @@ elif [ ! -d "$2" ]; then
 	usage
 	exit 1
 else
-	TARGET_DIR=$(canonical "$2")
+	TARGET_DIR=$(canonical "$TARGET_DIR")
 fi
 
 if [ -e "$TARGET_DIR/$PROJECT_NAME" ]; then
