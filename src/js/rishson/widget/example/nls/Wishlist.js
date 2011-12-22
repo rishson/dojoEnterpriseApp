@@ -16,5 +16,5 @@ define({
     // same name as this file in a directory named after
     // the language. A Spanish (es) bundle has been provided
     // as an example.
-    'es': true
+    "es": true
 });

@@ -204,7 +204,8 @@ define([
         _onAddClick: function(){
             // summary:
             //      Handler for Add button click: adds an item to the store.
-            //      If the store is observable, 
+            //      If the store is observable, this will ultimately result in
+            //      _observeHandler being fired.
             
             var nameTB = this.nameTextBox,
                 priceTB = this.priceTextBox,
@@ -235,7 +236,7 @@ define([
         _onInvalidAdd: function() {
             // summary:
             //      Stub method that fires if the user attempts to add an item
-            //      while fields are in an invalid state
+            //      while fields are in an invalid state.
         }
     });
 
