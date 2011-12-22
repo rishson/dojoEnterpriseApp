@@ -19,10 +19,9 @@
         require([
             "doh",
             "dojo/window",
-            "dijit/registry",
             "dijit/robotx",
             "domReady!"
-        ], function(doh, win, registry){
+        ], function(doh, win){
             doh.robot.initRobot("../$className$.html?robot");
             
             var testWidget;
@@ -30,9 +29,12 @@
                 {
                     name: "Create tests",
                     setUp: function(t){
-                        testWidget = registry.byId("testWidget");
+                        // use global dijit object, altered by dijit/robotx
+                        testWidget = dijit.byId("testWidget");
                     },
                     runTest: function(t){
+                        t.t(testWidget && testWidget._started,
+                            "Widget should be instantiated and started.");
                     },
                     tearDown: function(t){
                     }
