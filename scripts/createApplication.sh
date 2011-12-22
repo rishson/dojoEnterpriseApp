@@ -128,6 +128,7 @@ mkdir -p "$PROJECT_DIR/src/js"
 cp -r "$LIB_PATH/src/js/app" "$LIB_PATH/src/js/rishson" "$PROJECT_DIR/src/js"
 cp    "$LIB_PATH/src/index.html" "$PROJECT_DIR/src"
 cp -r "$LIB_PATH/app-scripts" "$PROJECT_DIR/scripts"
+cp    "$LIB_PATH/app-build.profile.js" "$PROJECT_DIR/build.profile.js"
 
 sed -e "s#^\(SRC_URL=\).*\$#\1$SRC_URL#" "$LIB_PATH/app-configuration" > "$PROJECT_DIR/configuration"
 

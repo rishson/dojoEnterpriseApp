@@ -123,14 +123,12 @@ echo
 
 echo "Setting up when.js"
 echo "=================="
-confirm_file_overwrite "when.js" "$TARGET_DIR/when.js"
+WHEN_DIR="$TARGET_DIR/when"
+confirm_file_overwrite "when.js" "$WHEN_DIR"
 if (($?)); then
 	echo "Fetching when.js $WHEN_VERSION"
-	WHEN_TMP_DIR="$TARGET_DIR/when-tmp"
-	mkdir "$WHEN_TMP_DIR"
-	$GET "https://github.com/briancavalier/when.js/tarball/$WHEN_VERSION" | tar -C "$WHEN_TMP_DIR" --strip-components 1 -xzf -
-	mv "$WHEN_TMP_DIR/when.js" "$TARGET_DIR"
-	rm -rf "$WHEN_TMP_DIR"
+	mkdir "$WHEN_DIR"
+	$GET "https://github.com/briancavalier/when.js/tarball/$WHEN_VERSION" | tar -C "$WHEN_DIR" --strip-components 1 -xzf -
 	echo "when.js extracted"
 fi
 
@@ -138,13 +136,15 @@ echo
 
 echo "Setting up wire"
 echo "==============="
-confirm_file_overwrite "wire" "$TARGET_DIR/wire.js" "$TARGET_DIR/wire"
+WIRE_DIR="$TARGET_DIR/wire"
+WIRE_TMP_DIR="$TARGET_DIR/wire-tmp"
+confirm_file_overwrite "wire" "$WIRE_DIR" "$WIRE_TMP_DIR"
 if (($?)); then
 	echo "Fetching wire $WIRE_VERSION"
-	WIRE_TMP_DIR="$TARGET_DIR/wire-tmp"
 	mkdir "$WIRE_TMP_DIR"
 	$GET "https://github.com/briancavalier/wire/tarball/$WIRE_VERSION" | tar -C "$WIRE_TMP_DIR" --strip-components 1 -xzf -
-	mv "$WIRE_TMP_DIR/wire.js" "$WIRE_TMP_DIR/wire" "$TARGET_DIR"
+	mv "$WIRE_TMP_DIR/wire" "$TARGET_DIR"
+	mv "$WIRE_TMP_DIR/wire.js" "$WIRE_TMP_DIR/package.json" "$WIRE_DIR"
 	rm -rf "$WIRE_TMP_DIR"
 	echo "wire.js extracted"
 fi

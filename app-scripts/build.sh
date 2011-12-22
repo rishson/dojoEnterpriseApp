@@ -33,53 +33,16 @@ if [ -e "$DIST_DIR" ]; then
 	echo " Done"
 fi
 
-node "$DOJO" load=build --dojoConfig "$SRC_DIR/js/app/config.js" --release "$@"
+node "$DOJO" load=build --dojoConfig "$SRC_DIR/js/app/config.js" --profile "$PROJECT_DIR/build.profile.js" --basePath "$SRC_DIR/js" --releaseDir "../../dist/js" --release "$@"
 
-#DOJOVERSION="1.6.1"
-#
-#THISDIR=$(cd $(dirname $0) && pwd)
-#SRCDIR="$THISDIR/../src"
-#UTILDIR="$SRCDIR/js/dojo/dojo-release-${DOJOVERSION}-src/util/buildscripts"
-#PROFILEDIR=$(cd $THISDIR/../src/js/rishson/enterprise/build/ && pwd)
-#PROFILE="${PROFILEDIR}/EnterpriseProfile.js"
-#CSSDIR="$SRCDIR/css"
-#
-## this ain't pretty, but the dist directory needs to be present if we want to use
-## the constant later on (l.38) as the releaseDir param. This gets around the
-## restriction of having to provide lots of ../../ in the path that are 
-## different for different users
-#mkdir -p $THISDIR/../dist/
-#DISTDIR=$(cd $THISDIR/../dist/ && pwd)
-#
-#if [ ! -d "$UTILDIR" ]; then
-#  echo "Can't find Dojo build tools -- did you run ./util/setup.sh?"
-#  exit 1
-#fi
-#
-#if [ ! -f "$PROFILE" ]; then
-#  echo "Invalid input profile"
-#  exit 1
-#fi
-#
-#echo "Using $PROFILE. CSS will be copied and JS will be built."
-#
-## clean the old distribution files
-#rm -rf "$DISTDIR"
-#
-## This is now cleaned up because we used a different way of creating DISTDIR 
-## at the top
-#cd "$UTILDIR"
-#./build.sh profileFile=$PROFILE releaseDir=$DISTDIR
-#cd "$THISDIR"
-#
-## copy the css files
-## todo: how to do this better?
-#cp -r "$CSSDIR" "$DISTDIR/css"
-#
-## copy the index.html and make it production-friendly
-#cp "$SRCDIR/index.html" "$DISTDIR/index.html"
-#
-#sed -i -e "s/var releaseMode = false;/var releaseMode = true/" "$DISTDIR/index.html"
-#sed -i -e "s/js\/dojo\/dojo-release-${DOJOVERSION}-src/js/" "$DISTDIR/index.html"
-## this changes the path to the CSS files in enterprise.css.
-#sed -i -e "s/dojo-release-${DOJOVERSION}-src//" "$DISTDIR/css/enterprise.css"
+# Remove isDebug
+sed -i -e '/^\s*isDebug:\s*\(true\|false\|1\|0\),$/d' "$DIST_DIR/js/app/config.js"
+
+# Remove directories the build copies over that aren't needed
+rm -rf "$DIST_DIR/js/build" "$DIST_DIR/js/doh"
+
+# Transform LESS links to CSS links and remove inclusion of LESS
+sed -e 's#<link.*rel="stylesheet/less".*href="\(.*\)\.less">#<link rel="stylesheet" href="\1.css">#
+/^\s*<!-- Inclusion of LESS\..*$/d
+/^\s*<script>var less = { env: "development" };<\/script>$/d
+/^\s*<script src="js\/less\/dist\/less-.*\(\.min\)\?\.js"><\/script>$/d' "$SRC_DIR/index.html" > "$DIST_DIR/index.html"
