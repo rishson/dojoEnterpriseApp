@@ -209,23 +209,6 @@ if (($?)); then
 	cp "$TEMPLATE_PATH/nls.js" "$WIDGET_ES_NLS"
 fi
 
-WIDGET_TEST_FN="$TESTS_DIR/$WIDGET_CLASS.html"
-confirm_file_overwrite "$WIDGET_TEST_FN" "The test for $WIDGET_NAME already exists."
-if (($?)); then
-	PATH_TO_JS=$(relpath "${WIDGET_TEST_FN%/*}" "${TARGET_DIR}")
-	sed -e "s/\\\$className\\\$/$WIDGET_CLASS/
-	s#\\\$widgetName\\\$#$PACKAGE/$WIDGET_NAME#
-	s#\\\$pathToJs\\\$#$PATH_TO_JS#" "$TEMPLATE_PATH/test.html" > "$WIDGET_TEST_FN"
-fi
-
-WIDGET_ROBOT_FN="$ROBOT_TESTS_DIR/$WIDGET_CLASS.html"
-confirm_file_overwrite "$WIDGET_ROBOT_FN" "The robot test for $WIDGET_NAME already exists."
-if (($?)); then
-	PATH_TO_JS=$(relpath "${WIDGET_ROBOT_FN%/*}" "${TARGET_DIR}")
-	sed -e "s/\\\$className\\\$/$WIDGET_CLASS/
-	s#\\\$pathToJs\\\$#$PATH_TO_JS#" "$TEMPLATE_PATH/robot.html" > "$WIDGET_ROBOT_FN"
-fi
-
 if (($TEMPLATED)); then
 	WIDGET_TEMPLATE_FN="$WIDGET_TARGET/resources/$WIDGET_CLASS.html"
 	confirm_file_overwrite "$WIDGET_TEMPLATE_FN" "The template for $WIDGET_NAME already exists."
@@ -260,6 +243,25 @@ if [ -e "$APP_LESS" ]; then
 	fi
 else
 	echo "app.less does not exist; unable to add $WIDGET_NAME stylesheet to it."
+fi
+
+WIDGET_TEST_FN="$TESTS_DIR/$WIDGET_CLASS.html"
+confirm_file_overwrite "$WIDGET_TEST_FN" "The test for $WIDGET_NAME already exists."
+if (($?)); then
+	PATH_TO_JS=$(relpath "${WIDGET_TEST_FN%/*}" "$TARGET_DIR")
+	PATH_TO_CSS=$(relpath "$TESTS_DIR" "${WIDGET_CSS_FN%/*}")
+	sed -e "s/\\\$className\\\$/$WIDGET_CLASS/
+	s#\\\$widgetName\\\$#$PACKAGE/$WIDGET_NAME#
+	s#\\\$pathToJs\\\$#$PATH_TO_JS#
+	s#\\\$pathToCss\\\$#$PATH_TO_CSS#" "$TEMPLATE_PATH/test.html" > "$WIDGET_TEST_FN"
+fi
+
+WIDGET_ROBOT_FN="$ROBOT_TESTS_DIR/$WIDGET_CLASS.html"
+confirm_file_overwrite "$WIDGET_ROBOT_FN" "The robot test for $WIDGET_NAME already exists."
+if (($?)); then
+	PATH_TO_JS=$(relpath "${WIDGET_ROBOT_FN%/*}" "${TARGET_DIR}")
+	sed -e "s/\\\$className\\\$/$WIDGET_CLASS/
+	s#\\\$pathToJs\\\$#$PATH_TO_JS#" "$TEMPLATE_PATH/robot.html" > "$WIDGET_ROBOT_FN"
 fi
 
 echo

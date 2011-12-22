@@ -18,6 +18,13 @@ SCRIPT_NAME="${0##*/}"
 
 PROJECT_DIR="${SCRIPT_DIR%/*}"
 
+# The URL where the "src" directory is exposed
+SRC_URL="http://localhost/${PROJECT_DIR##*/}/src"
+
+if [ -e "$PROJECT_DIR/configuration" ]; then
+	. "$PROJECT_DIR/configuration"
+fi
+
 function usage {
 	echo "Usage: $SCRIPT_NAME [-hr] [-p PACKAGE_NAME] [-b BROWSER] [SUBDIRECTORY/]CLASS_NAME"
 }
@@ -133,7 +140,9 @@ else
 fi
 
 TARGET_DIR="$PROJECT_DIR/src/js"
+TARGET_URL="$SRC_URL/js"
 PACKAGE_DIR="$TARGET_DIR/$PACKAGE"
+PACKAGE_URL="$TARGET_URL/$PACKAGE"
 
 if [ ! -d "$TARGET_DIR" ]; then
 	echo "$SCRIPT_NAME only works on rishson projects."
@@ -161,13 +170,16 @@ fi
 WIDGET_DIR=$(dir_name "$WIDGET_NAME")
 WIDGET_CLASS="${WIDGET_NAME##*/}"
 TESTS_DIR="$PACKAGE_DIR/tests"
+TESTS_URL="$PACKAGE_URL/tests"
 
 if [ "$WIDGET_DIR" != "." ]; then
 	TESTS_DIR="$TESTS_DIR/$WIDGET_DIR"
+	TESTS_URL="$TESTS_URL/$WIDGET_DIR"
 fi
 
 if (($ROBOT)); then
 	TESTS_DIR="$TESTS_DIR/robot"
+	TESTS_URL="$TESTS_URL/robot"
 fi
 
 if [ ! -e "$TESTS_DIR/$WIDGET_CLASS.html" ]; then
@@ -179,4 +191,8 @@ if [ ! -e "$TESTS_DIR/$WIDGET_CLASS.html" ]; then
 	exit 1
 fi
 
-$OPEN "$OPEN_ARGS" "$TESTS_DIR/$WIDGET_CLASS.html"
+if [ -z "$OPEN_ARGS" ]; then
+	$OPEN "$TESTS_URL/$WIDGET_CLASS.html" 2> /dev/null
+else
+	$OPEN "$OPEN_ARGS" "$TESTS_URL/$WIDGET_CLASS.html" 2> /dev/null
+fi

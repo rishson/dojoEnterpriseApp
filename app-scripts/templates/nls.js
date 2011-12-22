@@ -1,3 +1,3 @@
 define({
-	/* key: 'Text' */
+    /* key: "Text" */
 });

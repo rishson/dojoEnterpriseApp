@@ -2,10 +2,13 @@
 
 set -P
 
-DOJO_VERSION="1.7.0"
-WHEN_VERSION="0.10.2"
-WIRE_VERSION="0.7.3"
-LESS_COMMIT="9e48460eff"
+# Default versions
+# These can/will be overridden in $PROJECT_DIR/configuration
+DOJO_VERSION=1.7.1
+WHEN_VERSION=0.10.3
+AOP_VERSION=0.5.1
+WIRE_VERSION=0.7.4
+LESS_VERSION=1.1.6
 
 # ${x%/*} is equivalent to dirname
 # ${x##*/} is equivalent to basename
@@ -45,6 +48,10 @@ done
 shift $((OPTIND-1))
 
 PROJECT_DIR="${SCRIPT_DIR%/*}"
+
+if [ -e "$PROJECT_DIR/configuration" ]; then
+	. "$PROJECT_DIR/configuration"
+fi
 
 if which wget >/dev/null; then
 	GET="wget --no-check-certificate -O -"
@@ -117,28 +124,41 @@ echo
 
 echo "Setting up when.js"
 echo "=================="
-confirm_file_overwrite "when.js" "$TARGET_DIR/when.js"
+WHEN_DIR="$TARGET_DIR/when"
+confirm_file_overwrite "when.js" "$WHEN_DIR"
 if (($?)); then
 	echo "Fetching when.js $WHEN_VERSION"
-	WHEN_TMP_DIR="$TARGET_DIR/when-tmp"
-	mkdir "$WHEN_TMP_DIR"
-	$GET "https://github.com/briancavalier/when.js/tarball/$WHEN_VERSION" | tar -C "$WHEN_TMP_DIR" --strip-components 1 -xzf -
-	mv "$WHEN_TMP_DIR/when.js" "$TARGET_DIR"
-	rm -rf "$WHEN_TMP_DIR"
+	mkdir "$WHEN_DIR"
+	$GET "https://github.com/briancavalier/when.js/tarball/$WHEN_VERSION" | tar -C "$WHEN_DIR" --strip-components 1 -xzf -
 	echo "when.js extracted"
+fi
+
+echo
+
+echo "Setting up aop.js"
+echo "=================="
+AOP_DIR="$TARGET_DIR/aop"
+confirm_file_overwrite "aop.js" "$AOP_DIR"
+if (($?)); then
+	echo "Fetching aop.js $AOP_VERSION"
+	mkdir "$AOP_DIR"
+	$GET "https://github.com/briancavalier/aop.js/tarball/$AOP_VERSION" | tar -C "$AOP_DIR" --strip-components 1 -xzf -
+	echo "aop.js extracted"
 fi
 
 echo
 
 echo "Setting up wire"
 echo "==============="
-confirm_file_overwrite "wire" "$TARGET_DIR/wire.js" "$TARGET_DIR/wire"
+WIRE_DIR="$TARGET_DIR/wire"
+WIRE_TMP_DIR="$TARGET_DIR/wire-tmp"
+confirm_file_overwrite "wire" "$WIRE_DIR" "$WIRE_TMP_DIR"
 if (($?)); then
 	echo "Fetching wire $WIRE_VERSION"
-	WIRE_TMP_DIR="$TARGET_DIR/wire-tmp"
 	mkdir "$WIRE_TMP_DIR"
 	$GET "https://github.com/briancavalier/wire/tarball/$WIRE_VERSION" | tar -C "$WIRE_TMP_DIR" --strip-components 1 -xzf -
-	mv "$WIRE_TMP_DIR/wire.js" "$WIRE_TMP_DIR/wire" "$TARGET_DIR"
+	mv "$WIRE_TMP_DIR/wire" "$TARGET_DIR"
+	mv "$WIRE_TMP_DIR/wire.js" "$WIRE_TMP_DIR/package.json" "$WIRE_DIR"
 	rm -rf "$WIRE_TMP_DIR"
 	echo "wire.js extracted"
 fi
@@ -149,10 +169,10 @@ echo "Setting up less"
 echo "==============="
 confirm_file_overwrite "LESS" "$TARGET_DIR/less"
 if (($?)); then
-	echo "Fetching LESS $LESS_COMMIT"
-	git clone https://github.com/cloudhead/less.js.git "$TARGET_DIR/less"
-	cd "$TARGET_DIR/less"
-	git checkout -q $LESS_COMMIT
-	rm -rf .git
-	echo "LESS cloned"
+	echo "Fetching LESS $LESS_VERSION"
+	cd "$PROJECT_DIR"
+	npm install "less@$LESS_VERSION"
+	mv "$PROJECT_DIR/node_modules/less" "$TARGET_DIR"
+	rm -rf "$PROJECT_DIR/node_modules"
+	echo "LESS fetched"
 fi
