@@ -4,10 +4,10 @@ set -P
 
 # Default versions
 # These can/will be overridden in $PROJECT_DIR/configuration
-DOJO_VERSION="1.7.1"
-WHEN_VERSION="0.10.2"
-WIRE_VERSION="0.7.3"
-LESS_VERSION="1.1.6"
+DOJO_VERSION=1.7.1
+WHEN_VERSION=0.10.2
+WIRE_VERSION=0.7.3
+LESS_VERSION=1.1.6
 
 # ${x%/*} is equivalent to dirname
 # ${x##*/} is equivalent to basename
