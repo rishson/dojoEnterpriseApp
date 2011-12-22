@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TestService Test</title>
+        <script type="text/javascript" src="../../dojo/dojo.js"
+            data-dojo-config="isDebug: true, async: true"></script>
+        <script type="text/javascript">
+            require([
+                "doh",
+                "dojo/_base/xhr",
+                "rishson/tests/TestService",
+                "dojo/domReady!"
+            ], function(doh, xhr, TestService){
+                // register services used by tests
+                TestService.register({
+                    baseUrl: "/service1/",
+                    handlers: [
+                        [/^foo$/, function(method, args, hasBody){
+                            // return arguments for inspection by tests
+                            return {
+                                method: method,
+                                args: args,
+                                hasBody: hasBody
+                            };
+                        }],
+                        ["^bar/([a-z]+)$", function(frag, method){
+                            if (method != "GET") {
+                                this.unsupportedMethod(method);
+                            }
+                            return frag;
+                        }],
+                        [/^json$/, function(method){
+                            // return a response formatted as JSON,
+                            // to test XHR with handleAs: "json"
+                            return '{"hello":"world"}';
+                        }],
+                        [/^nothere$/, function(method, args){
+                            // use convenience method to test setting status
+                            this.setStatus(args, 404);
+                            return "Not found";
+                        }]
+                    ]
+                });
+                TestService.register({
+                    baseUrl: "/service2/",
+                    delay: 1000, // longer default delay
+                    handlers: [
+                        [/^foo$/, function(){
+                            // return a string to distinguish 2nd TestService
+                            return "service2 foo";
+                        }],
+                        ["^bar/([a-z]+)$", function(frag, method){
+                            if (method != "GET") {
+                                this.unsupportedMethod(method);
+                            }
+                            return frag;
+                        }, 2000] // even longer delay
+                    ]
+                });
+                
+                doh.register("TestService Tests", [
+                    {
+                        name: "Test basic service functionality",
+                        runTest: function(){
+                            var dfd = new doh.Deferred();
+                            xhr.get({
+                                url: "/service1/foo",
+                                load: function(response){
+                                    if (response.method != "GET") {
+                                        dfd.errback(new Error(
+                                            "Unexpected response from /service1/foo"));
+                                    } else {
+                                        dfd.callback(true);
+                                    }
+                                },
+                                error: function(err){
+                                    dfd.errback(err);
+                                }
+                            });
+                            return dfd;
+                        }
+                    },
+                    {
+                        name: "Test capture group in URL RegExp",
+                        runTest: function(){
+                            var dfd = new doh.Deferred();
+                            xhr.get({
+                                url: "/service1/bar/something",
+                                load: function(response){
+                                    if (response != "something") {
+                                        dfd.errback(new Error(
+                                            "Unexpected response from /service1/bar"));
+                                    } else {
+                                        dfd.callback(true);
+                                    }
+                                },
+                                error: function(err){
+                                    dfd.errback(err);
+                                }
+                            });
+                            return dfd;
+                        }
+                    },
+                    {
+                        name: "Test using handleAs:'json'",
+                        runTest: function(){
+                            var dfd = new doh.Deferred();
+                            xhr.get({
+                                url: "/service1/json",
+                                handleAs: "json",
+                                load: function(response){
+                                    if (response.hello == "world") {
+                                        dfd.callback(true);
+                                    } else {
+                                        dfd.errback(new Error(
+                                            "Unexpected response from /service1/json"));
+                                    }
+                                },
+                                error: function(err){
+                                    dfd.errback(err);
+                                }
+                            });
+                            return dfd;
+                        }
+                    },
+                    {
+                        name: "Test checking status code",
+                        runTest: function(){
+                            var dfd = new doh.Deferred();
+                            var xhrDfd = xhr.get({
+                                url: "/service1/nothere",
+                                load: function(response){
+                                    if (xhrDfd.ioArgs.xhr.status == 404) {
+                                        dfd.callback(true);
+                                    } else {
+                                        dfd.errback(new Error(
+                                            "Unexpected status code from /service1/nothere"));
+                                    }
+                                },
+                                error: function(err){
+                                    dfd.errback(err);
+                                }
+                            });
+                            return dfd;
+                        }
+                    },
+                    {
+                        name: "Test unsupportedMethod",
+                        runTest: function(){
+                            var dfd = new doh.Deferred();
+                            xhr.post({
+                                url: "/service1/bar/something",
+                                failOk: true, // suppress expected error message
+                                load: function(response){
+                                    dfd.errback(new Error(
+                                        "POST to /service1/bar should fail"));
+                                },
+                                error: function(err){
+                                    if (err.message == "Unsupported method: POST") {
+                                        dfd.callback(true);
+                                    } else {
+                                        dfd.errback(new Error(
+                                            "POST to /service1/bar did not fail with expected error"));
+                                    }
+                                }
+                            });
+                            return dfd;
+                        }
+                    },
+                    {
+                        name: "Test unhandled URL",
+                        runTest: function(){
+                            var dfd = new doh.Deferred();
+                            xhr.get({
+                                url: "/service1/nope",
+                                failOk: true,
+                                load: function(response){
+                                    dfd.errback(new Error(
+                                        "/service1/nope should fail"));
+                                },
+                                error: function(err){
+                                    if (err.message.substr(0, 14) == "Unhandled URL:") {
+                                        dfd.callback(true);
+                                    } else {
+                                        dfd.errback(new Error(
+                                            "/service1/nope did not fail with expected error"));
+                                    }
+                                }
+                            });
+                            return dfd;
+                        }
+                    },
+                    {
+                        name: "Test isolation of separate TestServices",
+                        timeout: 2000,
+                        runTest: function(){
+                            var dfd = new doh.Deferred();
+                            xhr.get({
+                                url: "/service2/foo",
+                                load: function(response){
+                                    if (response != "service2 foo") {
+                                        dfd.errback(new Error(
+                                            "Unexpected response from /service2/foo"));
+                                    } else {
+                                        dfd.callback(true);
+                                    }
+                                },
+                                error: function(err){
+                                    dfd.errback(err);
+                                }
+                            });
+                        }
+                    },
+                    {
+                        name: "Test service-scope custom timeout",
+                        timeout: 2000,
+                        runTest: function(){
+                            var dfd = new doh.Deferred(),
+                                results = [];
+                            
+                            xhr.get({
+                                url: "/service2/foo",
+                                timeout: 750, // < 1000, will fail
+                                failOk: true, // suppress expected error message
+                                load: function(response){
+                                    console.error("750ms timeout should fail");
+                                },
+                                error: function(err){
+                                    results.push(true);
+                                }
+                            });
+                            xhr.get({
+                                url: "/service2/foo",
+                                timeout: 1250, // > 1000, will succeed
+                                load: function(){
+                                    results.push(true);
+                                }
+                            });
+                            
+                            // wait enough time for both XHRs to complete
+                            setTimeout(function(){
+                                if (results.length == 2) {
+                                    dfd.callback(true);
+                                } else {
+                                    dfd.errback(new Error(
+                                        "Service-scope custom timeout test failed"));
+                                }
+                            }, 1500);
+                            return dfd;
+                        }
+                    },
+                    {
+                        name: "Test handler-scope custom timeout",
+                        timeout: 3000,
+                        runTest: function(){
+                            var dfd = new doh.Deferred(),
+                                results = [];
+                            
+                            xhr.get({
+                                url: "/service2/bar/something",
+                                timeout: 1250, // < 2000, will fail
+                                failOk: true, // suppress expected error message
+                                load: function(response){
+                                    console.error("1250ms timeout should fail");
+                                },
+                                error: function(err){
+                                    results.push(true);
+                                }
+                            });
+                            xhr.get({
+                                url: "/service2/bar/something",
+                                timeout: 2250, // > 2000, will succeed
+                                load: function(){
+                                    results.push(true);
+                                }
+                            });
+                            
+                            // wait enough time for both XHRs to complete
+                            setTimeout(function(){
+                                if (results.length == 2) {
+                                    dfd.callback(true);
+                                } else {
+                                    dfd.errback(new Error(
+                                        "Handler-scope custom timeout test failed"));
+                                }
+                            }, 2500);
+                            return dfd;
+                        }
+                    }
+                ]);
+                doh.run();
+            });
+        </script>
+    </head>
+    <body>
+    </body>
+</html>

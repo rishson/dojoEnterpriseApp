@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>ApplicationWidget test page</title>
+
+    <style type="text/css">
+
+        @import "../../../dijit/themes/claro/claro.css";
+        @import "../../../dojo/resources/dojo.css";
+
+        .fixedRegion {
+            border: 1px solid black;
+            height : 600px;
+            width : 900px;
+        }
+    </style>
+
+    <script type="text/javascript">
+        var dojoConfig = {isDebug: true, async: true};
+    </script>
+
+    <script type="text/javascript" src="../../../dojo/dojo.js"></script>
+
+    <script type="text/javascript">
+        require([
+            "rishson/widget/_Widget",
+            "rishson/widget/_ApplicationWidget",
+            "dojo/domReady!"
+        ], function(_Widget, _ApplicationWidget){
+        });
+    </script>
+</head>
+<body class="claro">
+</body>
+</html>
