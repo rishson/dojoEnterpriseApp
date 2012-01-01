@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+		"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<title>doh.robot AppContainer Test</title>
+
+		<style>
+			@import "../../../../util/doh/robot/robot.css";
+		</style>
+
+		<!-- required: dojo.js -->
+		<script type="text/javascript" src="../../../../dojo/dojo.js"
+			data-dojo-config="isDebug: true"></script>
+
+		<script type="text/javascript">
+			require([
+				"doh",
+				"rishson/view/AppContainer",
+				"dojo/window",
+				"dijit/robotx",
+				"dojo/domReady!"
+			], function(doh, AppContainer, win){
+				doh.robot.initRobot('../../functional/testAppContainer.html');
+				
+				doh.register("AppContainer tests", [	
+					{
+						name: "Create tests",
+						setUp: function(){
+						},
+						runTest: function(){
+						},
+						tearDown: function(){
+						}
+					}
+				
+				]);
+				doh.run();
+			});
+		</script>
+	</head>
+</html>
