@@ -1,0 +1,124 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>SceneGraph Tests</title>
+    
+    <link rel="stylesheet/less" href="../../../app/resources/app.less">
+    <style>
+        #testWidget { height: 200px; }
+        #controller { height: 50px; }
+        #cp1 { background-color: #fcc; }
+        #cp2 { background-color: #cfc; }
+        #cp3 { background-color: #ccf; }
+    </style>
+</head>
+<body class="claro">
+    <div id="testWidget"></div>
+    <div id="controller"></div>
+    <div id="nav">
+        <h2>Navigate</h2>
+        <a href="#" id="back">Back (using reverse transition)</a><br>
+        <a href="#" id="forward">Forward</a>
+    </div>
+    <div id="animation">
+        <h2>Animation</h2>
+        <a href="#" id="slide">Slide (default)</a>
+        <a href="#" id="cover">Cover</a>
+        <a href="#" id="reveal">Reveal</a>
+    </div>
+    <script>var less = { env: "development" };</script>
+    <script src="../../../less/dist/less-1.1.6.min.js"></script>
+
+    <script>
+        var dojoConfig = {
+            async: true,
+            isDebug: true,
+            aliases: [
+                ["domReady", "dojo/domReady"]
+            ]
+        };
+    </script>
+    <script src="../../../dojo/dojo.js"></script>
+    <script>
+        require([
+            "grc/view/SceneGraph",
+            "dijit/layout/StackController",
+            "dijit/layout/ContentPane",
+            "dojo/dom",
+            "dojo/dom-construct",
+            "dojo/on",
+            "doh",
+            "domReady!"
+        ], function(SceneGraph, StackController, ContentPane,
+                dom, domConstruct, on, doh){
+            
+            var fromRobot = location.search == "?robot";
+            var testWidget;
+            
+            if(!fromRobot){
+                doh.register("SceneGraph Tests", [
+                    {
+                        name: "Instantiation",
+                        setUp: function(t){
+                        },
+                        runTest: function(t){
+                            t.t(testWidget && testWidget._started,
+                                "Widget should be instantiated and started.");
+                        },
+                        tearDown: function(t){
+                        }
+                    }
+                ]);
+            }
+            
+            function createWidget(){
+                if (!dom.byId("testWidget")) {
+                    // ensure placeholder exists (in case widget was destroyed)
+                    domConstruct.create("div", { id: "testWidget" }, document.body());
+                }
+                
+                // create widget, (re)assigning to variable in outer scope
+                testWidget = new SceneGraph({}, "testWidget");
+                testWidget.addChild(new ContentPane({
+                    id: "cp1",
+                    title: "one",
+                    content: "one"
+                }));
+                testWidget.addChild(new ContentPane({
+                    id: "cp2",
+                    title: "two",
+                    content: "two"
+                }));
+                testWidget.addChild(new ContentPane({
+                    id: "cp3",
+                    title: "three",
+                    content: "three"
+                }));
+                
+                // StackController for paging SceneGraph
+                var sc = new StackController({id: "controller", containerId: "testWidget"}).placeAt(document.body);
+                sc.startup();
+                testWidget.startup();
+            }
+            createWidget();
+            
+            on(dom.byId("nav"), "a:click", function(evt){
+                // id is forward or back, matching SceneWidget method name
+                testWidget[this.id]();
+                evt.preventDefault();
+            });
+            
+            on(dom.byId("animation"), "a:click", function(evt){
+                // id is slide/cover/reveal, matching transition type
+                testWidget.transitionType = this.id;
+                evt.preventDefault();
+            });
+            
+            if(!fromRobot){
+                doh.run();
+            }
+        });
+    </script>
+</body>
+</html>
