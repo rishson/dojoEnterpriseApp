@@ -5,6 +5,7 @@
     <title>SceneGraph Tests</title>
     
     <link rel="stylesheet/less" href="../../../app/resources/app.less">
+    <link rel="stylesheet/less" href="../../view/resources/SceneGraph.less">
     <style>
         #testWidget { height: 200px; }
         #controller { height: 50px; }
@@ -48,10 +49,14 @@
             "dojo/dom",
             "dojo/dom-construct",
             "dojo/on",
+            "dojo/has",
             "doh",
             "domReady!"
         ], function(SceneGraph, StackController, ContentPane,
-                dom, domConstruct, on, doh){
+                dom, domConstruct, on, has, doh){
+            
+            console.log("has (csstransitions, csstransforms, csstransforms3d): ",
+                has("csstransitions"), has("csstransforms"), has("csstransforms3d"));
             
             var fromRobot = location.search == "?robot";
             var testWidget;
