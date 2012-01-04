@@ -2,21 +2,20 @@
 
 TODOs:
 
-* use Deferred.when to hook animation logic to resolution of promise
-  potentially returned by _showChild
-
+* support for leaving a "gap" where the previous pane is still visible
+  
 */
 
 define([
     "dojo/_base/declare",
     "dijit/layout/StackContainer",
+    "dojo/DeferredList",
     "dojo/dom-style",
     "dojo/dom-construct",
     "dojo/has",
     "require",
-    "dojo/i18n!./nls/SceneGraph",
-    "dojo/_base/sniff"
-], function(declare, StackContainer, domStyle, domConstruct, has, require, l10n){
+    "dojo/i18n!./nls/SceneGraph"
+], function(declare, StackContainer, DeferredList, domStyle, domConstruct, has, require, l10n){
     var transitions = {}, // placeholder for transition methods to be loaded
         // variables for feature tests
         testDiv = document.createElement("div"),
@@ -51,7 +50,7 @@ define([
     }, true);
     
     has.add("csstransforms", function(){
-        var style = testDiv.style;
+        var style = testDiv.style, i;
         if (style.transformProperty !== undefined) {
             // standard, no vendor prefix
             return { css: "" };
@@ -127,6 +126,12 @@ define([
         //      Dijit's defaultDuration (currently defaults to 200).
         duration: 0,
         
+        // loadBeforeTransition: Boolean
+        //      For ContentPane children, setting this to true waits for the
+        //      newly-selected ContentPane to finish loading its href (if
+        //      applicable) before animating.
+        loadBeforeTransition: false,
+        
         forward: function(){
             // summary:
             //      Advances to next page, passing specific animation type.
@@ -144,10 +149,18 @@ define([
             var self = this,
                 oldNode = oldChild.domNode,
                 newNode = newChild.domNode,
-                reverse;
+                reverse, showChildResult, promise;
             
             // if only newChild was specified, don't perform a transition
             if (!oldChild) { return this.inherited(arguments); }
+            
+            function transition(){
+                newNode.style.visibility = "";
+                return transitions[animate](newNode, oldNode, {
+                    reverse: reverse,
+                    duration: self.duration
+                });
+            }
             
             // normalize animate/reverse variables
             if (animate === undefined) {
@@ -159,10 +172,13 @@ define([
             }
             
             if (typeof transitions[animate] == "function") {
-                oldNode.style.position = newNode.style.position = "absolute";
+                // ensure new node remains hidden initially until it's time to
+                // perform the transition; applicable in case of
+                // loadBeforeTransition + ContentPane with unloaded href
+                newNode.style.visibility = "hidden";
                 
                 // ensure new child is displayed and its size is calculated
-                this._showChild(newChild);
+                showChildResult = this._showChild(newChild);
                 if (this.doLayout && newChild.resize) {
                     // ensure child is sized properly to container
                     newChild.resize(this._containerContentBox || this._contentBox);
@@ -170,12 +186,24 @@ define([
                 
                 // Invoke transition method.  It returns a promise, which
                 // resolves when the animation completes.
-                return transitions[animate](newNode, oldNode, {
-                    reverse: reverse,
-                    duration: this.duration
-                }).then(
-                    function(){ self._hideChild(oldChild); }
-                );
+                if (this.loadBeforeTransition && showChildResult.then) {
+                    // If loadBeforeTransition is set and _showChild returned a
+                    // promise (e.g. ContentPane w/ unloaded href), chain
+                    // the transition to the completion of the load.
+                    promise = showChildResult.then(transition);
+                } else {
+                    // Otherwise, return a promise that resolves when both the
+                    // transition and load (if applicable) are complete.
+                    promise = showChildResult.then ?
+                        new DeferredList([showChildResult, transition()]) :
+                        transition();
+                    
+                    promise = promise.then(
+                        function(){ self._hideChild(oldChild); }
+                    );
+                }
+                
+                return promise;
             } else {
                 // unknown/unhandled animation; don't perform any
                 return this.inherited(arguments);
