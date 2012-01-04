@@ -138,7 +138,7 @@ define([
             newNode.style.zIndex = 1;
             oldNode.style.zIndex = 2;
             // reset placement of new node (in case it had been translated)
-            newNode.style[transitionPrefix + "Property"] = "";
+            newNode.style[transitionPrefix + "Duration"] = "0ms";
             newNode.style[transform] = translatePrefix + "0" + translateSuffix;
             
             return slideNode(oldNode, true, options);
