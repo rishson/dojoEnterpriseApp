@@ -7,17 +7,16 @@
     <link rel="stylesheet/less" href="../../../app/resources/app.less">
     <link rel="stylesheet/less" href="../../view/resources/SceneGraph.less">
     <style>
-        #testWidget { height: 200px; }
-        #controller { height: 50px; }
-        #cp1 { background-color: #fcc; }
-        #cp2 { background-color: #cfc; }
-        #cp3 { background-color: #ccf; }
+        .grcSceneGraph { height: 100px; }
+        .controller { height: 50px; }
+        .cp1 { background-color: #fcc; }
+        .cp2 { background-color: #cfc; }
+        .cp3 { background-color: #ccf; }
     </style>
 </head>
 <body class="claro">
-    <div id="testWidget"></div>
-    <div id="controller"></div>
     <div id="nav">
+        <h1>Additional controls for first widget</h1>
         <h2>Navigate</h2>
         <a href="#" id="back">Back (using reverse transition)</a><br>
         <a href="#" id="forward">Forward</a>
@@ -46,20 +45,31 @@
             "grc/view/SceneGraph",
             "dijit/layout/StackController",
             "dijit/layout/ContentPane",
+            "dojo/_base/lang",
             "dojo/dom",
             "dojo/dom-construct",
             "dojo/on",
             "dojo/has",
             "doh",
+            "rishson/tests/TestService",
             "domReady!"
         ], function(SceneGraph, StackController, ContentPane,
-                dom, domConstruct, on, has, doh){
+                lang, dom, domConstruct, on, has, doh, TestService){
             
             console.log("has (csstransitions, csstransforms, csstransforms3d): ",
                 has("csstransitions"), has("csstransforms"), has("csstransforms3d"));
             
             var fromRobot = location.search == "?robot";
-            var testWidget;
+            
+            // register custom XHR handler for /testServices/delay/*
+            // in order to test ContentPane loading
+            TestService.register({
+                handlers: [
+                    [/^delay\/(.*)$/, function(frag){
+                        return frag + " content";
+                    }, 1000]
+                ]
+            });
             
             if(!fromRobot){
                 doh.register("SceneGraph Tests", [
@@ -77,36 +87,80 @@
                 ]);
             }
             
-            function createWidget(){
-                if (!dom.byId("testWidget")) {
-                    // ensure placeholder exists (in case widget was destroyed)
-                    domConstruct.create("div", { id: "testWidget" }, document.body());
+            function createWidget(id, useHref, loadBeforeTransition){
+                var panes = [
+                        new ContentPane({
+                            id: id + "_cp1",
+                            className: "cp1",
+                            title: "one"
+                        }),
+                        new ContentPane({
+                            id: id + "_cp2",
+                            className: "cp2",
+                            title: "two"
+                        }),
+                        new ContentPane({
+                            id: id + "_cp3",
+                            className: "cp3",
+                            title: "three"
+                        })
+                    ],
+                    div = domConstruct.create("div", {
+                        id: id + "_container",
+                        className: "container"
+                    }),
+                    args = { id: id, duration: 500 },
+                    widget, p, i, len;
+                
+                if (loadBeforeTransition) {
+                    args.loadBeforeTransition = true;
+                }
+                widget = new SceneGraph(args).placeAt(div);
+                
+                for (i = 0, len = panes.length; i < len; i++) {
+                    p = panes[i];
+                    if (useHref) {
+                        // add href using TestService to test CP loading
+                        p.set("href", "/testServices/delay/" + p.get("title"));
+                    } else {
+                        // set content directly, no load
+                        p.set("content", p.get("title") + " content");
+                    }
+                    widget.addChild(p);
                 }
                 
-                // create widget, (re)assigning to variable in outer scope
-                testWidget = new SceneGraph({}, "testWidget");
-                testWidget.addChild(new ContentPane({
-                    id: "cp1",
-                    title: "one",
-                    content: "one"
-                }));
-                testWidget.addChild(new ContentPane({
-                    id: "cp2",
-                    title: "two",
-                    content: "two"
-                }));
-                testWidget.addChild(new ContentPane({
-                    id: "cp3",
-                    title: "three",
-                    content: "three"
-                }));
-                
                 // StackController for paging SceneGraph
-                var sc = new StackController({id: "controller", containerId: "testWidget"}).placeAt(document.body);
+                var sc = new StackController({
+                    id: id + "_controller",
+                    containerId: id,
+                    className: "controller"
+                }).placeAt(div, "first");
+                
+                document.body.appendChild(div);
                 sc.startup();
-                testWidget.startup();
+                widget.startup();
+                
+                console.log("duration:", widget.duration);
+                
+                return widget;
             }
-            createWidget();
+            
+            // create basic instance (also for tests)
+            testWidget = createWidget("testWidget");
+            domConstruct.place(
+                "<h1>Basic test (loadBeforeTransition: false, CPs with content)",
+                "testWidget_container", "before");
+            
+            // create instances to test loadBeforeTransition w/ CP's
+            createWidget("lbaContentWidget", true);
+            domConstruct.place(
+                "<h1>Test with loadBeforeTransition: false, CPs with href",
+                "lbaContentWidget_container", "before");
+            
+            createWidget("lbaHrefWidget", true, true);
+            domConstruct.place(
+                "<h1>Test with loadBeforeTransition: true, CPs with href",
+                "lbaHrefWidget_container", "before");
             
             on(dom.byId("nav"), "a:click", function(evt){
                 // id is forward or back, matching SceneWidget method name
