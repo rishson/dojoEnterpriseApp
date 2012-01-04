@@ -145,6 +145,12 @@ define([
                 { type: this.transitionType, reverse: true });
         },
         
+        selectChild: function(page, animate){
+            // summary:
+            //      Show the given widget, unless a transition is in progress
+            return !this._transitionPromise && this.inherited(arguments);
+        },
+        
         _transition: function(newChild, oldChild, animate){
             var self = this,
                 oldNode = oldChild.domNode,
@@ -155,11 +161,19 @@ define([
             if (!oldChild) { return this.inherited(arguments); }
             
             function transition(){
-                newNode.style.visibility = "";
-                return transitions[animate](newNode, oldNode, {
-                    reverse: reverse,
-                    duration: self.duration
-                });
+                newNode.style.visibility = ""; // unhide
+                
+                // store transition promise on instance to flag activity,
+                // cleared when transition completes
+                var promise = self._transitionPromise =
+                    transitions[animate](newNode, oldNode, {
+                        reverse: reverse,
+                        duration: self.duration
+                    }).then(function(){
+                        self._hideChild(oldChild);
+                        delete self._transitionPromise;
+                    });
+                return promise;
             }
             
             // normalize animate/reverse variables
@@ -189,18 +203,14 @@ define([
                 if (this.loadBeforeTransition && showChildResult.then) {
                     // If loadBeforeTransition is set and _showChild returned a
                     // promise (e.g. ContentPane w/ unloaded href), chain
-                    // the transition to the completion of the load.
-                    promise = showChildResult.then(transition);
+                    // the transition to the completion (or failure) of the load.
+                    promise = showChildResult.then(transition, transition);
                 } else {
                     // Otherwise, return a promise that resolves when both the
                     // transition and load (if applicable) are complete.
                     promise = showChildResult.then ?
                         new DeferredList([showChildResult, transition()]) :
                         transition();
-                    
-                    promise = promise.then(
-                        function(){ self._hideChild(oldChild); }
-                    );
                 }
                 
                 return promise;
