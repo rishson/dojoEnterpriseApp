@@ -3,8 +3,9 @@ define([
     "dojo/_base/fx",
     "dojo/fx",
     "dojo/aspect",
-    "dojo/dom-style"
-], function(Deferred, baseFx, fx, aspect, domStyle){
+    "dijit/_base/manager" // for defaultDuration
+], function(Deferred, baseFx, fx, aspect, manager){
+    
     function handleOnEnd(anim, dfd){
         // adds after advice to an animation's onEnd to resolve a Deferred;
         // used by all animation methods in order to return a promise
@@ -15,8 +16,11 @@ define([
     }
     
     return {
-        slide: function(newNode, oldNode, reverse){
-            var dfd = new Deferred(), anim;
+        slide: function(newNode, oldNode, options){
+            var dfd = new Deferred(),
+                reverse = options.reverse,
+                duration = options.duration || manager.defaultDuration,
+                anim;
             
             anim = fx.combine([
                 // duration matches the one unfortunately hard-coded in css3/transit
@@ -27,7 +31,7 @@ define([
                         end: reverse ? 100 : -100,
                         units: "%"
                     } },
-                    duration: 250
+                    duration: duration
                 }),
                 baseFx.animateProperty({
                     node: newNode,
@@ -36,7 +40,7 @@ define([
                         end: 0,
                         units: "%"
                     } },
-                    duration: 250
+                    duration: duration
                 })
             ]);
             
@@ -45,22 +49,21 @@ define([
             return dfd.promise;
         },
         
-        coverInit: function(newNode, oldNode, reverse){
-            // ensure that new node "covers" old one
-            domStyle.set(oldNode, { zIndex: 1 });
-            domStyle.set(newNode, { zIndex: 2 });
-        },
-        cover: function(newNode, oldNode, reverse){
+        cover: function(newNode, oldNode, options){
             var dfd = new Deferred(), anim, handle;
+            
+            // ensure that new node "covers" old one
+            newNode.style.zIndex = 2;
+            oldNode.style.zIndex = 1;
             
             anim = baseFx.animateProperty({
                 node: newNode,
                 properties: { left: {
-                    start: reverse ? -100 : 100,
+                    start: options.reverse ? -100 : 100,
                     end: 0,
                     units: "%"
                 } },
-                duration: 250
+                duration: options.duration || manager.defaultDuration
             });
             
             handleOnEnd(anim, dfd);
@@ -68,22 +71,22 @@ define([
             return dfd.promise;
         },
         
-        revealInit: function(newNode, oldNode, reverse){
+        reveal: function(newNode, oldNode, options){
+            var dfd = new Deferred(),
+                anim, handle;
+            
             // ensure that old node "reveals" new one
-            domStyle.set(oldNode, { zIndex: 2 });
-            domStyle.set(newNode, { zIndex: 1 });
-        },
-        reveal: function(newNode, oldNode, reverse){
-            var dfd = new Deferred(), anim, handle;
+            newNode.style.zIndex = 1;
+            oldNode.style.zIndex = 2;
             
             anim = baseFx.animateProperty({
                 node: oldNode,
                 properties: { left: {
                     start: 0,
-                    end: reverse ? 100 : -100,
+                    end: options.reverse ? 100 : -100,
                     units: "%"
                 } },
-                duration: 250
+                duration: options.duration || manager.defaultDuration
             });
             
             handleOnEnd(anim, dfd);
