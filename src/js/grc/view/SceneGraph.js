@@ -9,17 +9,28 @@ TODOs:
 define([
     "dojo/_base/declare",
     "dijit/layout/StackContainer",
+    "dojo/_base/array",
+    "dojo/_base/Deferred",
     "dojo/DeferredList",
     "dojo/dom-style",
     "dojo/dom-construct",
+    "dojo/topic",
     "dojo/has",
     "require",
     "dojo/i18n!./nls/SceneGraph"
-], function(declare, StackContainer, DeferredList, domStyle, domConstruct, has, require, l10n){
+], function(declare, StackContainer, arrayUtil, Deferred, DeferredList,
+        domStyle, domConstruct, topic, has, require, l10n){
     var transitions = {}, // placeholder for transition methods to be loaded
         // variables for feature tests
         testDiv = document.createElement("div"),
         cssPrefixes = ["ms", "O", "Moz", "Webkit"];
+    
+    function makePromise(value){
+        // simple function to create and immediately resolve/return a promise
+        var dfd = new Deferred();
+        dfd.resolve(value);
+        return dfd.promise;
+    }
     
     // add feature tests for CSS transitions and transforms,
     // and run them now since we'll need them shortly anyway
@@ -93,9 +104,9 @@ define([
     
     // Load CSS3-based transition logic if the browser supports it;
     // otherwise, fall back to a dojo/_base/fx-based solution.
-    require(has("csstransitions") &&
+    require(/*has("csstransitions") &&
             (has("csstransforms") || has("csstransforms3d")) ?
-        ["./transition/css3"] : ["./transition/fx"],
+        ["./transition/css3"] : */["./transition/fx"],
     function(t){
         transitions = t;
     });
@@ -117,8 +128,23 @@ define([
         // transitionType: String
         //      Type of transition to engage when panes are switched.
         //      Transition direction is reversed during back() calls.
-        //      Currently supported: "slide", "cover", "reveal"
+        //      Currently supported: "slide", "cover"
         transitionType: "slide",
+        
+        // transitionSide: String
+        //      Side which new panes will slide in from when transitioning
+        //      "forward".
+        transitionSide: "right",
+        
+        // gap: Number
+        //      When transitionType is "cover" and this is a positive number,
+        //      subsequent panes will not occupy the full width of the viewport,
+        //      instead leaving a gap at the far edge.
+        gap: 0,
+        
+        // gapUnits: String
+        //      Defines whether gap is measured in "px" or "%".
+        gapUnits: "%",
         
         // duration: Number
         //      Number of milliseconds each transition should last.
@@ -132,23 +158,128 @@ define([
         //      applicable) before animating.
         loadBeforeTransition: false,
         
-        forward: function(){
+        forward: function(page){
             // summary:
             //      Advances to next page, passing specific animation type.
-            return this.selectChild(this._adjacent(true), this.transitionType);
+            // page: Widget?
+            //      Optionally, a widget to add to the container before advancing.
+            
+            if (page) { this.addChild(page); }
+            return this._selectChild(this._adjacent(true));
         },
         
-        back: function(){
+        back: function(removePrevious){
             // summary:
             //      Advances to previous page, passing specific animation type.
-            return this.selectChild(this._adjacent(false),
-                { type: this.transitionType, reverse: true });
+            // removePrevious: Boolean?
+            //      If specified true, the previously-active child will be
+            //      removed from the container.
+            
+            var self = this,
+                prev = this.selectedChildWidget, // soon-to-be-previous child
+                promise;
+            
+            promise = this._selectChild(this._adjacent(false), true);
+            
+            if (removePrevious) {
+                promise = promise.then(function(r){
+                    if (r !== false) {
+                        self.removeChild(prev);
+                    }
+                });
+            }
+            return promise;
         },
         
-        selectChild: function(page, animate){
+        addChild: function(child){
             // summary:
-            //      Show the given widget, unless a transition is in progress
-            return !this._transitionPromise && this.inherited(arguments);
+            //      Augments StackContainer.addChild to set the z-index of the
+            //      newly added child so that "younger" children are in front.
+            //      NOTE: insertIndex not supported, since this widget is
+            //      intended to be used purely like a stack.
+            
+            child.domNode.style.zIndex = this.getChildren().length;
+            this.inherited(arguments);
+        },
+        
+        selectChild: function(page){
+            // summary:
+            //      Complete override of StackContainer.selectChild;
+            //      uses back/forward to drive the stack.
+            
+            if (this.selectedChildWidget == page) { return; }
+            
+            var self = this,
+                children = this.getChildren(),
+                newIndex = arrayUtil.indexOf(children, page),
+                i = arrayUtil.indexOf(children, this.selectedChildWidget),
+                dfd = new Deferred(),
+                promise = dfd; // will be chained in loop
+            
+            // functions used in loops for promise chaining
+            function forward(){ return self.forward(); }
+            function back(){ return self.back(); }
+            
+            // one of the following loops will execute, depending on direction
+            while (i < newIndex) {
+                promise = promise.then(forward);
+                i++;
+            }
+            while (i > newIndex) {
+                promise = promise.then(back);
+                i--;
+            }
+            
+            dfd.resolve(); // resolve the initial Deferred to start the chain
+            return promise;
+        },
+        
+        _selectChild: function(page, reverse){
+            // summary:
+            //      Performs common logic for all back/forward processes.
+            // returns: Promise
+            //      Promise representing when the ensuing transition completes.
+            //      Resolves to false if no transition is to take place.
+            
+            var old = this.selectedChildWidget,
+                dfd, transition;
+            
+            if (this._transitionPromise || old == page) {
+                // return a pre-resolved promise to keep API consistent;
+                // resolve with false value to indicate no change
+                return makePromise(false);
+            }
+            
+            this._set("selectedChildWidget", page);
+            topic.publish(this.id + "selectChild", page);
+            transition = this._transition(page, old, {
+                type: this.transitionType,
+                reverse: reverse
+            });
+            
+            // normalize to promise, resolving to true to indicate that
+            // a change took place even if no transition occurred
+            return transition.then ? transition : makePromise(true);
+        },
+        
+        _adjacent: function(forward){
+            // summary:
+            //      Extends StackContainer._adjacent to not wrap.
+            //      If already at the end, returns the current pane.
+            
+            var children = this.getChildren(),
+                current = this.selectedChildWidget,
+                index = arrayUtil.indexOf(children, current);
+            
+            index += forward ? 1 : -1;
+            return index >= 0 && index < children.length ?
+                children[index] : current;
+        },
+        
+        _hideChild: function(page){
+            // summary:
+            //      Overrides StackContainer._hideChild,
+            //      since previous children are to potentially remain visible.
         },
         
         _transition: function(newChild, oldChild, animate){
@@ -160,17 +291,22 @@ define([
             // if only newChild was specified, don't perform a transition
             if (!oldChild) { return this.inherited(arguments); }
             
+            oldChild._set("selected", false);
+            newChild._set("selected", true);
+            
             function transition(){
                 newNode.style.visibility = ""; // unhide
                 
                 // store transition promise on instance to flag activity,
                 // cleared when transition completes
                 var promise = self._transitionPromise =
-                    transitions[animate](newNode, oldNode, {
-                        reverse: reverse,
-                        duration: self.duration
+                    transitions[animate]({
+                        newNode: newNode,
+                        oldNode: oldNode,
+                        side: self.transitionSide,
+                        duration: self.duration,
+                        reverse: reverse
                     }).then(function(){
-                        self._hideChild(oldChild);
                         delete self._transitionPromise;
                     });
                 return promise;
@@ -186,16 +322,17 @@ define([
             }
             
             if (typeof transitions[animate] == "function") {
-                // ensure new node remains hidden initially until it's time to
-                // perform the transition; applicable in case of
+                // when sliding in, ensure new node remains hidden initially
+                // until it's time to perform the transition; applicable in case of
                 // loadBeforeTransition + ContentPane with unloaded href
-                newNode.style.visibility = "hidden";
+                if (!reverse) { newNode.style.visibility = "hidden"; }
                 
                 // ensure new child is displayed and its size is calculated
                 showChildResult = this._showChild(newChild);
                 if (this.doLayout && newChild.resize) {
                     // ensure child is sized properly to container
                     newChild.resize(this._containerContentBox || this._contentBox);
+                    // TODO: account for gap
                 }
                 
                 // Invoke transition method.  It returns a promise, which

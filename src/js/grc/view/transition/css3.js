@@ -79,7 +79,7 @@ define([
         style[transform] = start;
         
         on.once(node, transitionend, function(){
-            dfd.resolve();
+            dfd.resolve(node);
         });
         
         // need to set end styles separately to allow browser to redraw first

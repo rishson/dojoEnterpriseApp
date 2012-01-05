@@ -25,7 +25,6 @@
         <h2>Animation</h2>
         <a href="#" id="slide">Slide (default)</a>
         <a href="#" id="cover">Cover</a>
-        <a href="#" id="reveal">Reveal</a>
     </div>
     <script>var less = { env: "development" };</script>
     <script src="../../../less/dist/less-1.1.6.min.js"></script>
@@ -167,7 +166,7 @@
             });
             
             on(dom.byId("animation"), "a:click", function(evt){
-                // id is slide/cover/reveal, matching transition type
+                // id is slide/cover, matching transition type
                 testWidget.transitionType = this.id;
                 evt.preventDefault();
             });

@@ -11,19 +11,21 @@ define([
         // used by all animation methods in order to return a promise
         var handle = aspect.after(anim, "onEnd", function(){
             handle.remove();
-            dfd.resolve();
+            dfd.resolve(anim.node);
         });
     }
     
     return {
-        slide: function(newNode, oldNode, options){
+        slide: function(options){
             var dfd = new Deferred(),
-                reverse = options.reverse,
+                newNode = options.newNode,
+                oldNode = options.oldNode,
+                side = options.side,
                 duration = options.duration || manager.defaultDuration,
+                reverse = (side == "left" ^ options.reverse),
                 anim;
             
             anim = fx.combine([
-                // duration matches the one unfortunately hard-coded in css3/transit
                 baseFx.animateProperty({
                     node: oldNode,
                     properties: { left: {
@@ -49,43 +51,24 @@ define([
             return dfd.promise;
         },
         
-        cover: function(newNode, oldNode, options){
-            var dfd = new Deferred(), anim, handle;
-            
-            // ensure that new node "covers" old one
-            newNode.style.zIndex = 2;
-            oldNode.style.zIndex = 1;
-            
-            anim = baseFx.animateProperty({
-                node: newNode,
-                properties: { left: {
-                    start: options.reverse ? -100 : 100,
-                    end: 0,
-                    units: "%"
-                } },
-                duration: options.duration || manager.defaultDuration
-            });
-            
-            handleOnEnd(anim, dfd);
-            anim.play();
-            return dfd.promise;
-        },
-        
-        reveal: function(newNode, oldNode, options){
+        cover: function(options){
             var dfd = new Deferred(),
+                reverse = options.reverse,
+                node = options.node ||
+                    (reverse ? options.oldNode : options.newNode),
+                max = options.side == "right" ? 100 : -100,
+                props = {}, prop = {},
                 anim, handle;
             
-            // ensure that old node "reveals" new one
-            newNode.style.zIndex = 1;
-            oldNode.style.zIndex = 2;
+            prop = { units: "%" };
+            prop[reverse ? "end" : "start"] = max;
+            prop[reverse ? "start" : "end"] = 0;
+            
+            props.left = prop;
             
             anim = baseFx.animateProperty({
-                node: oldNode,
-                properties: { left: {
-                    start: 0,
-                    end: options.reverse ? 100 : -100,
-                    units: "%"
-                } },
+                node: node,
+                properties: props,
                 duration: options.duration || manager.defaultDuration
             });
             
