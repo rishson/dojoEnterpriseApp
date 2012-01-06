@@ -49,46 +49,43 @@ define([
         transitionend = "transitionend"; // no vendor prefix, standard name
     }
     
-    function slideNode(node, start, end, duration){
-        var dfd = new Deferred(),
-            style = node.style;
-        
-        duration = duration || manager.defaultDuration;
-        
-        // embed start and end within translate values
-        start = translatePrefix + start + "%" + translateSuffix;
-        end = translatePrefix + end + "%" + translateSuffix;
-        
-        // initialize node styles without transition, before beginning slide
-        style[transitionPrefix + "Duration"] = "0ms";
-        style[transform] = start;
-        
-        on.once(node, transitionend, function(){
-            dfd.resolve(node);
-        });
-        
-        // need to set end styles separately to allow browser to redraw first
-        setTimeout(function(){
-            // update properties to kick off transition
-            style[transitionPrefix + "Property"] = "all";
-            style[transitionPrefix + "Duration"] = duration + "ms";
-            style[transform] = end;
-        }, 0);
-        
-        return dfd.promise;
-    }
-    
-    function resetSlideNode(node){
-        // summary:
-        //      Resets the position of a node that was previously transitioned.
-        
-        var style = node.style;
-        style[transitionPrefix + "Duration"] = "0ms";
-        style[transform] = translatePrefix + "0" + translateSuffix;
-    }
-    
     return {
-        slideNode: slideNode,
-        resetSlideNode: resetSlideNode
+        slideNode: function(node, start, end, duration){
+            var dfd = new Deferred(),
+                style = node.style;
+            
+            duration = duration || manager.defaultDuration;
+            
+            // embed start and end within translate values
+            start = translatePrefix + start + "%" + translateSuffix;
+            end = translatePrefix + end + "%" + translateSuffix;
+            
+            // initialize node styles without transition, before beginning slide
+            style[transitionPrefix + "Duration"] = "0ms";
+            style[transform] = start;
+            
+            on.once(node, transitionend, function(){
+                dfd.resolve(node);
+            });
+            
+            // need to set end styles separately to allow browser to redraw first
+            setTimeout(function(){
+                // update properties to kick off transition
+                style[transitionPrefix + "Property"] = "all";
+                style[transitionPrefix + "Duration"] = duration + "ms";
+                style[transform] = end;
+            }, 0);
+            
+            return dfd.promise;
+        },
+        
+        slideReset: function(node){
+            // summary:
+            //      Resets the position of a previously-transitioned node.
+            
+            var style = node.style;
+            style[transitionPrefix + "Duration"] = "0ms";
+            style[transform] = translatePrefix + "0" + translateSuffix;
+        }
     };
 });

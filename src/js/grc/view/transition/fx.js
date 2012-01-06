@@ -17,34 +17,31 @@ define([
         return dfd.promise;
     }
     
-    function slideNode(node, start, end, duration){
-        var props = {},
-            anim;
-        
-        props.left = {
-            start: start,
-            end: end,
-            units: "%"
-        };
-        
-        anim = baseFx.animateProperty({
-            node: node,
-            properties: props,
-            duration: duration
-        });
-        
-        return startAnimation(anim); // promise
-    }
-    
-    function resetSlideNode(node){
-        // summary:
-        //      Resets the position of a node that was previously transitioned.
-        
-        node.style.left = "0";
-    }
-    
     return {
-        slideNode: slideNode,
-        resetSlideNode: resetSlideNode
+        slideNode: function(node, start, end, duration){
+            var props = {},
+                anim;
+            
+            props.left = {
+                start: start,
+                end: end,
+                units: "%"
+            };
+            
+            anim = baseFx.animateProperty({
+                node: node,
+                properties: props,
+                duration: duration
+            });
+            
+            return startAnimation(anim); // promise
+        },
+        
+        slideReset: function(node){
+            // summary:
+            //      Resets the position of a node that was previously transitioned.
+            
+            node.style.left = "0";
+        }
     };
 });
