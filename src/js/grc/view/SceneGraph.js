@@ -2,8 +2,10 @@
 
 TODOs:
 
-* support for leaving a "gap" where the previous pane is still visible
-  
+* click on "older" child to hide "younger" ones
+* revisit fx transition logic
+* attempt to work out some overflow glitches in css3 logic
+
 */
 
 define([
@@ -74,6 +76,11 @@ define([
         //      newly-selected ContentPane to finish loading its href (if
         //      applicable) before animating.
         loadBeforeTransition: false,
+        
+        constructor: function(args){
+            // force doLayout to false to prevent child resize from being forced
+            args.doLayout = false;
+        },
         
         forward: function(page){
             // summary:
@@ -193,20 +200,17 @@ define([
                 children[index] : current;
         },
         
-        _hideChild: function(page){
-            // summary:
-            //      Overrides StackContainer._hideChild,
-            //      since previous children are to potentially remain visible.
-        },
-        
         _transition: function(newChild, oldChild, animate){
             var self = this,
                 oldNode = oldChild.domNode,
                 newNode = newChild.domNode,
-                reverse, showChildResult, promise;
+                reverse, showChildResult, promise,
+                gapSide, gapSize;
             
             // if only newChild was specified, don't perform a transition
-            if (!oldChild) { return this.inherited(arguments); }
+            if (!oldChild) {
+                return this._showChild(newChild);
+            }
             
             oldChild._set("selected", false);
             newChild._set("selected", true);
@@ -214,20 +218,16 @@ define([
             function transition(){
                 newNode.style.visibility = ""; // unhide
                 
-                // store transition promise on instance to flag activity,
-                // cleared when transition completes
-                var promise = self._transitionPromise =
-                    transitions[animate]({
-                        newNode: newNode,
-                        oldNode: oldNode,
-                        side: self.transitionSide,
-                        duration: self.duration,
-                        reverse: reverse
-                    }).then(function(r){
-                        delete self._transitionPromise;
-                        return r;
-                    });
-                return promise;
+                return transitions[animate]({
+                    newNode: newNode,
+                    oldNode: oldNode,
+                    side: self.transitionSide,
+                    duration: self.duration,
+                    reverse: reverse
+                }).then(function(r){
+                    delete self._transitionPromise;
+                    return r;
+                });
             }
             
             // normalize animate/reverse variables
@@ -240,17 +240,23 @@ define([
             }
             
             if (typeof transitions[animate] == "function") {
-                // when sliding in, ensure new node remains hidden initially
-                // until it's time to perform the transition; applicable in case of
-                // loadBeforeTransition + ContentPane with unloaded href
-                if (!reverse) { newNode.style.visibility = "hidden"; }
+                if (!reverse) {
+                    // when sliding in, ensure new node is hidden until the
+                    // the transition is to be performed; applicable in case of
+                    // loadBeforeTransition + ContentPane with unloaded href
+                    newNode.style.visibility = "hidden";
+                } else {
+                
+                }
                 
                 // ensure new child is displayed and its size is calculated
                 showChildResult = this._showChild(newChild);
-                if (this.doLayout && newChild.resize && !reverse) {
-                    // ensure child is sized properly to container
-                    newChild.resize(this._containerContentBox || this._contentBox);
-                    // TODO: account for gap
+                
+                if (!reverse && this.gap > 0 && this.transitionType == "cover") {
+                    // calculate gap and apply style to node
+                    gapSide = this.transitionSide == "left" ? "right" : "left";
+                    gapSize = this.gap * arrayUtil.indexOf(this.getChildren(), newChild);
+                    newChild.domNode.style[gapSide] = gapSize + this.gapUnits;
                 }
                 
                 // Invoke transition method.  It returns a promise, which
@@ -268,10 +274,12 @@ define([
                         transition();
                 }
                 
-                return promise;
+                // store transition promise on instance to flag activity,
+                // cleared when transition completes
+                return this._transitionPromise = promise;
             } else {
                 // unknown/unhandled animation; don't perform any
-                return this.inherited(arguments);
+                return this._showChild(newChild);
             }
         }
     });

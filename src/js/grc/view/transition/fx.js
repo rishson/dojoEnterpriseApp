@@ -11,6 +11,7 @@ define([
         var dfd = new Deferred(),
             handle = aspect.after(anim, "onEnd", function(){
                 handle.remove();
+                anim.node.style.overflow = "";
                 dfd.resolve(anim.node);
             });
         anim.play();
@@ -18,30 +19,37 @@ define([
     }
     
     return {
-        slideNode: function(node, start, end, duration){
+        slideNode: function(node, start, end, options){
             var props = {},
+                side = options.side,
+                prop = side == "right" ? "marginLeft" : "marginRight",
+                reverse = side == "left",
                 anim;
             
-            props.left = {
-                start: start,
-                end: end,
+            props[prop] = {
+                start: reverse ? -start : start,
+                end: reverse ? -end : end,
                 units: "%"
             };
             
             anim = baseFx.animateProperty({
                 node: node,
                 properties: props,
-                duration: duration
+                duration: options.duration || manager.defaultDuration
             });
             
+            node.style.overflow = "hidden"
             return startAnimation(anim); // promise
         },
         
-        slideReset: function(node){
+        slideReset: function(node, options){
             // summary:
             //      Resets the position of a node that was previously transitioned.
             
-            node.style.left = "0";
+            var side = options.side,
+                prop = side == "left" ? "marginRight" : "marginLeft";
+                //prop = "margin" + side.substr(0, 1).toUpperCase() + side.substr(1);
+            node.style[prop] = "0";
         }
     };
 });

@@ -106,11 +106,16 @@ define([
                 duration = options.duration,
                 reverse = (side == "left" ^ options.reverse),
                 oldEnd = reverse ? 100 : -100,
-                newStart = reverse ? -100 : 100;
+                newStart = reverse ? -100 : 100,
+                info = {
+                    duration: options.duration,
+                    // this indicates particularly to fx to always use marginLeft
+                    side: "right"
+                };
             
             return new DeferredList([
-                transitions.slideNode(options.oldNode, 0, oldEnd, duration),
-                transitions.slideNode(options.newNode, newStart, 0, duration)
+                transitions.slideNode(options.oldNode, 0, oldEnd, info),
+                transitions.slideNode(options.newNode, newStart, 0, info)
             ]);
         },
         
@@ -129,11 +134,16 @@ define([
                     (reverse ? options.oldNode : options.newNode),
                 max = options.side == "right" ? 100 : -100,
                 start = reverse ? 0 : max,
-                end = reverse ? max : 0;
+                end = reverse ? max : 0,
+                info = {
+                    duration: options.duration,
+                    side: options.side
+                };
             
             // ensure stationary node is correctly positioned first
-            transitions.slideReset(reverse ? options.newNode : options.oldNode);
-            return transitions.slideNode(node, start, end, options.duration);
+            transitions.slideReset(reverse ? options.newNode : options.oldNode,
+                info);
+            return transitions.slideNode(node, start, end, info);
         }
     };
     

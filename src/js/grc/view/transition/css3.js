@@ -50,9 +50,10 @@ define([
     }
     
     return {
-        slideNode: function(node, start, end, duration){
+        slideNode: function(node, start, end, options){
             var dfd = new Deferred(),
-                style = node.style;
+                style = node.style,
+                duration = options.duration;
             
             duration = duration || manager.defaultDuration;
             
@@ -63,8 +64,10 @@ define([
             // initialize node styles without transition, before beginning slide
             style[transitionPrefix + "Duration"] = "0ms";
             style[transform] = start;
+            style.overflow = "hidden";
             
             on.once(node, transitionend, function(){
+                style.overflow = "";
                 dfd.resolve(node);
             });
             
@@ -79,7 +82,7 @@ define([
             return dfd.promise;
         },
         
-        slideReset: function(node){
+        slideReset: function(node, options){
             // summary:
             //      Resets the position of a previously-transitioned node.
             

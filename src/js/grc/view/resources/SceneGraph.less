@@ -4,6 +4,13 @@
     
     /* set position to absolute to accommodate transition logic */
     position: absolute;
+    
+    /* set all sides to 0 to enforce sizing aganist parent by default */
+    /* (NOTE: this won't work in IE6) */
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
 }
 
 /* these media queries assist in feature detection of 3D transforms */

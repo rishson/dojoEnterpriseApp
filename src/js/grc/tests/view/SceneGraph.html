@@ -12,7 +12,7 @@
             margin: 1em 0;
         }
         .container {
-            width: 50%;
+            width: 600px;
             margin: 1em;
         }
         .controller { height: 50px; }
@@ -54,24 +54,34 @@
             "dojo/dom",
             "dojo/dom-construct",
             "dojo/on",
+            "dojo/aspect",
             "dojo/has",
             "doh",
             "rishson/tests/TestService",
             "domReady!"
         ], function(SceneGraph, StackController, ContentPane,
-                lang, dom, domConstruct, on, has, doh, TestService){
+                lang, dom, domConstruct, on, aspect, has, doh, TestService){
             
             console.log("has (csstransitions, csstransforms, csstransforms3d): ",
                 has("csstransitions"), has("csstransforms"), has("csstransforms3d"));
             
             var fromRobot = location.search == "?robot";
             
+            function generateContent(str){
+                str += " content ";
+                for (var i = 8; i--;) {
+                    str += str;
+                }
+                str = '<div style="float: right">floated right</div>' + str;
+                return str;
+            }
+            
             // register custom XHR handler for /testServices/delay/*
             // in order to test ContentPane loading
             TestService.register({
                 handlers: [
                     [/^delay\/(.*)$/, function(frag){
-                        return frag + " content";
+                        return generateContent(frag);
                     }, 1000]
                 ]
             });
@@ -96,17 +106,14 @@
                 var panes = [
                         new ContentPane({
                             id: id + "_cp1",
-                            className: "cp1",
                             title: "one"
                         }),
                         new ContentPane({
                             id: id + "_cp2",
-                            className: "cp2",
                             title: "two"
                         }),
                         new ContentPane({
                             id: id + "_cp3",
-                            className: "cp3",
                             title: "three"
                         })
                     ],
@@ -114,7 +121,7 @@
                         id: id + "_container",
                         className: "container"
                     }),
-                    args = { id: id, duration: 500 },
+                    args = { id: id, duration: 500, gap: 20, gapUnits: "px" },
                     widget, nav, sc, p, i, len;
                 
                 if (loadBeforeTransition) {
@@ -129,8 +136,17 @@
                         p.set("href", "/testServices/delay/" + p.get("title"));
                     } else {
                         // set content directly, no load
-                        p.set("content", p.get("title") + " content");
+                        p.set("content", generateContent(p.get("title")));
                     }
+                    
+                    // possible bug in 1.7: setting className on a widget
+                    // clobbers baseClass
+                    p.domNode.className += " cp" + (i + 1);
+                    
+                    // even if this gets logged, it shouldn't get logged w/ args
+                    aspect.after(p, "resize", function(){
+                        console.log("child resize called", arguments);
+                    }, true);
                     widget.addChild(p);
                 }
                 
