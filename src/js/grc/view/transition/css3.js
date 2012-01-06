@@ -52,8 +52,6 @@ define([
     }
     
     function slideNode(node, start, end, duration){
-        // Handles "slide" transition of a node.
-        
         var dfd = new Deferred(),
             style = node.style;
         
@@ -82,48 +80,5 @@ define([
         return dfd.promise;
     }
     
-    return {
-        slide: function(options){
-            // summary:
-            //      Performs a slide transition, moving the old node out and
-            //      new node in simultaneously.
-            // options: Object
-            //      * side: which direction the transition is relative to
-            //      * reverse: if true, nodes move towards `side` instead of away
-            //      * duration: how long the transition should take
-            // returns: promise
-            //      Returns a promise which resolves when the transition ends.
-            
-            var side = options.side,
-                duration = options.duration,
-                reverse = (side == "left" ^ options.reverse),
-                oldEnd = reverse ? 100 : -100,
-                newStart = reverse ? -100 : 100;
-            
-            return new DeferredList([
-                slideNode(options.oldNode, 0, oldEnd, duration),
-                slideNode(options.newNode, newStart, 0, duration)
-            ]);
-        },
-        
-        cover: function(options){
-            // summary:
-            //      Performs a cover transition, moving the new node in.
-            // options: Object
-            //      * side: which direction the transition is relative to
-            //      * reverse: if true, performs "uncover" rather than "cover"
-            //      * duration: how long the transition should take
-            // returns: promise
-            //      Returns a promise which resolves when the transition ends.
-            
-            var reverse = options.reverse,
-                node = options.node ||
-                    (reverse ? options.oldNode : options.newNode),
-                max = options.side == "right" ? 100 : -100,
-                start = reverse ? 0 : max,
-                end = reverse ? max : 0;
-            
-            return slideNode(node, start, end, options.duration);
-        }
-    };
+    return { slideNode: slideNode };
 });

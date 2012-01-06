@@ -107,7 +107,7 @@ define([
     require([
         has("csstransitions") &&
         (has("csstransforms") || has("csstransforms3d")) ?
-        "./transition/css3" : "./transition/fx"
+        "./transitions!css3" : "./transitions!fx"
     ], function(t){
         transitions = t;
     });
