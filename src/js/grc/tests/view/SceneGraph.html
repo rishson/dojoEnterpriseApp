@@ -27,6 +27,11 @@
         <a href="#" id="slide">Slide (default)</a>
         <a href="#" id="cover">Cover</a>
     </div>
+    <div id="side">
+        <h1>Active side for all widgets</h1>
+        <a href="#" id="left">Left</a>
+        <a href="#" id="right">Right (default)</a>
+    </div>
     <script>var less = { env: "development" };</script>
     <script src="../../../less/dist/less-1.1.6.min.js"></script>
 
@@ -173,9 +178,16 @@
                 "lbaHrefWidget_container", "before");
             
             on(dom.byId("animation"), "a:click", function(evt){
-                // id is slide/cover, matching transition type.
+                // id is slide/cover, matching transitionType value.
                 // apply change to prototype to force on all widget instances.
                 SceneGraph.prototype.transitionType = this.id;
+                evt.preventDefault();
+            });
+            
+            on(dom.byId("side"), "a:click", function(evt){
+                // id is left/right, matching transitionSide value.
+                // apply change to prototype to force on all widget instances.
+                SceneGraph.prototype.transitionSide = this.id;
                 evt.preventDefault();
             });
             
