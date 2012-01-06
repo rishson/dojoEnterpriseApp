@@ -78,5 +78,17 @@ define([
         return dfd.promise;
     }
     
-    return { slideNode: slideNode };
+    function resetSlideNode(node){
+        // summary:
+        //      Resets the position of a node that was previously transitioned.
+        
+        var style = node.style;
+        style[transitionPrefix + "Duration"] = "0ms";
+        style[transform] = translatePrefix + "0" + translateSuffix;
+    }
+    
+    return {
+        slideNode: slideNode,
+        resetSlideNode: resetSlideNode
+    };
 });

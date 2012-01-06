@@ -247,7 +247,7 @@ define([
                 
                 // ensure new child is displayed and its size is calculated
                 showChildResult = this._showChild(newChild);
-                if (this.doLayout && newChild.resize) {
+                if (this.doLayout && newChild.resize && !reverse) {
                     // ensure child is sized properly to container
                     newChild.resize(this._containerContentBox || this._contentBox);
                     // TODO: account for gap

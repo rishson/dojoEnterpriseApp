@@ -131,6 +131,7 @@ define([
                 start = reverse ? 0 : max,
                 end = reverse ? max : 0;
             
+            transitions.resetSlideNode(reverse ? options.newNode : options.oldNode);
             return transitions.slideNode(node, start, end, options.duration);
         }
     };

@@ -36,5 +36,15 @@ define([
         return startAnimation(anim); // promise
     }
     
-    return { slideNode: slideNode };
+    function resetSlideNode(node){
+        // summary:
+        //      Resets the position of a node that was previously transitioned.
+        
+        node.style.left = "0";
+    }
+    
+    return {
+        slideNode: slideNode,
+        resetSlideNode: resetSlideNode
+    };
 });
