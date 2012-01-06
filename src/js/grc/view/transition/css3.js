@@ -1,12 +1,10 @@
 //FIXME: debug Opera, if it is to be supported (increasing timeout seems to help)
 define([
     "dojo/_base/Deferred",
-    "dojo/DeferredList",
     "dojo/on",
     "dojo/has",
-    "dojo/dom-style",
     "dijit/_base/manager", // for defaultDuration
-], function(Deferred, DeferredList, on, has, domStyle, manager){
+], function(Deferred, on, has, manager){
     var hasTransition = has("csstransitions"),
         hasTransform = has("csstransforms"),
         hasTransform3d = has("csstransforms3d"),

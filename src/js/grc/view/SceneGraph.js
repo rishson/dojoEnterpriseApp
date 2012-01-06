@@ -16,14 +16,10 @@ define([
     "dojo/dom-construct",
     "dojo/topic",
     "dojo/has",
-    "require",
+    "./transitions!", // plugin which loads CSS3- or fx-based transition logic
     "dojo/i18n!./nls/SceneGraph"
 ], function(declare, StackContainer, arrayUtil, Deferred, DeferredList,
-        domStyle, domConstruct, topic, has, require, l10n){
-    var transitions = {}, // placeholder for transition methods to be loaded
-        // variables for feature tests
-        testDiv = document.createElement("div"),
-        cssPrefixes = ["ms", "O", "Moz", "Webkit"];
+        domStyle, domConstruct, topic, has, transitions, l10n){
     
     function makePromise(value){
         // simple function to create and immediately resolve/return a promise
@@ -31,86 +27,6 @@ define([
         dfd.resolve(value);
         return dfd.promise;
     }
-    
-    // add feature tests for CSS transitions and transforms,
-    // and run them now since we'll need them shortly anyway
-    has.add("csstransitions", function(){
-        // rather than simply return true, this test returns an object with
-        // information on vendor prefixes for style rules and events.
-        
-        var style = testDiv.style,
-            // transitionend prefixes, in same order as cssPrefixes
-            tePrefixes = ["MS", "o", "", "webkit"],
-            i;
-        
-        if (style.transitionProperty !== undefined) {
-            // standard, no vendor prefix
-            return { css: "", transitionend: "" };
-        }
-        for (i = cssPrefixes.length; i--;) {
-            if (style[cssPrefixes[i] + "TransitionProperty"] !== undefined) {
-                return {
-                    css: cssPrefixes[i], // css prefix
-                    transitionend: tePrefixes[i] // vendor-specific event prefix
-                };
-            }
-        }
-        
-        // otherwise, not supported
-        return false;
-    }, true);
-    
-    has.add("csstransforms", function(){
-        var style = testDiv.style, i;
-        if (style.transformProperty !== undefined) {
-            // standard, no vendor prefix
-            return { css: "" };
-        }
-        for (i = cssPrefixes.length; i--;) {
-            if (style[cssPrefixes[i] + "Transform"] !== undefined) {
-                return { css: cssPrefixes[i] };
-            }
-        }
-        
-        // otherwise, not supported
-        return false;
-    }, true);
-    
-    has.add("csstransforms3d", function(){
-        var style = testDiv.style, left, prefix;
-        
-        // apply csstransforms3d class to test transform-3d media queries
-        testDiv.className = "csstransforms3d";
-        // add to body to allow measurement
-        document.body.appendChild(testDiv);
-        left = testDiv.offsetLeft;
-        
-        if (left === 9) {
-            // standard, no prefix
-            return { css: "" };
-        } else if (left > 9){
-            // Matched one of the vendor prefixes; offset indicates which
-            prefix = cssPrefixes[left - 10];
-            return prefix ? { css: prefix } : false;
-        }
-        
-        // otherwise, not supported
-        return false;
-    }, true);
-    
-    // discard the test node after tests are done
-    domConstruct.destroy(testDiv);
-    testDiv = null;
-    
-    // Load CSS3-based transition logic if the browser supports it;
-    // otherwise, fall back to a dojo/_base/fx-based solution.
-    require([
-        has("csstransitions") &&
-        (has("csstransforms") || has("csstransforms3d")) ?
-        "./transitions!css3" : "./transitions!fx"
-    ], function(t){
-        transitions = t;
-    });
     
     return declare(StackContainer, {
         // summary:
