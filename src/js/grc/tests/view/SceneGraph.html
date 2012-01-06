@@ -7,7 +7,14 @@
     <link rel="stylesheet/less" href="../../../app/resources/app.less">
     <link rel="stylesheet/less" href="../../view/resources/SceneGraph.less">
     <style>
-        .grcSceneGraph { height: 100px; }
+        .grcSceneGraph {
+            height: 100px;
+            margin: 1em 0;
+        }
+        .container {
+            width: 50%;
+            margin: 1em;
+        }
         .controller { height: 50px; }
         .cp1 { background-color: #fcc; }
         .cp2 { background-color: #cfc; }
@@ -15,14 +22,8 @@
     </style>
 </head>
 <body class="claro">
-    <div id="nav">
-        <h1>Additional controls for first widget</h1>
-        <h2>Navigate</h2>
-        <a href="#" id="back">Back (using reverse transition)</a><br>
-        <a href="#" id="forward">Forward</a>
-    </div>
     <div id="animation">
-        <h2>Animation</h2>
+        <h1>Animation type for all widgets</h1>
         <a href="#" id="slide">Slide (default)</a>
         <a href="#" id="cover">Cover</a>
     </div>
@@ -109,7 +110,7 @@
                         className: "container"
                     }),
                     args = { id: id, duration: 500 },
-                    widget, p, i, len;
+                    widget, nav, sc, p, i, len;
                 
                 if (loadBeforeTransition) {
                     args.loadBeforeTransition = true;
@@ -128,8 +129,20 @@
                     widget.addChild(p);
                 }
                 
-                // StackController for paging SceneGraph
-                var sc = new StackController({
+                // back/forward links for calling back() and forward()
+                nav = dojo.place('<div class="nav">' +
+                    '<a class="back" href="#">Back (using reverse transition)</a>' +
+                    ' <a class="forward" href="#">Forward</a></div>',
+                    div, "first");
+                
+                on(nav, "a:click", function(evt){
+                    // class is forward or back, matching SceneWidget method name
+                    widget[this.className]();
+                    evt.preventDefault();
+                });
+                
+                // StackController for paging SceneGraph directly
+                sc = new StackController({
                     id: id + "_controller",
                     containerId: id,
                     className: "controller"
@@ -143,7 +156,7 @@
             }
             
             // create basic instance (also for tests)
-            testWidget = createWidget("testWidget");
+            window.testWidget = createWidget("testWidget");
             domConstruct.place(
                 "<h1>Basic test (loadBeforeTransition: false, CPs with content)",
                 "testWidget_container", "before");
@@ -159,15 +172,10 @@
                 "<h1>Test with loadBeforeTransition: true, CPs with href",
                 "lbaHrefWidget_container", "before");
             
-            on(dom.byId("nav"), "a:click", function(evt){
-                // id is forward or back, matching SceneWidget method name
-                testWidget[this.id]();
-                evt.preventDefault();
-            });
-            
             on(dom.byId("animation"), "a:click", function(evt){
-                // id is slide/cover, matching transition type
-                testWidget.transitionType = this.id;
+                // id is slide/cover, matching transition type.
+                // apply change to prototype to force on all widget instances.
+                SceneGraph.prototype.transitionType = this.id;
                 evt.preventDefault();
             });
             

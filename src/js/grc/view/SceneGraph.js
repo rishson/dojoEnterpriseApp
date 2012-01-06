@@ -104,10 +104,11 @@ define([
     
     // Load CSS3-based transition logic if the browser supports it;
     // otherwise, fall back to a dojo/_base/fx-based solution.
-    require(/*has("csstransitions") &&
-            (has("csstransforms") || has("csstransforms3d")) ?
-        ["./transition/css3"] : */["./transition/fx"],
-    function(t){
+    require([
+        has("csstransitions") &&
+        (has("csstransforms") || has("csstransforms3d")) ?
+        "./transition/css3" : "./transition/fx"
+    ], function(t){
         transitions = t;
     });
     
@@ -306,8 +307,9 @@ define([
                         side: self.transitionSide,
                         duration: self.duration,
                         reverse: reverse
-                    }).then(function(){
+                    }).then(function(r){
                         delete self._transitionPromise;
+                        return r;
                     });
                 return promise;
             }

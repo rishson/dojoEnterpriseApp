@@ -51,28 +51,17 @@ define([
         transitionend = "transitionend"; // no vendor prefix, standard name
     }
     
-    function slideNode(node, out, options){
+    function slideNode(node, start, end, duration){
         // Handles "slide" transition of a node.
-        // If out is true, node is sliding "out" (from 0); else "in" (to 0)
         
-        var start = "0",
-            end = "0",
-            dfd = new Deferred(),
-            style = node.style,
-            reverse = options.reverse,
-            duration = options.duration || manager.defaultDuration;
+        var dfd = new Deferred(),
+            style = node.style;
         
-        if (out) {
-            // reverse == out to the right, forward == out to the left
-            end = (reverse ? "" : "-") + "100%";
-        } else {
-            // reverse == in from the left, forward == in from the right
-            start = (reverse ? "-" : "") + "100%";
-        }
+        duration = duration || manager.defaultDuration;
         
         // embed start and end within translate values
-        start = translatePrefix + start + translateSuffix;
-        end = translatePrefix + end + translateSuffix;
+        start = translatePrefix + start + "%" + translateSuffix;
+        end = translatePrefix + end + "%" + translateSuffix;
         
         // initialize node styles without transition, before beginning slide
         style[transitionPrefix + "Duration"] = "0ms";
@@ -94,54 +83,47 @@ define([
     }
     
     return {
-        slide: function(newNode, oldNode, options){
+        slide: function(options){
             // summary:
             //      Performs a slide transition, moving the old node out and
             //      new node in simultaneously.
             // options: Object
-            //      * reverse: if true, node is moving to the right; else to the left
-            //      * duration: how long the transition should take; default is 250ms
+            //      * side: which direction the transition is relative to
+            //      * reverse: if true, nodes move towards `side` instead of away
+            //      * duration: how long the transition should take
             // returns: promise
             //      Returns a promise which resolves when the transition ends.
+            
+            var side = options.side,
+                duration = options.duration,
+                reverse = (side == "left" ^ options.reverse),
+                oldEnd = reverse ? 100 : -100,
+                newStart = reverse ? -100 : 100;
+            
             return new DeferredList([
-                slideNode(oldNode, true, options),
-                slideNode(newNode, false, options)
+                slideNode(options.oldNode, 0, oldEnd, duration),
+                slideNode(options.newNode, newStart, 0, duration)
             ]);
         },
         
-        cover: function(newNode, oldNode, options){
+        cover: function(options){
             // summary:
             //      Performs a cover transition, moving the new node in.
             // options: Object
-            //      * reverse: if true, node is moving to the right; else to the left
-            //      * duration: how long the transition should take; default is 250ms
+            //      * side: which direction the transition is relative to
+            //      * reverse: if true, performs "uncover" rather than "cover"
+            //      * duration: how long the transition should take
             // returns: promise
             //      Returns a promise which resolves when the transition ends.
             
-            // ensure that new node "covers" old one
-            newNode.style.zIndex = 2;
-            oldNode.style.zIndex = 1;
+            var reverse = options.reverse,
+                node = options.node ||
+                    (reverse ? options.oldNode : options.newNode),
+                max = options.side == "right" ? 100 : -100,
+                start = reverse ? 0 : max,
+                end = reverse ? max : 0;
             
-            return slideNode(newNode, false, options);
-        },
-        
-        reveal: function(newNode, oldNode, options){
-            // summary:
-            //      Performs a reveal transition, moving the old node out.
-            // options: Object
-            //      * reverse: if true, node is moving to the right; else to the left
-            //      * duration: how long the transition should take; default is 250ms
-            // returns: promise
-            //      Returns a promise which resolves when the transition ends.
-            
-            // ensure that old node "reveals" new one
-            newNode.style.zIndex = 1;
-            oldNode.style.zIndex = 2;
-            // reset placement of new node (in case it had been translated)
-            newNode.style[transitionPrefix + "Duration"] = "0ms";
-            newNode.style[transform] = translatePrefix + "0" + translateSuffix;
-            
-            return slideNode(oldNode, true, options);
+            return slideNode(node, start, end, options.duration);
         }
     };
 });
