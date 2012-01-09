@@ -1,13 +1,3 @@
-/*
-
-TODOs:
-
-* click on "older" child to hide "younger" ones
-* revisit fx transition logic
-* attempt to work out some overflow glitches in css3 logic
-
-*/
-
 define([
     "dojo/_base/declare",
     "dijit/layout/StackContainer",
@@ -81,6 +71,7 @@ define([
         
         constructor: function(args){
             // force doLayout to false to prevent child resize from being forced
+            if (!args) { args = {}; }
             args.doLayout = false;
         },
         
