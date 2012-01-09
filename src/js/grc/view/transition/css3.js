@@ -49,7 +49,7 @@ define([
         transitionend = "transitionend"; // no vendor prefix, standard name
     }
     
-    return {
+    var ret = {
         slideNode: function(node, start, end, options){
             var dfd = new Deferred(),
                 style = node.style,
@@ -58,16 +58,20 @@ define([
             duration = duration || manager.defaultDuration;
             
             // embed start and end within translate values
-            start = translatePrefix + start + "%" + translateSuffix;
-            end = translatePrefix + end + "%" + translateSuffix;
+            start = (start ?
+                translatePrefix + start + "%" + translateSuffix : "");
+            end = (end ?
+                translatePrefix + end + "%" + translateSuffix : "");
             
             // initialize node styles without transition, before beginning slide
             style[transitionPrefix + "Duration"] = "0ms";
             style[transform] = start;
-            style.overflow = "hidden";
             
             on.once(node, transitionend, function(){
-                style.overflow = "";
+                // reset position to minimize effect of
+                // Chrome's scrollbar displacement bug
+                ret.slideReset(node, options);
+                
                 dfd.resolve(node);
             });
             
@@ -88,7 +92,8 @@ define([
             
             var style = node.style;
             style[transitionPrefix + "Duration"] = "0ms";
-            style[transform] = translatePrefix + "0" + translateSuffix;
+            style[transform] = "";
         }
     };
+    return ret;
 });

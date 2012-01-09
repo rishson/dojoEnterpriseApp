@@ -264,8 +264,6 @@ define([
                     // the transition is to be performed; applicable in case of
                     // loadBeforeTransition + ContentPane with unloaded href
                     newNode.style.visibility = "hidden";
-                } else {
-                
                 }
                 
                 // ensure new child is displayed and its size is calculated
@@ -291,6 +289,14 @@ define([
                     promise = showChildResult.then ?
                         new DeferredList([showChildResult, transition()]) :
                         transition();
+                }
+                
+                if (reverse) {
+                    // hide "younger" child which was scrolled out of view
+                    // (allows css3 logic to reset styles)
+                    promise = promise.then(function(){
+                        oldNode.style.visibility = "hidden";
+                    });
                 }
                 
                 // store transition promise on instance to flag activity,
