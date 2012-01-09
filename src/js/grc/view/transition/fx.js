@@ -11,8 +11,6 @@ define([
         var dfd = new Deferred(),
             handle = aspect.after(anim, "onEnd", function(){
                 handle.remove();
-                // restore overflow style stashed on Animation object
-                anim.node.style.overflow = anim._origOverflow;
                 dfd.resolve(anim.node);
             });
         anim.play();
@@ -24,12 +22,18 @@ define([
             var props = {},
                 side = options.side,
                 prop = side == "right" ? "marginLeft" : "marginRight",
+                oppositeProp = side == "right" ? "marginRight" : "marginLeft",
                 reverse = side == "left",
                 anim;
             
             props[prop] = {
                 start: reverse ? -start : start,
                 end: reverse ? -end : end,
+                units: "%"
+            };
+            props[oppositeProp] = {
+                start: reverse ? start : -start,
+                end: reverse ? end : -end,
                 units: "%"
             };
             
@@ -39,9 +43,6 @@ define([
                 duration: options.duration || manager.defaultDuration
             });
             
-            // turn off overflow during animation; stash old value if any
-            anim._origOverflow = node.style.overflow;
-            node.style.overflow = "hidden";
             return startAnimation(anim); // promise
         },
         
