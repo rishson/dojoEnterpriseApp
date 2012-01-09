@@ -19,10 +19,11 @@ define([
     "dojo/on",
     "dojo/topic",
     "dojo/has",
+    "dijit/registry", // for byNode
     "./transitions!", // plugin which loads CSS3- or fx-based transition logic
     "dojo/i18n!./nls/SceneGraph"
 ], function(declare, StackContainer, arrayUtil, Deferred, DeferredList,
-        domStyle, domConstruct, on, topic, has, transitions, l10n){
+        domStyle, domConstruct, on, topic, has, registry, transitions, l10n){
     
     function makePromise(value){
         // simple function to create and immediately resolve/return a promise
@@ -91,10 +92,7 @@ define([
             this._clickHandle =
                 on(this.domNode, "." + this.baseClass + "-child:click",
                 function(evt){
-                    if (self.selectedChildWidget.domNode != this) {
-                        // transition to clicked child
-                        self.selectChild(self.getChildren().indexOf(this));
-                    }
+                    self.selectChild(registry.byNode(this));
                 });
         },
         
