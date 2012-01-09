@@ -22,16 +22,25 @@
     </style>
 </head>
 <body class="claro">
-    <div id="animation">
+    <form id="settingsForm">
         <h1>Animation type for all widgets</h1>
-        <a href="#" id="slide">Slide (default)</a>
-        <a href="#" id="cover">Cover</a>
-    </div>
-    <div id="side">
+        <div>
+        <label><input type="radio" name="transitionType" value="slide" checked>
+            Slide (default)</label>
+        <label><input type="radio" name="transitionType" value="cover">
+            Cover</label>
+        </div>
+        
         <h1>Active side for all widgets</h1>
-        <a href="#" id="left">Left</a>
-        <a href="#" id="right">Right (default)</a>
-    </div>
+        <div>
+        <label><input type="radio" name="transitionSide" value="left">
+            Left</label>
+        <label><input type="radio" name="transitionSide" value="right" checked>
+            Right (default)</label>
+        </div>
+        
+        <div><input type="submit" value="Recreate widgets"></div>
+    </form>
     <script>var less = { env: "development" };</script>
     <script src="../../../less/dist/less-1.1.6.min.js"></script>
 
@@ -50,22 +59,21 @@
             "grc/view/SceneGraph",
             "dijit/layout/StackController",
             "dijit/layout/ContentPane",
+            "dijit/registry",
             "dojo/_base/lang",
             "dojo/dom",
             "dojo/dom-construct",
+            "dojo/dom-form",
             "dojo/on",
             "dojo/aspect",
             "dojo/has",
-            "doh",
             "rishson/tests/TestService",
             "domReady!"
-        ], function(SceneGraph, StackController, ContentPane,
-                lang, dom, domConstruct, on, aspect, has, doh, TestService){
+        ], function(SceneGraph, StackController, ContentPane, registry,
+                lang, dom, domConstruct, domForm, on, aspect, has, TestService){
             
             console.log("has (csstransitions, csstransforms, csstransforms3d): ",
                 has("csstransitions"), has("csstransforms"), has("csstransforms3d"));
-            
-            var fromRobot = location.search == "?robot";
             
             function generateContent(str){
                 str += " content ";
@@ -86,68 +94,62 @@
                 ]
             });
             
-            if(!fromRobot){
-                doh.register("SceneGraph Tests", [
-                    {
-                        name: "Instantiation",
-                        setUp: function(t){
-                        },
-                        runTest: function(t){
-                            t.t(testWidget && testWidget._started,
-                                "Widget should be instantiated and started.");
-                        },
-                        tearDown: function(t){
-                        }
-                    }
-                ]);
+            function createCP(args, className, useHref) {
+                var p;
+                
+                if (useHref) {
+                    // add href using TestService to test CP loading
+                    args.href = "/testServices/delay/" + args.title;
+                } else {
+                    // set content directly, no load
+                    args.content = generateContent(args.title);
+                }
+                
+                p = new dijit.layout.ContentPane(args);
+                
+                // possible bug in 1.7: setting className on a widget
+                // clobbers baseClass
+                p.domNode.className += " " + className;
+                
+                return p;
             }
             
-            function createWidget(id, useHref, loadBeforeTransition){
-                var panes = [
-                        new ContentPane({
-                            id: id + "_cp1",
-                            title: "one"
-                        }),
-                        new ContentPane({
-                            id: id + "_cp2",
-                            title: "two"
-                        }),
-                        new ContentPane({
-                            id: id + "_cp3",
-                            title: "three"
-                        })
-                    ],
+            function createWidget(id, additionalArgs, useHref){
+                var div = dom.byId(id + "_container"),
+                    args = lang.mixin({}, {
+                        id: id,
+                        duration: 1000,
+                        gap: 20,
+                        gapUnits: "%"
+                    }, additionalArgs),
+                    widget, nav, sc, p, i;
+                
+                if (!div) {
                     div = domConstruct.create("div", {
                         id: id + "_container",
                         className: "container"
-                    }),
-                    args = { id: id, duration: 1000, gap: 20, gapUnits: "px" },
-                    widget, nav, sc, p, i, len;
-                
-                if (loadBeforeTransition) {
-                    args.loadBeforeTransition = true;
+                    }, document.body);
+                    
+                    // hook up delegated event listener for forward/back
+                    on(div, "#nav a:click", function(evt){
+                        // class is forward/back, matching SceneWidget method name
+                        widget[this.className]();
+                        evt.preventDefault();
+                    });
+                } else {
+                    // destroy existing widgets and clear node
+                    registry.byId(id).destroyRecursive();
+                    registry.byId(id + "_controller").destroyRecursive();
+                    domConstruct.empty(div);
                 }
+                
                 widget = new SceneGraph(args).placeAt(div);
                 
-                for (i = 0, len = panes.length; i < len; i++) {
-                    p = panes[i];
-                    if (useHref) {
-                        // add href using TestService to test CP loading
-                        p.set("href", "/testServices/delay/" + p.get("title"));
-                    } else {
-                        // set content directly, no load
-                        p.set("content", generateContent(p.get("title")));
-                    }
-                    
-                    // possible bug in 1.7: setting className on a widget
-                    // clobbers baseClass
-                    p.domNode.className += " cp" + (i + 1);
-                    
-                    // even if this gets logged, it shouldn't get logged w/ args
-                    aspect.after(p, "resize", function(){
-                        console.log("child resize called", arguments);
-                    }, true);
-                    widget.addChild(p);
+                for (i = 1; i <= 3; i++) {
+                    widget.addChild(createCP({
+                        id: id + "_cp" + i,
+                        title: "Child " + i
+                    }, "cp" + i, useHref));
                 }
                 
                 // back/forward links for calling back() and forward()
@@ -156,12 +158,6 @@
                     ' <a class="forward" href="#">Forward</a></div>',
                     div, "first");
                 
-                on(nav, "a:click", function(evt){
-                    // class is forward or back, matching SceneWidget method name
-                    widget[this.className]();
-                    evt.preventDefault();
-                });
-                
                 // StackController for paging SceneGraph directly
                 sc = new StackController({
                     id: id + "_controller",
@@ -169,47 +165,44 @@
                     className: "controller"
                 }).placeAt(div, "first");
                 
-                document.body.appendChild(div);
                 sc.startup();
                 widget.startup();
                 
                 return widget;
             }
             
-            // create basic instance (also for tests)
-            window.testWidget = createWidget("testWidget");
-            domConstruct.place(
-                "<h1>Basic test (loadBeforeTransition: false, CPs with content)",
-                "testWidget_container", "before");
-            
-            // create instances to test loadBeforeTransition w/ CP's
-            createWidget("lbaContentWidget", true);
-            domConstruct.place(
-                "<h1>Test with loadBeforeTransition: false, CPs with href",
-                "lbaContentWidget_container", "before");
-            
-            createWidget("lbaHrefWidget", true, true);
-            domConstruct.place(
-                "<h1>Test with loadBeforeTransition: true, CPs with href",
-                "lbaHrefWidget_container", "before");
-            
-            on(dom.byId("animation"), "a:click", function(evt){
-                // id is slide/cover, matching transitionType value.
-                // apply change to prototype to force on all widget instances.
-                SceneGraph.prototype.transitionType = this.id;
-                evt.preventDefault();
-            });
-            
-            on(dom.byId("side"), "a:click", function(evt){
-                // id is left/right, matching transitionSide value.
-                // apply change to prototype to force on all widget instances.
-                SceneGraph.prototype.transitionSide = this.id;
-                evt.preventDefault();
-            });
-            
-            if(!fromRobot){
-                doh.run();
+            function createWidgets(args){
+                var first = !window.testWidget; // first time?
+                
+                // create basic instance (also for tests)
+                window.testWidget = createWidget("testWidget", lang.clone(args));
+                first && domConstruct.place(
+                    "<h1>Basic test (loadBeforeTransition: false, CPs with content)",
+                    "testWidget_container", "before");
+                
+                // create instances to test loadBeforeTransition w/ CP's
+                createWidget("lbaContentWidget", lang.mixin({}, args), true);
+                first && domConstruct.place(
+                    "<h1>Test with loadBeforeTransition: false, CPs with href",
+                    "lbaContentWidget_container", "before");
+                
+                createWidget("lbaHrefWidget",
+                    lang.mixin({ loadBeforeTransition: true}, args), true);
+                first && domConstruct.place(
+                    "<h1>Test with loadBeforeTransition: true, CPs with href",
+                    "lbaHrefWidget_container", "before");
             }
+            
+            var form = dom.byId("settingsForm");
+            form.onsubmit = function() {
+                var args = domForm.toObject(form);
+                console.log("args:", args);
+                createWidgets(args);
+                return false;
+            }
+            
+            // create widgets for first time
+            createWidgets();
         });
     </script>
 </body>
