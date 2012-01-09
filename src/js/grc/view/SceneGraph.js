@@ -16,12 +16,13 @@ define([
     "dojo/DeferredList",
     "dojo/dom-style",
     "dojo/dom-construct",
+    "dojo/on",
     "dojo/topic",
     "dojo/has",
     "./transitions!", // plugin which loads CSS3- or fx-based transition logic
     "dojo/i18n!./nls/SceneGraph"
 ], function(declare, StackContainer, arrayUtil, Deferred, DeferredList,
-        domStyle, domConstruct, topic, has, transitions, l10n){
+        domStyle, domConstruct, on, topic, has, transitions, l10n){
     
     function makePromise(value){
         // simple function to create and immediately resolve/return a promise
@@ -80,6 +81,26 @@ define([
         constructor: function(args){
             // force doLayout to false to prevent child resize from being forced
             args.doLayout = false;
+        },
+        
+        postCreate: function(){
+            var self = this;
+            
+            this.inherited(arguments);
+            
+            this._clickHandle =
+                on(this.domNode, "." + this.baseClass + "-child:click",
+                function(evt){
+                    if (self.selectedChildWidget.domNode != this) {
+                        // transition to clicked child
+                        self.selectChild(self.getChildren().indexOf(this));
+                    }
+                });
+        },
+        
+        uninitialize: function(){
+            this.inherited(arguments);
+            this._clickHandle.remove();
         },
         
         forward: function(page){
