@@ -7,20 +7,20 @@
     <link rel="stylesheet/less" href="../../../app/resources/app.less">
     <link rel="stylesheet/less" href="../../view/resources/SceneGraph.less">
     <style>
+        html, body {
+            height: 100%;
+            padding: 0;
+        }
+        #testWidget {
+            height: 100%;
+        }
         
+        .dijitNumberTextBox {
+            width: 3em !important;
+        }
     </style>
 </head>
 <body class="claro">
-    <div id="animation">
-        <h1>Animation type for all widgets</h1>
-        <a href="#" id="slide">Slide (default)</a>
-        <a href="#" id="cover">Cover</a>
-    </div>
-    <div id="side">
-        <h1>Active side for all widgets</h1>
-        <a href="#" id="left">Left</a>
-        <a href="#" id="right">Right (default)</a>
-    </div>
     <script>var less = { env: "development" };</script>
     <script src="../../../less/dist/less-1.1.6.min.js"></script>
 
@@ -35,34 +35,94 @@
     </script>
     <script src="../../../dojo/dojo.js"></script>
     <script>
+        // functions defined in require callback, but called in global scope
+        var formToWidget, next, prev;
+        
         require([
             "grc/view/SceneGraph",
-            "dojo/_base/lang",
-            "dojo/dom",
             "dojo/aspect",
-            "dijit/registry",
-            "dojo/parser",
+            "dojo/dom-construct",
+            "dojo/query",
             "rishson/tests/TestService",
             "dijit/layout/ContentPane",
+            "dijit/layout/StackContainer",
+            // the following are referenced in SceneGraph_dijitform_content
+            "dijit/layout/BorderContainer",
+            "dijit/form/Form",
             "dijit/form/Button",
             "dijit/form/CheckBox",
             "dijit/form/RadioButton",
             "dijit/form/TextBox",
+            "dijit/form/NumberTextBox",
             "dijit/form/FilteringSelect",
+            "dijit/Calendar",
             "domReady!"
-        ], function(SceneGraph, lang, dom, aspect, registry, parser, TestService){
+        ], function(SceneGraph, aspect, domConstruct, query, TestService,
+                ContentPane, StackContainer){
+            
+            var testHandler = [/^delay\/(.*)$/, function(frag){
+                    return generateContent(frag);
+                }, 500];
             
             // register custom XHR handler for /testServices/delay/*
             // in order to test ContentPane loading
             TestService.register({
-                handlers: [
-                    [/^delay\/(.*)$/, function(frag){
-                        return generateContent(frag);
-                    }, 1000]
-                ]
+                handlers: [testHandler]
             });
             
+            function createWidget(args){
+                if (!args) { args = {}; }
+                args.id = "testWidget";
+                args.duration = 500;
+                
+                var w = new SceneGraph(args).placeAt(document.body);
+                w.addChild(createCP());
+                w.startup();
+                return w;
+            }
             
+            var widget = createWidget();
+            
+            function createCP(){
+                var cp = new ContentPane({
+                    href: "SceneGraph_dijitform_content.html",
+                    onLoad: function(){
+                        query(".title", this.containerNode)[0].innerHTML =
+                            "Child " + (widget.getChildren().length);
+                    }
+                });
+                
+                aspect.after(cp, "resize", function(){
+                    console.log("cp resize called:", cp.id, arguments);
+                });
+                
+                return cp;
+            }
+            
+            next = function(){
+                widget.addChild(createCP());
+                widget.forward();
+                //widget.forward(createCP(), true);
+            };
+            
+            prev = function(evt){
+                evt.stopPropagation();
+                widget.back();
+            };
+            
+            formToWidget = function(){
+                var form = dijit.getEnclosingWidget(this.domNode.parentNode),
+                    values = form.get("value");
+                
+                // update delay used by mock XHR handler
+                testHandler[2] = values.loadingDelay;
+                
+                delete values.loadingDelay;
+                
+                widget.destroyRecursive();
+                //TODO: strings -> numbers?
+                widget = createWidget(values);
+            }
         });
     </script>
 </body>

@@ -1,0 +1,82 @@
+<div data-dojo-type="dijit.layout.BorderContainer">
+    <div data-dojo-type="dijit.layout.ContentPane"
+         data-dojo-props="region: 'center'">
+        <form data-dojo-type="dijit.form.Form">
+            <h1 class="title"></h1>
+            <div>Transition type:
+                <label>
+                    <input type="radio" data-dojo-type="dijit.form.RadioButton"
+                        name="transitionType" value="slide" checked>
+                    Slide (default)
+                </label>
+                <label>
+                    <input type="radio" data-dojo-type="dijit.form.RadioButton"
+                        name="transitionType" value="cover">
+                    Cover
+                </label>
+            </div>
+            <div>Transition side:
+                <label>
+                    <input type="radio" data-dojo-type="dijit.form.RadioButton"
+                        name="transitionSide" value="left">
+                    Left
+                </label>
+                <label>
+                    <input type="radio" data-dojo-type="dijit.form.RadioButton"
+                        name="transitionSide" value="right" checked>
+                    Right (default)
+                </label>
+            </div>
+            <div>Gap size: (cover only)
+                <input type="text" data-dojo-type="dijit.form.NumberTextBox"
+                    name="gap" value="0"></label>
+                <label>
+                    <input type="radio" data-dojo-type="dijit.form.RadioButton"
+                        name="gapUnits" value="px">px
+                </label>
+                <label>
+                    <input type="radio" data-dojo-type="dijit.form.RadioButton"
+                        name="gapUnits" value="%" checked>%
+                </label>
+            </div>
+            <div><label>
+                <input type="checkbox" data-dojo-type="dijit.form.CheckBox"
+                    name="loadBeforeTransition value="true">
+                Load content of new child before starting transition
+            </label></div>
+            <div><label>Simulate loading delay:
+                <!-- (this value will be pulled out in the processing function;
+                    it is not used directly by the widget) -->
+                <input type="text" data-dojo-type="dijit.form.NumberTextBox"
+                    name="loadingDelay" value="500"> ms
+            </label></div>
+            
+            <div>
+                <button type="button" data-dojo-type="dijit.form.Button"
+                        data-dojo-props="onClick: formToWidget">
+                    Recreate SceneGraph
+                </button>
+            </div>
+            
+            <p>Additional widgets to add weight to panes...</p>
+            <div>
+                <select data-dojo-type="dijit.form.FilteringSelect">
+                    <option value="1">one</option>
+                    <option value="2">two</option>
+                </select>
+                <select data-dojo-type="dijit.form.FilteringSelect">
+                    <option value="3">three</option>
+                    <option value="4">four</option>
+                </select>
+            </div>
+            <div data-dojo-type="dijit.Calendar"></div>
+        </form>
+    </div>
+    <div data-dojo-type="dijit.layout.ContentPane"
+         data-dojo-props="region: 'bottom'">
+        <button type="button" data-dojo-type="dijit.form.Button"
+            data-dojo-props="onClick: next">Transition to new child</button>
+        <button type="button" data-dojo-type="dijit.form.Button"
+            data-dojo-props="onClick: prev">Transition to previous child</button>
+    </div>
+</div>

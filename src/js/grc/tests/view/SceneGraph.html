@@ -16,9 +16,9 @@
             margin: 1em;
         }
         .controller { height: 50px; }
-        .cp1 { background-color: #fcc; }
-        .cp2 { background-color: #cfc; }
-        .cp3 { background-color: #ccf; }
+        .container .cp1 { background-color: #fcc; }
+        .container .cp2 { background-color: #cfc; }
+        .container .cp3 { background-color: #ccf; }
     </style>
 </head>
 <body class="claro">
@@ -100,7 +100,7 @@
                 ]
             });
             
-            function createCP(args, className, useHref) {
+            function createCP(args, className, useHref){
                 var p;
                 
                 if (useHref) {
