@@ -92,17 +92,40 @@ define([
             this._clickHandle.remove();
         },
         
-        forward: function(page){
+        forward: function(page, destroyRemoved){
             // summary:
             //      Advances to next page, passing specific animation type.
             // page: Widget?
             //      Optionally, a widget to add to the container before advancing.
+            //      Note that this will cause any existing later children to be
+            //      removed, so that the specified page is transitioned in.
+            // destroyRemoved: Boolean?
+            //      If true, any children removed in the process of setting up
+            //      the widget specified in `page` will also be destroyed.
             
-            if (page) { this.addChild(page); }
+            var current, children, child, i;
+            
+            if (page) {
+                // remove and optionally destroy any existing next-children
+                current = this.selectedChildWidget;
+                children = this.getChildren();
+                for (i = children.length; i--;) {
+                    child = children[i];
+                    if (child == current) { break; }
+                    
+                    console.log('removing:', child.id);
+                    this.removeChild(child);
+                    if (destroyRemoved) { child.destroyRecursive(); }
+                }
+                console.log('current:', current.id);
+                
+                // add new next child
+                this.addChild(page);
+            }
             return this._selectChild(this._adjacent(true));
         },
         
-        back: function(removePrevious){
+        back: function(removePrevious, destroyRemoved){
             // summary:
             //      Advances to previous page, passing specific animation type.
             // removePrevious: Boolean?
@@ -119,6 +142,9 @@ define([
                 promise = promise.then(function(r){
                     if (r !== false) {
                         self.removeChild(prev);
+                        if (destroyRemoved) {
+                            prev.destroyRecursive();
+                        }
                     }
                 });
             }
@@ -266,6 +292,8 @@ define([
                     gapSize = this.gap * arrayUtil.indexOf(this.getChildren(), newChild);
                     newChild.domNode.style[gapSide] = gapSize + this.gapUnits;
                 }
+                // prompt child to recalculate size after any gap is calculated
+                newChild.resize();
                 
                 // Invoke transition method.  It returns a promise, which
                 // resolves when the animation completes.
