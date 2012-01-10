@@ -113,11 +113,9 @@ define([
                     child = children[i];
                     if (child == current) { break; }
                     
-                    console.log('removing:', child.id);
                     this.removeChild(child);
                     if (destroyRemoved) { child.destroyRecursive(); }
                 }
-                console.log('current:', current.id);
                 
                 // add new next child
                 this.addChild(page);

@@ -15,8 +15,8 @@
             height: 100%;
         }
         
-        .dijitNumberTextBox {
-            width: 3em !important;
+        .form .dijitNumberTextBox {
+            width: 3em;
         }
     </style>
 </head>
@@ -44,8 +44,9 @@
             "dojo/dom-construct",
             "dojo/query",
             "rishson/tests/TestService",
+            "dijit/registry",
             "dijit/layout/ContentPane",
-            "dijit/layout/StackContainer",
+            "dojo/text!./SceneGraph_dijitform_content.html",
             // the following are referenced in SceneGraph_dijitform_content
             "dijit/layout/BorderContainer",
             "dijit/form/Form",
@@ -58,11 +59,13 @@
             "dijit/Calendar",
             "domReady!"
         ], function(SceneGraph, aspect, domConstruct, query, TestService,
-                ContentPane, StackContainer){
+                registry, ContentPane, content){
             
-            var testHandler = [/^delay\/(.*)$/, function(frag){
-                    return generateContent(frag);
+            var testHandler = [/^content$/, function(){
+                    return content;
                 }, 500];
+            
+            var values; // stores latest submitted form values
             
             // register custom XHR handler for /testServices/delay/*
             // in order to test ContentPane loading
@@ -85,10 +88,13 @@
             
             function createCP(){
                 var cp = new ContentPane({
-                    href: "SceneGraph_dijitform_content.html",
+                    href: "/testServices/content",
                     onLoad: function(){
                         query(".title", this.containerNode)[0].innerHTML =
                             "Child " + (widget.getChildren().length);
+                        // reinstate form values to be consistent
+                        registry.byNode(query(".form", this.containerNode)[0])
+                            .set("value", values);
                     }
                 });
                 
@@ -100,9 +106,7 @@
             }
             
             next = function(){
-                widget.addChild(createCP());
-                widget.forward();
-                //widget.forward(createCP(), true);
+                widget.forward(createCP(), true);
             };
             
             prev = function(evt){
@@ -111,16 +115,15 @@
             };
             
             formToWidget = function(){
-                var form = dijit.getEnclosingWidget(this.domNode.parentNode),
-                    values = form.get("value");
+                var form = dijit.getEnclosingWidget(this.domNode.parentNode);
+                
+                values = form.get("value");
                 
                 // update delay used by mock XHR handler
+                // (note: SceneGraph does nothing with this property)
                 testHandler[2] = values.loadingDelay;
                 
-                delete values.loadingDelay;
-                
                 widget.destroyRecursive();
-                //TODO: strings -> numbers?
                 widget = createWidget(values);
             }
         });
