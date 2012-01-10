@@ -25,21 +25,27 @@
     <form id="settingsForm">
         <h1>Animation type for all widgets</h1>
         <div>
-        <label><input type="radio" name="transitionType" value="slide" checked>
-            Slide (default)</label>
-        <label><input type="radio" name="transitionType" value="cover">
-            Cover</label>
+            <label><input type="radio" name="transitionType" value="slide" checked>
+                Slide (default)</label>
+            <label><input type="radio" name="transitionType" value="cover">
+                Cover</label>
         </div>
         
         <h1>Active side for all widgets</h1>
         <div>
-        <label><input type="radio" name="transitionSide" value="left">
-            Left</label>
-        <label><input type="radio" name="transitionSide" value="right" checked>
-            Right (default)</label>
+            <label><input type="radio" name="transitionSide" value="left">
+                Left</label>
+            <label><input type="radio" name="transitionSide" value="right" checked>
+                Right (default)</label>
         </div>
         
-        <div><input type="submit" value="Recreate widgets"></div>
+        <h1>Gap (Cover only)</h1>
+        <div>
+            <label>Size: <input type="text" name="gap" value="20" size="3"></label>
+            <label><input type="radio" name="gapUnits" value="px" checked>px</label>
+            <label><input type="radio" name="gapUnits" value="%">%</label>
+        </div>
+        <p><input type="submit" value="Recreate widgets"></p>
     </form>
     <script>var less = { env: "development" };</script>
     <script src="../../../less/dist/less-1.1.6.min.js"></script>
@@ -111,6 +117,11 @@
                 // clobbers baseClass
                 p.domNode.className += " " + className;
                 
+                // this may log, but should never log w/ defined arguments
+                aspect.after(p, "resize", function() {
+                    console.log(p.id + " resize", arguments);
+                })
+                
                 return p;
             }
             
@@ -118,9 +129,7 @@
                 var div = dom.byId(id + "_container"),
                     args = lang.mixin({}, {
                         id: id,
-                        duration: 1000,
-                        gap: 20,
-                        gapUnits: "%"
+                        duration: 1000
                     }, additionalArgs),
                     widget, nav, sc, p, i;
                 
@@ -131,7 +140,7 @@
                     }, document.body);
                     
                     // hook up delegated event listener for forward/back
-                    on(div, "#nav a:click", function(evt){
+                    on(div, ".nav a:click", function(evt){
                         // class is forward/back, matching SceneWidget method name
                         widget[this.className]();
                         evt.preventDefault();

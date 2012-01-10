@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>SceneGraph Tests</title>
+    
+    <link rel="stylesheet/less" href="../../../app/resources/app.less">
+    <link rel="stylesheet/less" href="../../view/resources/SceneGraph.less">
+    <style>
+        
+    </style>
+</head>
+<body class="claro">
+    <div id="animation">
+        <h1>Animation type for all widgets</h1>
+        <a href="#" id="slide">Slide (default)</a>
+        <a href="#" id="cover">Cover</a>
+    </div>
+    <div id="side">
+        <h1>Active side for all widgets</h1>
+        <a href="#" id="left">Left</a>
+        <a href="#" id="right">Right (default)</a>
+    </div>
+    <script>var less = { env: "development" };</script>
+    <script src="../../../less/dist/less-1.1.6.min.js"></script>
+
+    <script>
+        var dojoConfig = {
+            async: true,
+            isDebug: true,
+            aliases: [
+                ["domReady", "dojo/domReady"]
+            ]
+        };
+    </script>
+    <script src="../../../dojo/dojo.js"></script>
+    <script>
+        require([
+            "grc/view/SceneGraph",
+            "dojo/_base/lang",
+            "dojo/dom",
+            "dojo/aspect",
+            "dijit/registry",
+            "dojo/parser",
+            "rishson/tests/TestService",
+            "dijit/layout/ContentPane",
+            "dijit/form/Button",
+            "dijit/form/CheckBox",
+            "dijit/form/RadioButton",
+            "dijit/form/TextBox",
+            "dijit/form/FilteringSelect",
+            "domReady!"
+        ], function(SceneGraph, lang, dom, aspect, registry, parser, TestService){
+            
+            // register custom XHR handler for /testServices/delay/*
+            // in order to test ContentPane loading
+            TestService.register({
+                handlers: [
+                    [/^delay\/(.*)$/, function(frag){
+                        return generateContent(frag);
+                    }, 1000]
+                ]
+            });
+            
+            
+        });
+    </script>
+</body>
+</html>
