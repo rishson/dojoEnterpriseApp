@@ -14,10 +14,14 @@
     
     /* set an opaque default background to avoid unintended bleed-through */
     background-color: #fff;
+    
+    /* The following styles improve behavior in Chrome and mobile WebKit. */
+    /* (Mileage still varies on Android.) */
+    -webkit-perspective: 1000;
+    -webkit-backface-visibility: hidden;
 }
 
 /* these media queries assist in feature detection of 3D transforms */
-/* TODO: Consider covering this programmatically instead */
 
 .csstransforms3d {
     position: absolute;
