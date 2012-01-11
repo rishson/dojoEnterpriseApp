@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>SceneGraph Tests</title>
+    <title>SceneGraph Test with Dijit Form components</title>
     
     <link rel="stylesheet/less" href="../../../app/resources/app.less">
     <link rel="stylesheet/less" href="../../view/resources/SceneGraph.less">
@@ -40,7 +40,6 @@
         
         require([
             "grc/view/SceneGraph",
-            "dojo/aspect",
             "dojo/dom-construct",
             "dojo/query",
             "rishson/tests/TestService",
@@ -53,12 +52,11 @@
             "dijit/form/Button",
             "dijit/form/CheckBox",
             "dijit/form/RadioButton",
-            "dijit/form/TextBox",
             "dijit/form/NumberTextBox",
             "dijit/form/FilteringSelect",
             "dijit/Calendar",
             "domReady!"
-        ], function(SceneGraph, aspect, domConstruct, query, TestService,
+        ], function(SceneGraph, domConstruct, query, TestService,
                 registry, ContentPane, content){
             
             var testHandler = [/^content$/, function(){
@@ -96,10 +94,6 @@
                         registry.byNode(query(".form", this.containerNode)[0])
                             .set("value", values);
                     }
-                });
-                
-                aspect.after(cp, "resize", function(){
-                    console.log("cp resize called:", cp.id, arguments);
                 });
                 
                 return cp;

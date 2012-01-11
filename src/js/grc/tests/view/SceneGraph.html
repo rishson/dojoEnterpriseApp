@@ -76,12 +76,11 @@
             "dojo/dom-construct",
             "dojo/dom-form",
             "dojo/on",
-            "dojo/aspect",
             "dojo/has",
             "rishson/tests/TestService",
             "domReady!"
         ], function(SceneGraph, StackController, ContentPane, registry,
-                lang, dom, domConstruct, domForm, on, aspect, has, TestService){
+                lang, dom, domConstruct, domForm, on, has, TestService){
             
             console.log("has (csstransitions, csstransforms, csstransforms3d): ",
                 has("csstransitions"), has("csstransforms"), has("csstransforms3d"));
@@ -121,11 +120,6 @@
                 // possible bug in 1.7: setting className on a widget
                 // clobbers baseClass
                 p.domNode.className += " " + className;
-                
-                // this may log, but should never log w/ defined arguments
-                aspect.after(p, "resize", function() {
-                    console.log(p.id + " resize", arguments);
-                })
                 
                 return p;
             }

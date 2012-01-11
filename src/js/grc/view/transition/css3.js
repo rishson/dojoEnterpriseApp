@@ -1,9 +1,8 @@
-//FIXME: debug Opera, if it is to be supported (increasing timeout seems to help)
 define([
     "dojo/_base/Deferred",
     "dojo/on",
     "dojo/has",
-    "dijit/_base/manager", // for defaultDuration
+    "dijit/_base/manager" // for defaultDuration
 ], function(Deferred, on, has, manager){
     var hasTransition = has("csstransitions"),
         hasTransform = has("csstransforms"),
@@ -75,8 +74,6 @@ define([
                 tlStrings.prefix + start + "%" + tlStrings.suffix : "");
             end = (end ?
                 tlStrings.prefix + end + "%" + tlStrings.suffix : "");
-            
-            console.log(node.id, "start", start, "end", end);
             
             // initialize node styles without transition, before beginning slide
             style[transitionPrefix + "Duration"] = "0ms";

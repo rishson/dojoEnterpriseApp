@@ -91,7 +91,8 @@ define([
                 on(this.domNode, "." + this.baseClass + "-child:click",
                 function(evt){
                     self.selectChild(registry.byNode(this));
-                });
+                }
+            );
         },
         
         uninitialize: function(){
@@ -101,7 +102,7 @@ define([
         
         forward: function(page, destroyRemoved){
             // summary:
-            //      Advances to next page, passing specific animation type.
+            //      Advances to next page.
             // page: Widget?
             //      Optionally, a widget to add to the container before advancing.
             //      Note that this will cause any existing later children to be
@@ -132,7 +133,7 @@ define([
         
         back: function(removePrevious, destroyRemoved){
             // summary:
-            //      Advances to previous page, passing specific animation type.
+            //      Advances to previous page.
             // removePrevious: Boolean?
             //      If specified true, the previously-active child will be
             //      removed from the container.
@@ -242,6 +243,18 @@ define([
         },
         
         _transition: function(newChild, oldChild, animate){
+            // summary:
+            //      Overridden from StackContainer, this method kicks off
+            //      the desired transition effect.
+            // newChild: Widget
+            //      Widget to become the active child of the container.
+            // oldChild: Widget
+            //      Widget which was previously the active child.
+            // animate: String||Object
+            //      Specifies transition type and, if an object, whether the
+            //      transition is to be reversed.  This argument is normally
+            //      determined automatically based on public API calls.
+            
             var self = this,
                 oldNode = oldChild.domNode,
                 newNode = newChild.domNode,
