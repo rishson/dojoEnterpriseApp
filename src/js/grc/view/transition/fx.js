@@ -37,17 +37,27 @@ define([
                 // complement to main property, also animated to maintain size
                 oppositeProp = "margin" + properCase(side),
                 reverse = side == "left" || side == "top",
-                anim;
+                units = "%",
+                height, anim;
+            
+            if (side == "top" || side == "bottom") {
+                // for margin-top/bottom, need to convert to px,
+                // since percentages are relative to width (yes, really)
+                height = node.offsetHeight;
+                start = Math.round(start * height / 100);
+                end = Math.round(end * height / 100);
+                units = "px";
+            }
             
             props[prop] = {
                 start: reverse ? -start : start,
                 end: reverse ? -end : end,
-                units: "%"
+                units: units
             };
             props[oppositeProp] = {
                 start: reverse ? start : -start,
                 end: reverse ? end : -end,
-                units: "%"
+                units: units
             };
             
             anim = baseFx.animateProperty({
