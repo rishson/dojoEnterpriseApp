@@ -15,6 +15,13 @@ define([
 ], function(declare, StackContainer, arrayUtil, Deferred, DeferredList,
         domStyle, domConstruct, on, topic, has, registry, transitions, l10n){
     
+    var opposites = {
+        left: "right",
+        top: "bottom",
+        right: "left",
+        bottom: "top"
+    };
+    
     function makePromise(value){
         // simple function to create and immediately resolve/return a promise
         var dfd = new Deferred();
@@ -44,7 +51,7 @@ define([
         
         // transitionSide: String
         //      Side which new panes will slide in from when transitioning
-        //      "forward".
+        //      "forward".  Valid values are "right", "left", "bottom", "top"
         transitionSide: "right",
         
         // gap: Number
@@ -286,7 +293,7 @@ define([
                 
                 if (!reverse && this.gap > 0 && this.transitionType == "cover") {
                     // calculate gap and apply style to node
-                    gapSide = this.transitionSide == "left" ? "right" : "left";
+                    gapSide = opposites[this.transitionSide];
                     gapSize = this.gap * arrayUtil.indexOf(this.getChildren(), newChild);
                     newChild.domNode.style[gapSide] = gapSize + this.gapUnits;
                 }

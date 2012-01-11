@@ -104,13 +104,12 @@ define([
             
             var side = options.side,
                 duration = options.duration,
-                reverse = (side == "left" ^ options.reverse),
+                reverse = ((side == "left" || side == "top") ^ options.reverse),
                 oldEnd = reverse ? 100 : -100,
                 newStart = reverse ? -100 : 100,
                 info = {
                     duration: options.duration,
-                    // this indicates particularly to fx to always use marginLeft
-                    side: "right"
+                    side: options.side
                 };
             
             return new DeferredList([
@@ -133,14 +132,15 @@ define([
             //      Returns a promise which resolves when the transition ends.
             
             var reverse = options.reverse,
+                side = options.side,
                 node = options.node ||
                     (reverse ? options.oldNode : options.newNode),
-                max = options.side == "right" ? 100 : -100,
+                max = side == "left" || side == "top" ? -100 : 100,
                 start = reverse ? 0 : max,
                 end = reverse ? max : 0,
                 info = {
                     duration: options.duration,
-                    side: options.side
+                    side: side
                 };
             
             // ensure stationary node is correctly positioned first

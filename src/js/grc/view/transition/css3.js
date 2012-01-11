@@ -12,23 +12,33 @@ define([
         transitionPrefix = hasTransition.css ?
             hasTransition.css + "Transition" : "transition",
         transitionend = hasTransition.transitionend,
-        translatePrefix,
-        translateSuffix,
+        translateStrings,
         transform;
     
     // Determine whether to use 3D or 2D transforms
     if (hasTransform3d) {
-        translatePrefix = "translate3d(";
-        translateSuffix = ",0,0)";
+        translateStrings = {
+            x: {
+                prefix: "translate3d(",
+                suffix: ",0,0)"
+            },
+            y: {
+                prefix: "translate3d(0,",
+                suffix: ",0)"
+            }
+        };
         transform = hasTransform3d.css;
     } else if (hasTransform) {
-        translatePrefix = "translateX(";
-        translateSuffix = ")";
+        translateStrings = {
+            x: { prefix: "translateX(" },
+            y: { prefix: "translateY(" }
+        };
+        translateStrings.x.suffix = translateStrings.y.suffix = ")";
         transform = hasTransform.css;
     }
     
     // at this point, there is enough info to validate and bail out on failure
-    if (!translatePrefix || !hasTransition) {
+    if (!translateStrings || !hasTransition) {
         throw new Error("css3 transition module loaded in an unsupported browser");
     }
     
@@ -53,15 +63,20 @@ define([
         slideNode: function(node, start, end, options){
             var dfd = new Deferred(),
                 style = node.style,
-                duration = options.duration;
+                duration = options.duration,
+                side = options.side,
+                tlStrings = translateStrings[side == "top" || side == "bottom" ?
+                    "y" : "x"];
             
             duration = duration || manager.defaultDuration;
             
             // embed start and end within translate values
             start = (start ?
-                translatePrefix + start + "%" + translateSuffix : "");
+                tlStrings.prefix + start + "%" + tlStrings.suffix : "");
             end = (end ?
-                translatePrefix + end + "%" + translateSuffix : "");
+                tlStrings.prefix + end + "%" + tlStrings.suffix : "");
+            
+            console.log(node.id, "start", start, "end", end);
             
             // initialize node styles without transition, before beginning slide
             style[transitionPrefix + "Duration"] = "0ms";

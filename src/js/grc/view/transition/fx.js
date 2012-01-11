@@ -5,6 +5,17 @@ define([
     "dijit/_base/manager" // for defaultDuration
 ], function(Deferred, baseFx, aspect, manager){
     
+    var opposites = {
+        left: "right",
+        top: "bottom",
+        right: "left",
+        bottom: "top"
+    };
+    
+    function properCase(str){
+        return str.substr(0, 1).toUpperCase() + str.substr(1);
+    }
+    
     function startAnimation(anim){
         // adds after advice to an animation's onEnd to resolve a Deferred,
         // then plays the animation and returns the Deferred's promise.
@@ -21,9 +32,11 @@ define([
         slideNode: function(node, start, end, options){
             var props = {},
                 side = options.side,
-                prop = side == "right" ? "marginLeft" : "marginRight",
-                oppositeProp = side == "right" ? "marginRight" : "marginLeft",
-                reverse = side == "left",
+                // main property to animate
+                prop = "margin" + properCase(opposites[side]),
+                // complement to main property, also animated to maintain size
+                oppositeProp = "margin" + properCase(side),
+                reverse = side == "left" || side == "top",
                 anim;
             
             props[prop] = {
@@ -51,9 +64,10 @@ define([
             //      Resets the position of a node that was previously transitioned.
             
             var side = options.side,
-                prop = side == "left" ? "marginRight" : "marginLeft";
+                style = node.style;
             
-            node.style.marginLeft = node.style.marginRight = "0";
+            style["margin" + properCase(side)] =
+                style["margin" + properCase(opposites[side])] = "0";
         }
     };
 });
