@@ -68,10 +68,6 @@ define([
             style[transform] = start;
             
             on.once(node, transitionend, function(){
-                // reset position to minimize effect of
-                // Chrome's scrollbar displacement bug
-                ret.slideReset(node, options);
-                
                 dfd.resolve(node);
             });
             

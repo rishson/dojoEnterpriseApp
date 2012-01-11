@@ -116,7 +116,10 @@ define([
             return new DeferredList([
                 transitions.slideNode(options.oldNode, 0, oldEnd, info),
                 transitions.slideNode(options.newNode, newStart, 0, info)
-            ]);
+            ]).then(function(){
+                transitions.slideReset(options.oldNode, options);
+                transitions.slideReset(options.newNode, options);
+            });
         },
         
         cover: function(options){

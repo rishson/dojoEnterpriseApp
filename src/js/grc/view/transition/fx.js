@@ -52,8 +52,8 @@ define([
             
             var side = options.side,
                 prop = side == "left" ? "marginRight" : "marginLeft";
-                //prop = "margin" + side.substr(0, 1).toUpperCase() + side.substr(1);
-            node.style[prop] = "0";
+            
+            node.style.marginLeft = node.style.marginRight = "0";
         }
     };
 });
