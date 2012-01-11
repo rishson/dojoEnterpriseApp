@@ -109,7 +109,7 @@
                 widget.forward(createCP(), true);
             }
             
-            next = function(create){
+            next = function(){
                 widget.forward();
             };
             
@@ -117,6 +117,11 @@
                 evt.stopPropagation();
                 widget.back();
             };
+            
+            remove = function(evt){
+                evt.stopPropagation();
+                widget.back(true, true); // remove and destroy child
+            }
             
             formToWidget = function(){
                 var form = dijit.getEnclosingWidget(this.domNode.parentNode);
