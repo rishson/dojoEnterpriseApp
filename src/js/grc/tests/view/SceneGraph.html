@@ -139,6 +139,7 @@
                     widget, nav, sc, p, i;
                 
                 if (!div) {
+                    // first time creating this widget; create its container
                     div = domConstruct.create("div", {
                         id: id + "_container",
                         className: "container"
@@ -147,7 +148,7 @@
                     // hook up delegated event listener for forward/back
                     on(div, ".nav a:click", function(evt){
                         // class is forward/back, matching SceneWidget method name
-                        widget[this.className]();
+                        registry.byId(id)[this.className]();
                         evt.preventDefault();
                     });
                 } else {
