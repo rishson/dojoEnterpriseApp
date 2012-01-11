@@ -36,7 +36,7 @@
     <script src="../../../dojo/dojo.js"></script>
     <script>
         // functions defined in require callback, but called in global scope
-        var formToWidget, next, prev;
+        var formToWidget, create, next, prev;
         
         require([
             "grc/view/SceneGraph",
@@ -105,8 +105,12 @@
                 return cp;
             }
             
-            next = function(){
+            create = function(){
                 widget.forward(createCP(), true);
+            }
+            
+            next = function(create){
+                widget.forward();
             };
             
             prev = function(evt){
