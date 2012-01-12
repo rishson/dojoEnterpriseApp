@@ -153,7 +153,7 @@ define([
     
     return {
         load: function(id, require, load){
-            require(["./transition/" + (hasCSS3 ? "css3" : "fx")], function(t){
+            require(["./transitions/" + (hasCSS3 ? "css3" : "fx")], function(t){
                 transitions = t; // store into module-local variable
                 load(api); // pass exposed API to become the plugin's "return"
             });
