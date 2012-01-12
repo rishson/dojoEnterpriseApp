@@ -107,10 +107,10 @@ define([
             // page: Widget?
             //      Optionally, a widget to add to the container before advancing.
             //      Note that this will cause any existing later children to be
-            //      removed, so that the specified page is transitioned in.
+            //      removed, so that the specified page is transitioned in next.
             // destroyRemoved: Boolean?
-            //      If true, any children removed in the process of setting up
-            //      the widget specified in `page` will also be destroyed.
+            //      If true, any children removed in the process of adding
+            //      the widget specified by `page` will also be destroyed.
             
             var current, children, child, i;
             
@@ -138,6 +138,9 @@ define([
             // removePrevious: Boolean?
             //      If specified true, the previously-active child will be
             //      removed from the container.
+            // destroyRemoved: Boolean?
+            //      If true, the removed child will also be destroyed.
+            //      (Not applicable if `removePrevious` is false.)
             
             var self = this,
                 prev = this.selectedChildWidget, // soon-to-be-previous child
@@ -262,7 +265,8 @@ define([
                 reverse, showChildResult, promise,
                 gapSide, gapSize;
             
-            // if only newChild was specified, don't perform a transition
+            // if only newChild was specified (first navigation),
+            // don't perform a transition
             if (!oldChild) {
                 return this._showChild(newChild);
             }
@@ -342,6 +346,7 @@ define([
                 return this._transitionPromise = promise;
             } else {
                 // unknown/unhandled animation; don't perform any
+                this._hideChild(oldChild);
                 return this._showChild(newChild);
             }
         }

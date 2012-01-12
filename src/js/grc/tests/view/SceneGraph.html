@@ -205,7 +205,6 @@
             var form = dom.byId("settingsForm");
             form.onsubmit = function() {
                 var args = domForm.toObject(form);
-                console.log("args:", args);
                 createWidgets(args);
                 return false;
             }

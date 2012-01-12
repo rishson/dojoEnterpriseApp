@@ -33,7 +33,7 @@ define([
         for (i = cssPrefixes.length; i--;) {
             if (style[cssPrefixes[i] + "TransitionProperty"] !== undefined) {
                 return {
-                    css: cssPrefixes[i], // css prefix
+                    css: cssPrefixes[i], // vendor-specific css property prefix
                     transitionend: tePrefixes[i] // vendor-specific event prefix
                 };
             }
