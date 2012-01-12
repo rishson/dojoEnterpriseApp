@@ -1,3 +1,10 @@
+.grcSceneGraph {
+    /* These styles improve transition behavior in Chrome and iOS WebKit.
+       (Mileage still varies on Android.) */
+    -webkit-perspective: 1000;
+    -webkit-backface-visibility: hidden;
+}
+
 .grcSceneGraph-child {
     /* suppress border on children (like dijit.css does for StackContainer) */
     border: none !important;
@@ -5,8 +12,8 @@
     /* set position to absolute to accommodate transition logic */
     position: absolute;
     
-    /* set all sides to 0 to enforce sizing aganist parent by default */
-    /* (NOTE: this won't work in IE6) */
+    /* set all sides to 0 to enforce sizing aganist parent by default
+       (NOTE: this won't work in IE6) */
     top: 0;
     right: 0;
     bottom: 0;
@@ -14,11 +21,6 @@
     
     /* set an opaque default background to avoid unintended bleed-through */
     background-color: #fff;
-    
-    /* The following styles improve behavior in Chrome and mobile WebKit. */
-    /* (Mileage still varies on Android.) */
-    -webkit-perspective: 1000;
-    -webkit-backface-visibility: hidden;
 }
 
 /* these media queries assist in feature detection of 3D transforms */
