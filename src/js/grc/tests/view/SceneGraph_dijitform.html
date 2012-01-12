@@ -123,11 +123,18 @@
                 values = form.get("value");
                 
                 // update delay used by mock XHR handler
-                // (note: SceneGraph does nothing with this property)
+                // (this property has nothing to do with SceneGraph)
                 testHandler[2] = values.loadingDelay;
                 
                 widget.destroyRecursive();
-                widget = createWidget(values);
+                widget = createWidget({
+                    transitionType: values.transitionType,
+                    transitionSide: values.transitionSide,
+                    gap: values.gap,
+                    gapUnits: values.gapUnits,
+                    // checkboxes register as array; use length (will be 0 or 1)
+                    loadBeforeTransition: values.loadBeforeTransition.length
+                });
             }
         });
     </script>
