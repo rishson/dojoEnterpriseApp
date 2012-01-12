@@ -30,6 +30,10 @@ define([
     
     return {
         slideNode: function(node, start, end, options){
+            // summary:
+            //      Slides the given node from the given start to the given end
+            //      position, according to the given options (duration, side)
+            
             var props = {},
                 side = options.side,
                 // main property to animate
@@ -71,7 +75,8 @@ define([
         
         slideReset: function(node, options){
             // summary:
-            //      Resets the position of a node that was previously transitioned.
+            //      Resets the position of a node that was previously
+            //      transitioned using slideNode.
             
             var side = options.side,
                 style = node.style;

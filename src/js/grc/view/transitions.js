@@ -97,6 +97,7 @@ define([
             //      Performs a slide transition, moving the old node out and
             //      new node in simultaneously.
             // options: Object
+            //      * newNode, oldNode: nodes to be transitioned in/out
             //      * side: which direction the transition is relative to
             //      * reverse: if true, nodes move towards `side` instead of away
             //      * duration: how long the transition should take
@@ -124,8 +125,11 @@ define([
         
         cover: function(options){
             // summary:
-            //      Performs a cover transition, moving the new node in.
+            //      Performs a cover transition, moving the new node in
+            //      or the old node out (reverse).
             // options: Object
+            //      * node, or newNode + oldNode: node(s) to be transitioned
+            //        (in the case of cover, only one is animated)
             //      * side: which direction the transition is relative to
             //      * reverse: if true, performs "uncover" rather than "cover"
             //      * duration: how long the transition should take
