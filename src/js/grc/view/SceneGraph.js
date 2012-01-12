@@ -33,11 +33,11 @@ define([
         // summary:
         //      Widget based on StackContainer which adds transition
         //      functionality, using CSS3 features where available, falling
-        //      back to an dojo/_base/fx implementation in older browsers.
+        //      back to a dojo/_base/fx implementation in older browsers.
         
         // baseClass: String
         // Overrides baseClass of StackContainer.
-        // This only loses one common style from dijit.css, which we re-add in
+        // This only loses one common style from dijit.css, which is re-added in
         // the LESS resource for this widget.
         baseClass: "grcSceneGraph",
         
@@ -51,13 +51,14 @@ define([
         
         // transitionSide: String
         //      Side which new panes will slide in from when transitioning
-        //      "forward".  Valid values are "right", "left", "bottom", "top"
+        //      "forward".  Valid values are "right", "left", "bottom", "top".
         transitionSide: "right",
         
         // gap: Number
         //      When transitionType is "cover" and this is a positive number,
         //      subsequent panes will not occupy the full width of the viewport,
-        //      instead leaving a gap at the far edge.
+        //      instead leaving a gap at the far edge where the previous child
+        //      is still visible.
         gap: 0,
         
         // gapUnits: String
