@@ -161,17 +161,6 @@ define([
             return promise;
         },
         
-        addChild: function(child){
-            // summary:
-            //      Augments StackContainer.addChild to set the z-index of the
-            //      newly added child so that "younger" children are in front.
-            //      NOTE: insertIndex not supported, since this widget is
-            //      intended to be used purely like a stack.
-            
-            child.domNode.style.zIndex = this.getChildren().length;
-            this.inherited(arguments);
-        },
-        
         selectChild: function(page){
             // summary:
             //      Complete override of StackContainer.selectChild;
@@ -202,6 +191,42 @@ define([
             
             dfd.resolve(); // resolve the initial Deferred to start the chain
             return promise;
+        },
+        
+        addChild: function(child){
+            // summary:
+            //      Augments StackContainer.addChild to set the z-index of the
+            //      newly added child so that "younger" children are in front.
+            //      NOTE: insertIndex not supported, since this widget is
+            //      intended to be used purely like a stack.
+            
+            child.domNode.style.zIndex = this.getChildren().length;
+            this.inherited(arguments);
+        },
+        
+        layout: function(){
+            // summary:
+            //      Overrides StackContainer.layout to account for resizing
+            //      previous children that are still visible in cover mode.
+            
+            var current = this.selectedChildWidget,
+                children, index, i;
+            
+            if (!current) { return; } // no child to resize
+            
+            if (this.transitionType != "cover") {
+                return this.inherited(arguments);
+            }
+            
+            // In cover mode, we need to call resize on all children up to the
+            // currently selected one.
+            // This is unnecessary in slide mode since the appropriate child
+            // is resized when a new transition occurs.
+            children = this.getChildren();
+            index = children.indexOf(current);
+            while (index >= 0) {
+                children[index--].resize();
+            }
         },
         
         _selectChild: function(page, reverse){
