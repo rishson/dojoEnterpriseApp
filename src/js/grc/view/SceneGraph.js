@@ -210,11 +210,11 @@ define([
             //      previous children that are still visible in cover mode.
             
             var current = this.selectedChildWidget,
-                children, index, i;
+                children, i;
             
             if (!current) { return; } // no child to resize
             
-            if (this.transitionType != "cover") {
+            if (this.transitionType != "cover" || this.gap < 1) {
                 return this.inherited(arguments);
             }
             
@@ -223,9 +223,9 @@ define([
             // This is unnecessary in slide mode since the appropriate child
             // is resized when a new transition occurs.
             children = this.getChildren();
-            index = children.indexOf(current);
-            while (index >= 0) {
-                children[index--].resize();
+            i = children.indexOf(current);
+            while (i >= 0) {
+                children[i--].resize();
             }
         },
         
