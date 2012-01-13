@@ -1,0 +1,142 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>SceneGraph Test with Dijit Form components</title>
+    
+    <link rel="stylesheet/less" href="../../../app/resources/app.less">
+    <link rel="stylesheet/less" href="../../view/resources/SceneGraph.less">
+    <style>
+        html, body {
+            height: 100%;
+            padding: 0;
+        }
+        #testWidget {
+            height: 100%;
+        }
+        
+        .form .dijitNumberTextBox {
+            width: 3em;
+        }
+    </style>
+</head>
+<body class="claro">
+    <script>var less = { env: "development" };</script>
+    <script src="../../../less/dist/less-1.1.6.min.js"></script>
+
+    <script>
+        var dojoConfig = {
+            async: true,
+            isDebug: true,
+            aliases: [
+                ["domReady", "dojo/domReady"]
+            ]
+        };
+    </script>
+    <script src="../../../dojo/dojo.js"></script>
+    <script>
+        // functions defined in require callback, but called in global scope
+        var formToWidget, create, next, prev;
+        
+        require([
+            "grc/view/SceneGraph",
+            "dojo/dom-construct",
+            "dojo/query",
+            "rishson/tests/TestService",
+            "dijit/registry",
+            "dijit/layout/ContentPane",
+            "dojo/text!./SceneGraph_dijitform_content.html",
+            // the following are referenced in SceneGraph_dijitform_content
+            "dijit/layout/BorderContainer",
+            "dijit/form/Form",
+            "dijit/form/Button",
+            "dijit/form/CheckBox",
+            "dijit/form/RadioButton",
+            "dijit/form/NumberTextBox",
+            "dijit/form/FilteringSelect",
+            "dijit/Calendar",
+            "domReady!"
+        ], function(SceneGraph, domConstruct, query, TestService,
+                registry, ContentPane, content){
+            
+            var testHandler = [/^content$/, function(){
+                    return content;
+                }, 500];
+            
+            var values; // stores latest submitted form values
+            
+            // register custom XHR handler for /testServices/delay/*
+            // in order to test ContentPane loading
+            TestService.register({
+                handlers: [testHandler]
+            });
+            
+            function createWidget(args){
+                if (!args) { args = {}; }
+                args.id = "testWidget";
+                args.duration = 500;
+                
+                var w = new SceneGraph(args).placeAt(document.body);
+                w.addChild(createCP());
+                w.startup();
+                return w;
+            }
+            
+            var widget = createWidget();
+            
+            function createCP(){
+                var cp = new ContentPane({
+                    href: "/testServices/content",
+                    onLoad: function(){
+                        query(".title", this.containerNode)[0].innerHTML =
+                            "Child " + (widget.getChildren().length);
+                        // reinstate form values to be consistent
+                        registry.byNode(query(".form", this.containerNode)[0])
+                            .set("value", values);
+                    }
+                });
+                
+                return cp;
+            }
+            
+            create = function(){
+                widget.forward(createCP(), true);
+            }
+            
+            next = function(){
+                widget.forward();
+            };
+            
+            prev = function(evt){
+                evt.stopPropagation();
+                widget.back();
+            };
+            
+            remove = function(evt){
+                evt.stopPropagation();
+                widget.back(true, true); // remove and destroy child
+            }
+            
+            formToWidget = function(){
+                var form = dijit.getEnclosingWidget(this.domNode.parentNode);
+                
+                values = form.get("value");
+                
+                // update delay used by mock XHR handler
+                // (this property has nothing to do with SceneGraph)
+                testHandler[2] = values.loadingDelay;
+                
+                widget.destroyRecursive();
+                widget = createWidget({
+                    transitionType: values.transitionType,
+                    transitionSide: values.transitionSide,
+                    gap: values.gap,
+                    gapUnits: values.gapUnits,
+                    // checkboxes register as array; use length (will be 0 or 1)
+                    loadBeforeTransition: values.loadBeforeTransition.length
+                });
+            }
+        });
+    </script>
+</body>
+</html>

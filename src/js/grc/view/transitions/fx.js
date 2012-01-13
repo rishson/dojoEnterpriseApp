@@ -1,0 +1,88 @@
+define([
+    "dojo/_base/Deferred",
+    "dojo/_base/fx",
+    "dojo/aspect",
+    "dijit/_base/manager" // for defaultDuration
+], function(Deferred, baseFx, aspect, manager){
+    
+    var opposites = {
+        left: "right",
+        top: "bottom",
+        right: "left",
+        bottom: "top"
+    };
+    
+    function properCase(str){
+        return str.substr(0, 1).toUpperCase() + str.substr(1);
+    }
+    
+    function startAnimation(anim){
+        // adds after advice to an animation's onEnd to resolve a Deferred,
+        // then plays the animation and returns the Deferred's promise.
+        var dfd = new Deferred(),
+            handle = aspect.after(anim, "onEnd", function(){
+                handle.remove();
+                dfd.resolve(anim.node);
+            });
+        anim.play();
+        return dfd.promise;
+    }
+    
+    return {
+        slideNode: function(node, start, end, options){
+            // summary:
+            //      Slides the given node from the given start to the given end
+            //      position, according to the given options (duration, side)
+            
+            var props = {},
+                side = options.side,
+                // main property to animate
+                prop = "margin" + properCase(opposites[side]),
+                // complement to main property, also animated to maintain size
+                oppositeProp = "margin" + properCase(side),
+                reverse = side == "left" || side == "top",
+                units = "%",
+                height, anim;
+            
+            if (side == "top" || side == "bottom") {
+                // for margin-top/bottom, need to convert to px,
+                // since percentages are relative to width (yes, really)
+                height = node.offsetHeight;
+                start = Math.round(start * height / 100);
+                end = Math.round(end * height / 100);
+                units = "px";
+            }
+            
+            props[prop] = {
+                start: reverse ? -start : start,
+                end: reverse ? -end : end,
+                units: units
+            };
+            props[oppositeProp] = {
+                start: reverse ? start : -start,
+                end: reverse ? end : -end,
+                units: units
+            };
+            
+            anim = baseFx.animateProperty({
+                node: node,
+                properties: props,
+                duration: options.duration || manager.defaultDuration
+            });
+            
+            return startAnimation(anim); // promise
+        },
+        
+        slideReset: function(node, options){
+            // summary:
+            //      Resets the position of a node that was previously
+            //      transitioned using slideNode.
+            
+            var side = options.side,
+                style = node.style;
+            
+            style["margin" + properCase(side)] =
+                style["margin" + properCase(opposites[side])] = "0";
+        }
+    };
+});
