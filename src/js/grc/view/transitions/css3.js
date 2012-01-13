@@ -52,7 +52,7 @@ define([
     if (transitionend) {
         // Append camel-case to vendor prefix, and also attempt to be
         // forward-compatible when more browsers support transitionend.
-        // (This is used as the target parameter to on.once)
+        // (This is used as the event parameter to on.once)
         transitionend += "TransitionEnd, transitionend";
     } else {
         transitionend = "transitionend"; // no vendor prefix, standard name

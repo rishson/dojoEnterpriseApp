@@ -4,16 +4,13 @@ define([
     "dojo/_base/array",
     "dojo/_base/Deferred",
     "dojo/DeferredList",
-    "dojo/dom-style",
-    "dojo/dom-construct",
     "dojo/on",
     "dojo/topic",
-    "dojo/has",
     "dijit/registry", // for byNode
     "./transitions!", // plugin which loads CSS3- or fx-based transition logic
     "dojo/i18n!./nls/SceneGraph"
 ], function(declare, StackContainer, arrayUtil, Deferred, DeferredList,
-        domStyle, domConstruct, on, topic, has, registry, transitions, l10n){
+        on, topic, registry, transitions, l10n){
     
     var opposites = {
         left: "right",
