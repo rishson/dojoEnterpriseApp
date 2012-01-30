@@ -11,7 +11,7 @@ The main features are:
 
 #### All kinds of other people's awesome
 - self bootstrapping - pulls in dependencies via setup script (uses wget or curl)
-- pulls in less.js and wire.js (+ aop.js, when.js)
+- pulls in [less.js](https://github.com/cloudhead/less.js) and [wire.js](https://github.com/briancavalier/wire)
 - depends on node.js (for running less.js), npm and Java (for the dojo build)
 
 #### Extensible scripts
@@ -58,16 +58,8 @@ Widgets can simply publish their request (along with a topic that the response w
 
 ```javascript
 
-//dojo 1.6 example of calling a RestService on the server and expecting a response to be published to a topic
- var restCall = new rishson.enterprise.control.RestRequest({service : 'testService',
-    verb : 'put',
-    params : [{exampleParamsName : 'exampleParamValue'}],
-    topic : 'testServiceResponse');
-
-dojo.publish(rishson.enterprise.Globals.SEND_REQUEST, restCall);
-
 //dojo 1.7+ example of calling a RestService on the server and expecting a response to be published to a topic
- var restCall = new RestRequest({service : 'testService',
+ var restCall = new RestRequest({url : 'testService',
     verb : 'delete',
     params : [{exampleParamsName : 'exampleParamValue'}],
     topic : 'testServiceResponse');
@@ -84,7 +76,7 @@ topic.publish(Globals.SEND_REQUEST, restCall);
 
 ```javascript
 //example of calling a WebService on the server and expecting a response on a callaback function
- var serviceCall = new rishson.enterprise.control.ServiceRequest({service : 'testService',
+ var serviceCall = new ServiceRequest({service : 'testService',
     method : 'TestMethod',
     params : [{exampleParamsName : 'exampleParamValue'}],
     callback : myCallback,
@@ -93,7 +85,7 @@ topic.publish(Globals.SEND_REQUEST, restCall);
  controller.send(serviceCall);
 
 //example of calling a RestService on the server and expecting a response to be published to a topic
- var restCall = new rishson.enterprise.control.RestRequest({service : 'testService',
+ var restCall = new RestRequest({service : 'testService',
     verb : 'post',
     params : [{exampleParamsName : 'exampleParamValue'}],
     topic : 'testServiceResponse');
