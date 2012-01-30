@@ -3,20 +3,50 @@
 
 DojoEnterpriseApp is an abstracted application framework for large web applications that use the [Dojo toolkit] (www.dojotoolkit.org).
 
-The directory structure and build scripts are taken from the excellent dojo-boilerplate by [Rebecca Murphey] (www.github.com/rmurphey).
+The project was inspired by dojoBoilerplate from [Rebecca Murphey] (www.github.com/rmurphey).
+Thanks must also go to Craig Barker for putting the first version through its paces, and the guys at [Sitepen] (www.sitepen.com) for their additions of awesomeness.
 
 The main features are:
 ----------------------
 
-### Abstracted control layer with:
+#### All kinds of other people's awesome
+- self bootstrapping - pulls in dependencies via setup script (uses wget or curl)
+- pulls in less.js and wire.js (+ aop.js, when.js)
+- depends on node.js (for running less.js), npm and Java (for the dojo build)
+
+#### Extensible scripts
+- scripts to pull in framwwork dependencies
+- scripts to create an 'application' (single page web app)
+- scripts to create templated and non-templated widgets (including test pages, less files..)
+- scripts to test widgets in a variety of browsers (chrome, FireFox, Safari and Chromium)
+- scripts to create a compresses, minified build using the dojo builder
+
+#### Abstracted control layer with:
 - abstracted communications protocols so that 'real' servers can be mocked during unit tests.
-- abstracted server calls to introduce clean separation of concerns so that code is not littered with Urls and thus easier to refactor.
+- abstracted server calls (REST and WebServices) to introduce clean separation of concerns so that code is not littered with Urls and thus easier to refactor.
 - provides a central location to perform work on all server calls (such as applying security policies, auditing, url resolution etc).
 
-### Common set of application widgets:
-- _Widget base class that provides life-cycle management based on Phil Higgins's [solution](http://higginsforpresident.net/2010/01/widgets-within-widgets) to memory leaks with custom dojo widgets that
-  programatically create widgets.
+#### Common set of application widgets:
+- _Widget base class that provides life-cycle management based on Phil Higgins's [solution](http://higginsforpresident.net/2010/01/widgets-within-widgets) to memory leaks with custom dojo widgets that programatically create widgets.
 - a full-page container widget with plugins for common 'enterprise' features such as session management.
+
+### Scripts
+-----------
+
+Scripts are written in bash and run on Linux and OSX.
+
+#####setup.sh
+Pulls in all external dependencies using wget or curl
+
+#####createApplication.sh
+Creates the directory structure for a single page web app. An application can contain any number of child widgets. All dependencies are copied over to the new directory structure.
+
+#####createWidget.sh
+Creates a single widget. The widget can be templated or not. The widget js, less, html (optional) and test pages are created. The widget's name is injected into the various files to allow for CSS namespacing etc.
+
+#####test.js
+Runs a test suite in a browser of your choice. The browsers supported are Chrome, FireFox, Safari and Chromium.
+
 
 
 
