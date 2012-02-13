@@ -10,6 +10,16 @@ AOP_VERSION=0.5.1
 WIRE_VERSION=0.7.4
 LESS_VERSION=1.1.6
 
+DOJO_DIR_NAME=dojo
+DIJIT_DIR_NAME=dijit
+DOJOX_DIR_NAME=dojox
+UTIL_DIR_NAME=util
+AOP_DIR_NAME=aop
+WHEN_DIR_NAME=when
+WIRE_DIR_NAME=wire
+LESS_DIR_NAME=less
+RISHSON_DIR_NAME=rishson
+
 # ${x%/*} is equivalent to dirname
 # ${x##*/} is equivalent to basename
 
@@ -176,3 +186,18 @@ if (($?)); then
 	rm -rf "$PROJECT_DIR/node_modules"
 	echo "LESS fetched"
 fi
+
+function createGitIgnore {
+	touch $SCRIPT_DIR/.gitignore
+
+    	echo $AOP_DIR_NAME >> $TARGET_DIR/.gitignore
+    	echo $DIJIT_DIR_NAME >> $TARGET_DIR/.gitignore
+    	echo $DOJO_DIR_NAME >> $TARGET_DIR/.gitignore
+    	echo $DOJOX_DIR_NAME >> $TARGET_DIR/.gitignore
+    	echo $LESS_DIR_NAME >> $TARGET_DIR/.gitignore
+    	echo $RISHSON_DIR_NAME >> $TARGET_DIR/.gitignore
+    	echo $UTIL_DIR_NAME >> $TARGET_DIR/.gitignore
+    	echo $WHEN_DIR_NAME >> $TARGET_DIR/.gitignore
+    	echo $WIRE_DIR_NAME >> $TARGET_DIR/.gitignore
+}
+createGitIgnore
