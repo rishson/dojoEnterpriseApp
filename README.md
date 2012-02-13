@@ -36,7 +36,7 @@ The main features are:
 Scripts are written in bash and run on Linux and OSX.
 
 #####setup.sh
-Pulls in all external dependencies using wget or curl
+Pulls in all external dependencies using wget or curl. Also creates a .gitignore file in the scripts directory that includes references to all downloaded dependencies.
 
 #####createApplication.sh
 Creates the directory structure for a single page web app. An application can contain any number of child widgets. All dependencies are copied over to the new directory structure.
