@@ -210,7 +210,7 @@ if (($GIT_IGNORE)); then
 fi
 echo
 
-echo adding gitignore to git staging
+echo "adding gitignore to git staging"
 git add "$PROJECT_DIR/.gitignore"
 
 echo
