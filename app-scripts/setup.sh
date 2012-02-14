@@ -9,6 +9,7 @@ WHEN_VERSION=0.10.3
 AOP_VERSION=0.5.1
 WIRE_VERSION=0.7.4
 LESS_VERSION=1.1.6
+RISHSON_VERSION=master
 
 # ${x%/*} is equivalent to dirname
 # ${x##*/} is equivalent to basename
@@ -17,7 +18,7 @@ SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 SCRIPT_NAME="${0##*/}"
 
 function usage {
-	echo "Usage: $SCRIPT_NAME [-hyi]"
+	echo "Usage: $SCRIPT_NAME [-hyir]"
 }
 
 function help_text {
@@ -27,10 +28,11 @@ function help_text {
 	echo "  -h                 Display this message"
 	echo "  -y                 Always overwrite files (don't prompt)"
 	echo "  -i                 Add packages to .gitignore"
+	echo "  -r                 Fetch dojoEnterpriseApp from github"
 }
 
 FORCE_CONFIRM_YES=0
-while getopts ":hyi" opt; do
+while getopts ":hyir" opt; do
 	case "$opt" in
 		h)
 			help_text
@@ -39,9 +41,11 @@ while getopts ":hyi" opt; do
 		y)
 			FORCE_CONFIRM_YES=1
 			;;
-	    i)
-	        GIT_IGNORE=1
-	        ;;
+	    	i)
+	        	GIT_IGNORE=1
+	        	;;
+		r)	DOWNLOAD_RISHSON=1
+			;;
 		\?)
 			echo "$SCRIPT_NAME: invalid option -- '$OPTARG'" >&2
 			usage
@@ -179,6 +183,20 @@ if (($?)); then
 	mv "$PROJECT_DIR/node_modules/less" "$TARGET_DIR"
 	rm -rf "$PROJECT_DIR/node_modules"
 	echo "LESS fetched"
+fi
+
+echo
+
+if (($DOWNLOAD_RISHSON)); then
+echo "Setting up dojoEnterpriseApp"
+echo "=================="
+RISHSON_DIR="$TARGET_DIR/rishson"
+confirm_file_overwrite "rishson" "$RISHSON_DIR"
+if (($?)); then
+	echo "Fetching dojoEnterpriseApp $RISHSON_VERSION"
+	mkdir "$RISHSON_DIR"
+	$GET "https://github.com/rishson/dojoEnterpriseApp/tarball/$RISHSON_VERSION" | tar -C "$RISHSON_DIR" --strip-components 1 -xzf -
+	echo "dojoEnterpriseApp extracted"
 fi
 
 echo
