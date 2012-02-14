@@ -211,4 +211,6 @@ fi
 echo
 
 echo adding gitignore to git staging
-git add $PROJECT_DIR/.gitignore
+git add "$PROJECT_DIR/.gitignore"
+
+echo
