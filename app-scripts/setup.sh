@@ -44,7 +44,8 @@ while getopts ":hyir" opt; do
 	    	i)
 	        	GIT_IGNORE=1
 	        	;;
-		r)	DOWNLOAD_RISHSON=1
+		r)	
+			DOWNLOAD_RISHSON=1
 			;;
 		\?)
 			echo "$SCRIPT_NAME: invalid option -- '$OPTARG'" >&2
