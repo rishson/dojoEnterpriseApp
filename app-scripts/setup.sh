@@ -173,6 +173,6 @@ if (($?)); then
 	cd "$PROJECT_DIR"
 	npm install "less@$LESS_VERSION"
 	mv "$PROJECT_DIR/node_modules/less" "$TARGET_DIR"
-	rm -rf "$PROJECT_DIR/node_modules"
+	echo rm -rf "$PROJECT_DIR/node_modules"
 	echo "LESS fetched"
 fi

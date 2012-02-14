@@ -140,8 +140,9 @@ if [ ! -d "$TARGET_DIR" ]; then
 fi
 
 if [ ! -d "$PACKAGE_DIR" ]; then
-	echo "The package specified for the widget does not exist or is not a directory: $PACKAGE_DIR"
-	exit 1
+	mkdir "$PACKAGE_DIR"
+	#echo "The package specified for the widget does not exist or is not a directory: $PACKAGE_DIR"
+	#exit 1
 fi
 
 WIDGET_NAME="$1"

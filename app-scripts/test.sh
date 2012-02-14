@@ -92,9 +92,11 @@ if which xdg-open > /dev/null; then
 			OPEN="/usr/bin/firefox"
 			;;
 		chrome)
+			#--allow-file-access-from-files
 			OPEN="/usr/bin/google-chrome"
 			;;
 		chromium)
+			#--allow-file-access-from-files
 			OPEN="/usr/bin/chromium-browser"
 			;;
 		help)
