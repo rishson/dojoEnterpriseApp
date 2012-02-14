@@ -10,16 +10,6 @@ AOP_VERSION=0.5.1
 WIRE_VERSION=0.7.4
 LESS_VERSION=1.1.6
 
-DOJO_DIR_NAME=dojo
-DIJIT_DIR_NAME=dijit
-DOJOX_DIR_NAME=dojox
-UTIL_DIR_NAME=util
-AOP_DIR_NAME=aop
-WHEN_DIR_NAME=when
-WIRE_DIR_NAME=wire
-LESS_DIR_NAME=less
-RISHSON_DIR_NAME=rishson
-
 # ${x%/*} is equivalent to dirname
 # ${x##*/} is equivalent to basename
 
@@ -27,7 +17,7 @@ SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 SCRIPT_NAME="${0##*/}"
 
 function usage {
-	echo "Usage: $SCRIPT_NAME [-hy]"
+	echo "Usage: $SCRIPT_NAME [-hyi]"
 }
 
 function help_text {
@@ -36,10 +26,11 @@ function help_text {
 	echo
 	echo "  -h                 Display this message"
 	echo "  -y                 Always overwrite files (don't prompt)"
+	echo "  -i                 Add packages to .gitignore"
 }
 
 FORCE_CONFIRM_YES=0
-while getopts ":hy" opt; do
+while getopts ":hyi" opt; do
 	case "$opt" in
 		h)
 			help_text
@@ -48,6 +39,9 @@ while getopts ":hy" opt; do
 		y)
 			FORCE_CONFIRM_YES=1
 			;;
+	    i)
+	        GIT_IGNORE=1
+	        ;;
 		\?)
 			echo "$SCRIPT_NAME: invalid option -- '$OPTARG'" >&2
 			usage
@@ -187,17 +181,13 @@ if (($?)); then
 	echo "LESS fetched"
 fi
 
-function createGitIgnore {
-	touch $SCRIPT_DIR/.gitignore
+echo
 
-    	echo $AOP_DIR_NAME >> $TARGET_DIR/.gitignore
-    	echo $DIJIT_DIR_NAME >> $TARGET_DIR/.gitignore
-    	echo $DOJO_DIR_NAME >> $TARGET_DIR/.gitignore
-    	echo $DOJOX_DIR_NAME >> $TARGET_DIR/.gitignore
-    	echo $LESS_DIR_NAME >> $TARGET_DIR/.gitignore
-    	echo $RISHSON_DIR_NAME >> $TARGET_DIR/.gitignore
-    	echo $UTIL_DIR_NAME >> $TARGET_DIR/.gitignore
-    	echo $WHEN_DIR_NAME >> $TARGET_DIR/.gitignore
-    	echo $WIRE_DIR_NAME >> $TARGET_DIR/.gitignore
-}
-createGitIgnore
+if (($GIT_IGNORE)); then
+    echo "Adding packages to .gitignore"
+    for PACKAGE_NAME in aop dijit dojo dojox less rishson util when wire; do
+        echo "src/js/$PACKAGE_NAME/" >> "$PROJECT_DIR/.gitignore"
+	done
+    echo "Done adding packages"
+fi
+echo
