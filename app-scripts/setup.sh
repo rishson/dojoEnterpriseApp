@@ -193,11 +193,12 @@ echo "Setting up dojoEnterpriseApp"
 echo "=================="
 RISHSON_DIR="$TARGET_DIR/rishson"
 confirm_file_overwrite "rishson" "$RISHSON_DIR"
-if (($?)); then
-	echo "Fetching dojoEnterpriseApp $RISHSON_VERSION"
-	mkdir "$RISHSON_DIR"
-	$GET "https://github.com/rishson/dojoEnterpriseApp/tarball/$RISHSON_VERSION" | tar -C "$RISHSON_DIR" --strip-components 1 -xzf -
-	echo "dojoEnterpriseApp extracted"
+	if (($?)); then
+		echo "Fetching dojoEnterpriseApp $RISHSON_VERSION"
+		mkdir "$RISHSON_DIR"
+		$GET "https://github.com/rishson/dojoEnterpriseApp/tarball/$RISHSON_VERSION" | tar -C "$RISHSON_DIR" --strip-components 1 -xzf -
+		echo "dojoEnterpriseApp extracted"
+	fi
 fi
 
 echo
