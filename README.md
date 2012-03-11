@@ -19,7 +19,7 @@ The main features are:
 - scripts to create an 'application' (single page web app)
 - scripts to create templated and non-templated widgets (including test pages, less files..)
 - scripts to test widgets in a variety of browsers (chrome, FireFox, Safari and Chromium)
-- scripts to create a compresses, minified build using the dojo builder
+- scripts to create a compressed, minified build using the dojo builder
 
 #### Abstracted control layer with:
 - abstracted communications protocols so that 'real' servers can be mocked during unit tests.
@@ -47,7 +47,8 @@ Creates a single widget. The widget can be templated or not. The widget js, less
 #####test.js
 Runs a test suite in a browser of your choice. The browsers supported are Chrome, FireFox, Safari and Chromium.
 
-
+#####build.sh
+Runs a dojo build to create a release version of an application.
 
 
 ### Control layer
