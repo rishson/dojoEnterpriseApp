@@ -4,10 +4,10 @@ set -P
 
 # Default versions
 # These can/will be overridden in $PROJECT_DIR/configuration
-DOJO_VERSION=1.7.1
-WHEN_VERSION=0.10.3
-AOP_VERSION=0.5.1
-WIRE_VERSION=0.7.4
+DOJO_VERSION=1.7.2
+WHEN_VERSION=1.0.2
+AOP_VERSION=0.5.2
+WIRE_VERSION=0.7.6
 LESS_VERSION=1.1.6
 RISHSON_VERSION=master
 
@@ -41,9 +41,9 @@ while getopts ":hyir" opt; do
 		y)
 			FORCE_CONFIRM_YES=1
 			;;
-	    	i)
-	        	GIT_IGNORE=1
-	        	;;
+	    i)
+	        GIT_IGNORE=1
+	        ;;
 		r)	
 			DOWNLOAD_RISHSON=1
 			;;
@@ -138,7 +138,7 @@ confirm_file_overwrite "when.js" "$WHEN_DIR"
 if (($?)); then
 	echo "Fetching when.js $WHEN_VERSION"
 	mkdir "$WHEN_DIR"
-	$GET "https://github.com/briancavalier/when.js/tarball/$WHEN_VERSION" | tar -C "$WHEN_DIR" --strip-components 1 -xzf -
+	$GET "https://github.com/cujojs/when/tarball/$WHEN_VERSION" | tar -C "$WHEN_DIR" --strip-components 1 -xzf -
 	echo "when.js extracted"
 fi
 
@@ -151,7 +151,7 @@ confirm_file_overwrite "aop.js" "$AOP_DIR"
 if (($?)); then
 	echo "Fetching aop.js $AOP_VERSION"
 	mkdir "$AOP_DIR"
-	$GET "https://github.com/briancavalier/aop.js/tarball/$AOP_VERSION" | tar -C "$AOP_DIR" --strip-components 1 -xzf -
+	$GET "https://github.com/cujojs/aop/tarball/$AOP_VERSION" | tar -C "$AOP_DIR" --strip-components 1 -xzf -
 	echo "aop.js extracted"
 fi
 
@@ -165,7 +165,7 @@ confirm_file_overwrite "wire" "$WIRE_DIR" "$WIRE_TMP_DIR"
 if (($?)); then
 	echo "Fetching wire $WIRE_VERSION"
 	mkdir "$WIRE_TMP_DIR"
-	$GET "https://github.com/briancavalier/wire/tarball/$WIRE_VERSION" | tar -C "$WIRE_TMP_DIR" --strip-components 1 -xzf -
+	$GET "https://github.com/cujojs/wire/tarball/$WIRE_VERSION" | tar -C "$WIRE_TMP_DIR" --strip-components 1 -xzf -
 	mv "$WIRE_TMP_DIR/wire" "$TARGET_DIR"
 	mv "$WIRE_TMP_DIR/wire.js" "$WIRE_TMP_DIR/package.json" "$WIRE_DIR"
 	rm -rf "$WIRE_TMP_DIR"
@@ -208,11 +208,7 @@ if (($GIT_IGNORE)); then
     for PACKAGE_NAME in aop dijit dojo dojox less rishson util when wire; do
         echo "src/js/$PACKAGE_NAME/" >> "$PROJECT_DIR/.gitignore"
 	done
-    echo "Done adding packages"
+    echo "Done adding packages - adding gitignore to git staging"
+	git add "$PROJECT_DIR/.gitignore"
 fi
-echo
-
-echo "adding gitignore to git staging"
-git add "$PROJECT_DIR/.gitignore"
-
 echo
