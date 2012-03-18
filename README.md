@@ -11,7 +11,7 @@ The main features are:
 
 #### All kinds of other people's awesome
 - self bootstrapping - pulls in dependencies via setup script (uses wget or curl)
-- pulls in [less.js](https://github.com/cloudhead/less.js) and [wire.js](https://github.com/briancavalier/wire)
+- pulls in [less.js](https://github.com/cloudhead/less.js) and [wire.js](https://github.com/cujojs/wire)
 - depends on node.js (for running less.js), npm and Java (for the dojo build)
 
 #### Extensible scripts
@@ -86,23 +86,23 @@ __index.html__ <-this is the base HTML file for the application
 
 All subfolders in this directory contain namespaced JavaScript projects. Think of these directories as applicationm imports.
 
-__aop__ <-this contains the aop project
+__aop__ <-this contains the [aop](https://github.com/cujojs/aop) project
 
 __app__ <-this contains your application code
 
-__dijit__ <-this contains dojo's widgets
+__dijit__ <-this contains [dojo's](https://github.com/dojo) widgets
 
-__dojo__ <-this contains the dojo base code
+__dojo__ <-this contains the [dojo](https://github.com/dojo) base code
 
-__dojox__ <-this contains the dojox code
+__dojox__ <-this contains the [dojox](https://github.com/dojo) code
 
 __rishson__ <-this contains all application skeleton code for your application
 
-__util__ <-this contains the dojo util code (including the dojo build system)
+__util__ <-this contains the [dojo](https://github.com/dojo) util code (including the dojo build system)
 
-__when__ <-this contains the when project
+__when__ <-this contains the [when](https://github.com/cujojs/when) project
 
-__wire__ <-this contains the wire.js project
+__wire__ <-this contains the [wire.js](https://github.com/cujojs/wire) project
 
 ######newApp/src/js/app
 
