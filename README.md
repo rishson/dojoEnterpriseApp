@@ -51,6 +51,74 @@ Runs a test suite in a browser of your choice. The browsers supported are Chrome
 Runs a dojo build to create a release version of an application.
 
 
+### A closer look at what is in the created directories
+-----------
+
+When you run this script for an application called 'newApp' you will get the following directory structure created for you:
+
+__newApp__ <-top level folder for everythingin your application
+
+__newApp/scripts__ <-contains all the bash scripts that you will need for your application
+
+__newApp/src__ <-contains all the JavaScript/HTML/CSS for the application and all custom widgets
+
+##### A closer look at whats in the directories:
+
+######newApp
+
+__build.profile.js__ <-this is the dojo build profile for the application and is used by the build.sh script
+
+__configuration__ <-this is the base configuration file used for the application. You can override the default versions of the external libraries that are pulled in and change the defult url used for testing your app.
+
+######newApp/scripts
+
+__templates__ <-this folder contains all the archetypes of files used elsewhere in the boilerplate. You shoudl not need to alter any of the files in this directory.
+
+__build.sh, createWidget.sh, setup.sh, test.sh__ <-bash scripts to manipulate the project
+
+######newApp/src
+
+__js__ <-this folder contains all the JavaScript, HTML and CSS for the application and all custom widgets
+
+__index.html__ <-this is the base HTML file for the application
+
+######newApp/src/js
+
+All subfolders in this directory contain namespaced JavaScript projects. Think of these directories as applicationm imports.
+
+__aop__ <-this contains the aop project
+
+__app__ <-this contains your application code
+
+__dijit__ <-this contains dojo's widgets
+
+__dojo__ <-this contains the dojo base code
+
+__dojox__ <-this contains the dojox code
+
+__rishson__ <-this contains all application skeleton code for your application
+
+__util__ <-this contains the dojo util code (including the dojo build system)
+
+__when__ <-this contains the when project
+
+__wire__ <-this contains the wire.js project
+
+######newApp/src/js/app
+
+__nls__ <-contains all the i18n files for your application
+
+__resources__ <-contains all the resources (images) for your app as well as the base less file.
+
+__app.profile.js__ <-this is the build profile for the application - you should modify __build.profile.js__ instead.
+
+__config.js__ <-this is the custom __dojoConfig__ for the application.
+
+__loader.spec.js__ <-this is the wire.js loader for the application.
+
+__package.json__ <-this is the package details of the application.
+
+
 ### Control layer
  -------------
 
