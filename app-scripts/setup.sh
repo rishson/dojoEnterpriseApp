@@ -192,11 +192,15 @@ if (($DOWNLOAD_RISHSON)); then
 echo "Setting up dojoEnterpriseApp"
 echo "=================="
 RISHSON_DIR="$TARGET_DIR/rishson"
+RISHSON_TMP_DIR="$TARGET_DIR/rishson-tmp"
 confirm_file_overwrite "rishson" "$RISHSON_DIR"
 	if (($?)); then
 		echo "Fetching dojoEnterpriseApp $RISHSON_VERSION"
-		mkdir "$RISHSON_DIR"
-		$GET "https://github.com/rishson/dojoEnterpriseApp/tarball/$RISHSON_VERSION" | tar -C "$RISHSON_DIR" --strip-components 1 -xzf -
+		mkdir "$RISHSON_TMP_DIR"
+		$GET "https://github.com/rishson/dojoEnterpriseApp/tarball/$RISHSON_VERSION" | tar -C "$RISHSON_TMP_DIR" --strip-components 1 -xzf -
+    		mv "$RISHSON_TMP_DIR/src/js/app" "$TARGET_DIR"
+    		mv "$RISHSON_TMP_DIR/src/js/rishson" "$TARGET_DIR"
+    		rm -rf "$RISHSON_TMP_DIR"
 		echo "dojoEnterpriseApp extracted"
 	fi
 fi
