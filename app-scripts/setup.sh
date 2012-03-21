@@ -5,10 +5,10 @@ set -P
 # Default versions
 # These can/will be overridden in $PROJECT_DIR/configuration
 DOJO_VERSION=1.7.2
-WHEN_VERSION=1.0.2
+WHEN_VERSION=0.10.4
 AOP_VERSION=0.5.2
 WIRE_VERSION=0.7.6
-LESS_VERSION=1.1.6
+LESS_VERSION=csnover
 RISHSON_VERSION=master
 
 # ${x%/*} is equivalent to dirname
@@ -176,14 +176,13 @@ echo
 
 echo "Setting up less"
 echo "==============="
-confirm_file_overwrite "LESS" "$TARGET_DIR/less"
+LESS_DIR="$TARGET_DIR/less"
+confirm_file_overwrite "LESS" "$LESS_DIR"
 if (($?)); then
 	echo "Fetching LESS $LESS_VERSION"
-	cd "$PROJECT_DIR"
-	npm install "less@$LESS_VERSION"
-	mv "$PROJECT_DIR/node_modules/less" "$TARGET_DIR"
-	rm -rf "$PROJECT_DIR/node_modules"
-	echo "LESS fetched"
+	mkdir "$LESS_DIR"
+	$GET "https://github.com/csnover/less.js/tarball/$LESS_VERSION" | tar -C "$LESS_DIR" --strip-components 1 -xzf -
+	echo "LESS extracted"
 fi
 
 echo
