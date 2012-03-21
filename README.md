@@ -6,6 +6,9 @@ DojoEnterpriseApp is an abstracted application framework for large web applicati
 The project was inspired by dojoBoilerplate from [Rebecca Murphey](http://www.github.com/rmurphey).
 Thanks must also go to [Craig Barker](http://www.github.com/craigbarker) for putting the first version through its paces, and the guys at [Sitepen](http://www.sitepen.com) for their additions of awesomeness.
 
+Please see the wiki for more details on what the scripts and JavaScript objects do.
+
+
 The main features are:
 ----------------------
 
