@@ -27,11 +27,12 @@ function help_text {
 	echo
 	echo "  -h                 Display this message"
 	echo "  -y                 Always overwrite files (don't prompt)"
-	echo "  -g                 Enable Github integration by adding packages to .gitignore
+	echo "  -g                 Enable Git integration by adding packages to .gitignore"
 }
 
 FORCE_CONFIRM_YES=0
-while getopts ":hyir" opt; do
+GIT_INTEGRATION=0
+while getopts ":hyg" opt; do
 	case "$opt" in
 		h)
 			help_text
@@ -40,12 +41,9 @@ while getopts ":hyir" opt; do
 		y)
 			FORCE_CONFIRM_YES=1
 			;;
-	    	i)
-	        	GIT_IGNORE=1
-	        	;;
-		r)	
-			DOWNLOAD_RISHSON=1
-			;;
+	    g)
+	        GIT_INTEGRATION=1
+	        ;;
 		\?)
 			echo "$SCRIPT_NAME: invalid option -- '$OPTARG'" >&2
 			usage
