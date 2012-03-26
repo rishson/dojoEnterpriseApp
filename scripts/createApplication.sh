@@ -162,22 +162,28 @@ if ((!$RUN_SETUP)); then
 	echo "Make sure you run 'scripts/setup.sh' from within the project directory before starting."
 fi
 
-if ((!$GIT_INTEGRATION)); then
+if (($GIT_INTEGRATION)); then
 	echo
 	echo "Initialising git repo for '$PROJECT_NAME'."
 	cd $PROJECT_DIR
 	touch README.md
+	echo "# $PROJECT_NAME" >> "README.md"
+    echo "===================" >> "README.md"
+	touch .gitignore
+	echo "*.~" >> ".gitignore"
 	git init
 	git add README.md
 	git add .gitignore
 	git add configuration
     git add build.profile.js
-	git add --all /scripts
+	git add scripts
 	git add src/index.html
-	git add --all src/js/app
+	git add src/js/app
 	git commit -am"Initial commit to add all the files created by running createApplication.sh"
-    git remote add origin $GIT_REMOTE
-    git push -u origin master
-    echo "Pushed initial commit to '$GIT_REMOTE'."
+    if (($GIT_REMOTE)); then
+        git remote add origin $GIT_REMOTE
+        git push -u origin master
+        echo "Pushed initial commit to '$GIT_REMOTE'."
+    fi
 fi
 
