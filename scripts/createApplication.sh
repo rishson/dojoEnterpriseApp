@@ -82,7 +82,7 @@ SRC_URL=""
 RUN_SETUP=0
 GIT_INTEGRATION=0
 GIT_REMOTE=""
-while getopts ":hsgu:" opt; do
+while getopts ":hsg:u:" opt; do
 	case "$opt" in
 		h)
 			help_text
@@ -180,10 +180,8 @@ if (($GIT_INTEGRATION)); then
 	git add src/index.html
 	git add src/js/app
 	git commit -am"Initial commit to add all the files created by running createApplication.sh"
-    if (($GIT_REMOTE)); then
         git remote add origin $GIT_REMOTE
         git push -u origin master
         echo "Pushed initial commit to '$GIT_REMOTE'."
-    fi
 fi
 
