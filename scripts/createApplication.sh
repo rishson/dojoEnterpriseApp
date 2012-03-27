@@ -82,7 +82,7 @@ SRC_URL=""
 RUN_SETUP=0
 GIT_INTEGRATION=0
 GIT_REMOTE=""
-while getopts ":hsgu:" opt; do
+while getopts ":hsg:u:" opt; do
 	case "$opt" in
 		h)
 			help_text
