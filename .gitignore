@@ -1,4 +1,11 @@
 .idea
-src/js/dojo
+src/js/aop/
+src/js/dijit/
+src/js/dojo/
+src/js/dojox/
+src/js/less/
+src/js/util/
+src/js/when/
+src/js/wire/
 dist
 *~
