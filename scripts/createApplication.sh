@@ -180,10 +180,8 @@ if (($GIT_INTEGRATION)); then
 	git add src/index.html
 	git add src/js/app
 	git commit -am"Initial commit to add all the files created by running createApplication.sh"
-    if (($GIT_REMOTE)); then
         git remote add origin $GIT_REMOTE
         git push -u origin master
         echo "Pushed initial commit to '$GIT_REMOTE'."
-    fi
 fi
 
