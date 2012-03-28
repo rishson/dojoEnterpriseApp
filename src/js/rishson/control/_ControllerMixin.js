@@ -7,7 +7,7 @@ define([
 ], function(_WidgetInWidgetMixin, declare, arrayUtil, lang, topic){
     /**
      * @class
-     * @name rishson.widget._ControllerMixin
+     * @name rishson.control._ControllerMixin
      * @description This is a mixin for Controller classes/widgets<p>
      * Controllers are classes that wire together the view (widgets) and the model.<p>
      * Application widgets are basically 'Controllers' in an MVC paradigm. Application widgets typically provide layout<p>
@@ -25,11 +25,11 @@ define([
      *<p>
      * At this point, all the topic in mychildWidget.pubList are wired to event handlers in myApplicationWidget.
      */
-    return declare("rishson.widget._ControllerMixin", _WidgetInWidgetMixin, {
+    return declare("rishson.control._ControllerMixin", _WidgetInWidgetMixin, {
     
         /**
          * @function
-         * @name rishson.widget._ControllerMixin.injectWidget
+         * @name rishson.control._ControllerMixin.injectWidget
          * @param {rishson.widget._Widget} widget a widget to examine for topics
          * @description widgets injected into this class will be examined to autowire its publish and subscribes.<p>
          * This function should be called for declarativly created widgets.
@@ -40,7 +40,7 @@ define([
     
         /**
          * @function
-         * @name rishson.widget._ControllerMixin.adopt
+         * @name rishson.control._ControllerMixin.adopt
          * @override rishson.widget._WidgetInWidgetMixin.adopt
          * @description widgets injected into this class will be examined to autowire its publish and subscribes.<p>
          * This function should be called for programatically created widgets.
@@ -54,7 +54,7 @@ define([
     
         /**
          * @function
-         * @name rishson.widget._ControllerMixin._autowirePubs
+         * @name rishson.control._ControllerMixin._autowirePubs
          * @private
          * @param {rishson.widget._Widget} widget a widget that contains a pubList of topics that it can publish.
          * @description autowire the published topics from the widget to event handlers in the Application widget.
@@ -80,7 +80,7 @@ define([
     
         /**
          * @function
-         * @name rishson.widget._ControllerMixin._capitaliseTopicName
+         * @name rishson.control._ControllerMixin._capitaliseTopicName
          * @private
          * @param {String} topic a name of a topic to capitalise.
          * @description capitalise the first letter of a topic.
