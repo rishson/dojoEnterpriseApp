@@ -21,24 +21,27 @@
 }
 
 .AppContainer .username {
-    float: right;
-    font-weight: bold;
-    padding-top: 8px;
-    padding: 5px;
-    border: 1px solid #ffffff;
+	cursor: pointer;
+	font-weight: bold;
+}
+
+.AppContainer .username:hover {
+	color: #FFA500;
+}
+
+.AppContainer .headerLink{
     cursor: pointer;
 }
 
-.AppContainer .headerButton {
-    padding: 5px;
-    border: 1px solid #c0c2c5;
-    cursor: pointer;
-    line-height: 100%;
-    border-radius: 0.65em;
-    -webkit-border-radius: 0.65em;
-    -moz-border-radius: 0.65em;
-    -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, .4);
-    -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, .4);
+.AppContainer .button {
+	border-radius: 0.65em;
+	-webkit-border-radius: 0.65em;
+	-moz-border-radius: 0.65em;
+	-webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, .4);
+	-moz-box-shadow: 0 1px 3px rgba(0, 0, 0, .4);
+	padding: 6px;
+	cursor: pointer;
+	line-height: 100%;
 }
 
 .AppContainer .logout {

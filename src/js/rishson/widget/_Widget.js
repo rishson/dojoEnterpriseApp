@@ -111,10 +111,10 @@ define([
          */
         addTopic : function(topicRef, topicName, makeGlobal) {
             if(!makeGlobal){
-                this.pubList.topicRef = this._topicNamespace + topicName;
+                this.pubList[topicRef] = this._topicNamespace + topicName;
             }
             else {
-                this.pubList.topicRef = this._globalTopicNamespace + topicName;
+                this.pubList[topicRef] = this._globalTopicNamespace + topicName;
             }
         },
 
