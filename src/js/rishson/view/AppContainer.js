@@ -71,21 +71,13 @@ define([
          */
         postCreate : function () {
             //additions to the subList
-            topic.subscribe(this.subList.WIDGET_INITIALISED, lang.hitch(this, "_handleWidgetInitialisation"));
     
             //additions to our pubList
             this.addTopic('LOGOUT', '/user/logout');
-
-            on(this.dapHeader, on.selector(".button", mouse.enter), this._handleMouseEnter);
-            on(this.dapHeader, on.selector(".button", mouse.leave), this._handleMouseLeave);
-            on(this.dapLogout, "click", this._handleLogout);
-
-            /*this.connect(this.dapLogout, 'onclick', this, this._handleLogout);
-            this.connect(this.dapLogout, 'onmouseenter', this, function() {domClass.add(this.dapLogout, 'mouseEnter')});
-            this.connect(this.dapLogout, 'onmouseleave', this, function() {domClass.remove(this.dapLogout, 'mouseEnter')});
-            this.connect(this.dapUsername, 'onmouseenter', this, function() {domClass.add(this.dapUsername, 'mouseEnter headerButton')});
-            this.connect(this.dapUsername, 'onmouseleave', this, function() {domClass.remove(this.dapUsername, 'mouseEnter headerButton')});
-            */
+			// A good example of selecting a node based on context.
+            on(this.dapHeader.domNode, on.selector(".button", mouse.enter), lang.hitch(this, this._handleMouseEnter));
+            on(this.dapHeader.domNode, on.selector(".button", mouse.leave), lang.hitch(this, this._handleMouseLeave));
+            on(this.dapLogout, "click", lang.hitch(this, this._handleLogout));
 
             this.inherited(arguments);  //rishson.widget._Widget
             this._i18n();
@@ -147,7 +139,7 @@ define([
             var node = evt.target;
             var classesToAdd = 'mouseEnter';
             if(node === this.dapUsername){
-                classesToAdd += ' headerButton';
+                classesToAdd += ' headerLink';
             }
             domClass.add(evt.target, classesToAdd);
         },
@@ -161,7 +153,7 @@ define([
             var node = evt.target;
             var classesToAdd = 'mouseEnter';
             if(node === this.dapUsername){
-                classesToAdd += ' headerButton';
+                classesToAdd += ' headerLink';
             }
             domClass.remove(evt.target, classesToAdd);
         }
