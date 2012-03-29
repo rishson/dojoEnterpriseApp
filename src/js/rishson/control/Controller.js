@@ -105,7 +105,12 @@ define([
                 this.subList = {};
                 
                 lang.mixin(this, unwrappedParams);
-                
+
+				var testParams = {username : 'Rishson',
+					footerText : '&copy; 2011 Rishson Enterprises.'};
+
+				this.throwaway = new rishson.view.AppContainer(testParams);
+
                 //this is optional so should not be included in the criteria validation
                 if(validLoginResponse.returnRequest) {
                   this.returnRequest = true;			
@@ -146,9 +151,9 @@ define([
          */
         
         registerWidget : function(widget) {
-            if(widget.declaredClass === 'rishson.view.AppContainer'){
+            if(widget.declaredClass === this.throwaway.declaredClass){
                 //listen out for events from the AppContainer
-                topic.subscribe(AppContainer.LOGOUT, lang.hitch(this, "_handleLogout"));
+                topic.subscribe(this.throwaway.pubList.LOGOUT, lang.hitch(this, "_handleLogout"));
             }
         },
         

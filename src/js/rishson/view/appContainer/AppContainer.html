@@ -3,10 +3,12 @@
     <div data-dojo-attach-point="mainContainer" data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="gutters:false"
          class="AppContainerSubContainer">
 
-        <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'top'" class="header">
-            <div data-dojo-attach-point="dapLogout" class="dijitInline logout headerButton"></div>
-            <div data-dojo-attach-point="dapUsername" class="dijitInline username"></div>
-            <div data-dojo-attach-point="dapWelcomeText" class="dijitInline welcomeText"></div>
+        <div data-dojo-type="dijit.layout.ContentPane" data-dojo-attach-point="dapHeader" data-dojo-props="region: 'top'" class="header">
+            <div data-dojo-attach-point="dapLogout" class="dijitInline button logout headerButton"></div>
+			<div class="welcomeText">
+				<span data-dojo-attach-point="dapWelcomeText"></span>
+				<a data-dojo-attach-point="dapUsername" class="username"></a>
+			</div>
         </div>
         <!--Application goes here-->
         <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'bottom'" class="footer">
