@@ -3,7 +3,7 @@ define([
     "rishson/widget/_WidgetInWidgetMixin",
     "rishson/Globals",
     "dojo/_base/declare", // declare
-    "dojo/_base/lang", // hitch
+    "dojo/_base/lang", // hitch mixin
     "dojo/topic" // publish/subscribe
 ], function(_Widget, _WidgetInWidgetMixin, Globals, declare, lang, topic){
     /**
@@ -58,15 +58,15 @@ define([
          */
         _widgetId : null,
     
-       /**
+        /**
          * @constructor
          */
-        constructor : function() {
+         constructor : function() {
             /*create a unique id for every instance of a widget. This is needed for when we publish our events and want to
               publish who we are. If id is blank then we assume there is only 1 instance of the implementing widget.*/
             this._widgetId = this.declaredClass + this.id;
             
-            /*any derrived widget can publish events on their own namespace so construct the widget namespace from
+            /*any derived widget can publish events on their own namespace so construct the widget namespace from
             the declared class, but replace the . to be a / so it is standard topic conventions*/
             this._topicNamespace = '/' + this.declaredClass.replace(/\./g, '/');
         
@@ -100,7 +100,25 @@ define([
     
             this.inherited(arguments);  //dijit._Widget
         },
-    
+
+        /**
+         * @function
+         * @name rishson.widget._Widget.addTopic
+         * @param topicRef {String} the object property (usually CAPITALISED) of the topic in the pubList
+         * @param topicName {String} the name of topic
+         * @param makeGlobal {Boolean} optional if true use the global topic namespace
+         * @description Syntaatic sugar to add items to a widgets pubList.
+         */
+        addTopic : function(topicRef, topicName, makeGlobal) {
+            if(!makeGlobal){
+                this.pubList.topicRef = this._topicNamespace + topicName;
+            }
+            else {
+                this.pubList.topicRef = this._globalTopicNamespace + topicName;
+            }
+        },
+
+
         /**
          * @function
          * @private

@@ -5,16 +5,19 @@ define([
     "dijit/_TemplatedMixin",
     "dijit/_WidgetsInTemplateMixin",
     "dojo/text!rishson/view/appContainer/AppContainer.html",
+    "dojo/i18n!rishson/nls/AppContainer",
     "rishson/util/ObjectValidator",
     "dojo/_base/declare", // declare + safeMixin
     "dojo/_base/lang", // hitch
     "dojo/dom-class", // add, remove
     "dojo/topic", // publish/subscribe
+    "dojo/on",
+    "dojo/mouse",
     //template widgets
     "dijit/layout/BorderContainer",
     "dijit/layout/ContentPane"
 ], function(_Widget, _LayoutWidget, _Container, _TemplatedMixin, _WidgetsInTemplateMixin,
-        template, ObjectValidator, declare, lang, domClass, topic){
+        template, l10n, ObjectValidator, declare, lang, domClass, topic, on, mouse){
     
     /**
      * @class
@@ -25,6 +28,8 @@ define([
             _TemplatedMixin, _WidgetsInTemplateMixin, _Container], {
     
         templateString : template,
+
+        l10n : l10n,
     
         /**
          * @field
@@ -69,14 +74,19 @@ define([
             topic.subscribe(this.subList.WIDGET_INITIALISED, lang.hitch(this, "_handleWidgetInitialisation"));
     
             //additions to our pubList
-            this.pubList.LOGOUT = this._topicNamespace + '/user/logout';
-    
-            this.connect(this.dapLogout, 'onclick', this, this._handleLogout);
+            this.addTopic('LOGOUT', '/user/logout');
+
+            on(this.dapHeader, on.selector(".button", mouse.enter), this._handleMouseEnter);
+            on(this.dapHeader, on.selector(".button", mouse.leave), this._handleMouseLeave);
+            on(this.dapLogout, "click", this._handleLogout);
+
+            /*this.connect(this.dapLogout, 'onclick', this, this._handleLogout);
             this.connect(this.dapLogout, 'onmouseenter', this, function() {domClass.add(this.dapLogout, 'mouseEnter')});
             this.connect(this.dapLogout, 'onmouseleave', this, function() {domClass.remove(this.dapLogout, 'mouseEnter')});
             this.connect(this.dapUsername, 'onmouseenter', this, function() {domClass.add(this.dapUsername, 'mouseEnter headerButton')});
             this.connect(this.dapUsername, 'onmouseleave', this, function() {domClass.remove(this.dapUsername, 'mouseEnter headerButton')});
-    
+            */
+
             this.inherited(arguments);  //rishson.widget._Widget
             this._i18n();
         },
@@ -102,9 +112,9 @@ define([
         },
     
         _i18n : function() {
-            this.dapWelcomeText.innerHTML = this._nlsStrings.WELCOME;
+            this.dapWelcomeText.innerHTML = this.l10n.WELCOME;
+            this.dapLogout.innerHTML = this.l10n.LOGOUT;
             this.dapUsername.innerHTML = this.username + '.';
-            this.dapLogout.innerHTML = this._nlsStrings.LOGOUT;
             this.dapFooterText.innerHTML = this.footerText;
         },
     
@@ -126,6 +136,34 @@ define([
          */
         _handleLogout : function () {
             topic.publish(this.pubList.LOGOUT);
+        },
+
+        /**
+         * @function
+         * @private
+         * @description Do hover styles
+         */
+        _handleMouseEnter : function (evt) {
+            var node = evt.target;
+            var classesToAdd = 'mouseEnter';
+            if(node === this.dapUsername){
+                classesToAdd += ' headerButton';
+            }
+            domClass.add(evt.target, classesToAdd);
+        },
+
+        /**
+         * @function
+         * @private
+         * @description Remove hover styles
+         */
+        _handleMouseLeave : function (evt) {
+            var node = evt.target;
+            var classesToAdd = 'mouseEnter';
+            if(node === this.dapUsername){
+                classesToAdd += ' headerButton';
+            }
+            domClass.remove(evt.target, classesToAdd);
         }
     
     });

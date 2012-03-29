@@ -16,7 +16,7 @@ define(["exports"], function(exports){
      * @type {String}
      * @description This namespace is prepended to every topic name
      */
-    exports.TOPIC_NAMESPACE = "/rishson/enterprise/widget";
+    exports.TOPIC_NAMESPACE = "/rishson/widget";
     
     exports.SEND_REQUEST = exports.TOPIC_NAMESPACE + "/request/send";
 });

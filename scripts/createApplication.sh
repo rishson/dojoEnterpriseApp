@@ -73,8 +73,8 @@ function help_text {
 	echo
 	echo "  -h                 Display this message"
 	echo "  -s                 Run setup.sh after creating the project"
-	echo "  -g                 Enable Git integration by creating a repo and adding the files to local git repo"
-	echo "  -u                 The URL of this project's 'src' directory"
+	echo "  -g REMOTE          Enable Git integration by creating a repo and adding the files to local git repo"
+	echo "  -u URL             The URL of this project's 'src' directory"
 	echo "                     (default is http://localhost/PROJECT_NAME/src)"
 }
 
@@ -82,7 +82,7 @@ SRC_URL=""
 RUN_SETUP=0
 GIT_INTEGRATION=0
 GIT_REMOTE=""
-while getopts ":hsgu:" opt; do
+while getopts ":hsg:u:" opt; do
 	case "$opt" in
 		h)
 			help_text

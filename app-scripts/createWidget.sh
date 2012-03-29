@@ -83,7 +83,7 @@ PROJECT_DIR="${SCRIPT_DIR%/*}"
 TEMPLATE_PATH="$SCRIPT_DIR/templates"
 
 function usage {
-	echo "Usage: $SCRIPT_NAME [-ht] [-p PACKAGE_NAME] [SUBDIRECTORY/]CLASS_NAME"
+	echo "Usage: $SCRIPT_NAME [-hty] [-p PACKAGE_NAME] [SUBDIRECTORY/]CLASS_NAME"
 }
 
 function help_text {
