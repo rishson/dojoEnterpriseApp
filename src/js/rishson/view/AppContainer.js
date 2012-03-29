@@ -78,6 +78,7 @@ define([
             on(this.dapHeader.domNode, on.selector(".button", mouse.enter), lang.hitch(this, this._handleMouseEnter));
             on(this.dapHeader.domNode, on.selector(".button", mouse.leave), lang.hitch(this, this._handleMouseLeave));
             on(this.dapLogout, "click", lang.hitch(this, this._handleLogout));
+            ls
 
             this.inherited(arguments);  //rishson.widget._Widget
             this._i18n();
