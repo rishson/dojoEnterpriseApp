@@ -10,6 +10,19 @@
     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4), 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.SimpleFooter .footerText {
+.SimpleFooter .footer {
     padding-top: 3px;
+}
+
+.SimpleFooter .footerText {
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.SimpleFooter .footerText:link, .footerText:visited, .footerText:active {
+    color: #000000;
+}
+
+.SimpleFooter .footerText:hover {
+    color: #FFA500;
 }

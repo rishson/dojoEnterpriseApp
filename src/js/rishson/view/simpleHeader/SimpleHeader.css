@@ -37,13 +37,8 @@
     color: #FFA500;
 }
 
-.SimpleHeader .headerLink{
-    cursor: pointer;
-}
-
 .SimpleHeader .button {
     border: 1px solid #cccccc;
-
     border-radius: 0.35em;
     -webkit-border-radius: 0.35em;
     -moz-border-radius: 0.35em;

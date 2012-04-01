@@ -5,12 +5,11 @@ define([
     "rishson/control/ServiceRequest"
 ], function(declare, Controller, MockTransport, ServiceRequest){
 
-    return declare('test.Scaffold', null, {
+    return declare('tests.Scaffold', null, {
     
         createController : function() {
             var mockTransport = new MockTransport();
-            var validLoginResponse = {logoutRequest : this.createLogoutRequest(),
-                serviceRegistry : [],
+            var validLoginResponse = {serviceRegistry : [],
                 grantedAuthorities : [],
                 returnRequest : true};
             return new Controller(mockTransport, validLoginResponse);

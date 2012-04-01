@@ -37,19 +37,23 @@
         
             function create() {
                 scaffold = new Scaffold();
-                //controller = scaffold.createController();
-    
+                controller = scaffold.createController();
+
                 var placeholder = dom.byId('placeholder');
                 var simpleHeader = new SimpleHeader({username : 'Rishson', region : 'top'});
+
                 var exampleApp = new ContentPane({region : 'center'});
                 exampleApp.set('content', 'Your application goes here.');
+
                 var simpleFooter = new SimpleFooter({footerText : '&copy; 2012 Rishson Enterprises.',
+                    footerLink : 'http://github.com/rishson',
                     region : 'bottom'});
+
                 var testParams = {header : simpleHeader, app: exampleApp, footer : simpleFooter};
                 var widgetToTest = new AppContainer(testParams, placeholder);
                 widgetToTest.startup();
     
-                //controller.registerWidget(widgetToTest);
+                controller.injectWidget(widgetToTest);
             }
             
             dom.byId("create").onclick = create;

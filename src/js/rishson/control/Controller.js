@@ -1,20 +1,20 @@
 define([
     "rishson/Globals",
+    "rishson/control/_ControllerMixin",
     "rishson/util/ObjectValidator",
-    "rishson/view/AppContainer", // LOGOUT topic string
     "dojo/_base/lang", // mixin, hitch
     "dojo/_base/array", // indexOf, forEach
     "dojo/_base/declare", // declare
     "dojo/topic", // publish/subscribe
     "dojox/rpc/Service"
-], function(Globals, ObjectValidator, AppContainer, lang, arrayUtil, declare, topic, Service){
+], function(Globals, _ControllerMixin, ObjectValidator, lang, arrayUtil, declare, topic, Service){
 
     /**
      * @class
      * @name rishson.control.Controller
      * @description This class is the conduit for all client server communication.
      */
-    return declare('rishson.control.Controller', null, {
+    return declare('rishson.control.Controller', [_ControllerMixin], {
     
         /**
          * @field
@@ -26,17 +26,9 @@ define([
     
         /**
          * @field
-         * @name rishson.control.Controller.logoutRequest
-         * @type {rishson.control.Request}
-         * @description a Request to send to the server when a user wants to logout
-         */
-        logoutRequest : null,
-    
-        /**
-         * @field
          * @name rishson.control.Controller.serviceRegistry
          * @type {Array}
-         * @description an array of dojox.RpcService(s). THis is populated from a list of SMD definitions
+         * @description an array of dojox.RpcService(s). This is populated from a list of SMD definitions
          */
         serviceRegistry : null,
     
@@ -44,8 +36,8 @@ define([
          * @field
          * @name rishson.control.Controller.grantedAuthorities
          * @type {Array}
-         * @description an array of permission to grant to the currently logged on user. Permissions willbe coerced to 
-       * lower case.
+         * @description an array of permission to grant to the currently logged on user. Permissions will be coerced to
+         * lower case.
          */
         grantedAuthorities : null,
     
@@ -67,28 +59,17 @@ define([
         _topicNamespace : Globals.TOPIC_NAMESPACE,
     
         /**
-         * @field
-         * @name rishson.widget._Widget.subList
-         * @type {Object}
-         * @description Object that contains the list of topics that any derived widget can listen out for
-         */
-        //@todo make this private with get/set so that contents can only be added to
-        subList : null,
-    
-        /**
          * @constructor
          * @param {Object} transport an implementation of rishson.control.Transport
          */
         constructor : function (transport, validLoginResponse) {
             /*validLoginResponse should be in the form:
-                {logoutRequest: rishson.control.Request,
-                serviceRegistry : [SMD Objects],
+                {serviceRegistry : [SMD Objects],
                 grantedAuthorities : [Authority Objects]}
             */
             var criteria = [{paramName : 'transport', paramType : 'object'},
                 {paramName : 'validLoginResponse', paramType : 'criteria', criteria :
-                    [{paramName : 'logoutRequest', paramType : 'object'},
-                    {paramName : 'serviceRegistry', paramType : 'array'},
+                    [{paramName : 'serviceRegistry', paramType : 'array'},
                     {paramName : 'grantedAuthorities', paramType : 'array'}]
                 }];
             var validator = new ObjectValidator(criteria);
@@ -98,18 +79,10 @@ define([
             if(validator.validate(params)) {
                 //unwrap the object contents for validation and to do a mixin
                 var unwrappedParams = {'transport' : transport,
-                'logoutRequest': validLoginResponse.logoutRequest,
                 'serviceRegistry': validLoginResponse.serviceRegistry,
                 'grantedAuthorities': validLoginResponse.grantedAuthorities};
                 
-                this.subList = {};
-                
                 lang.mixin(this, unwrappedParams);
-
-				var testParams = {username : 'Rishson',
-					footerText : '&copy; 2011 Rishson Enterprises.'};
-
-				this.throwaway = new rishson.view.AppContainer(testParams);
 
                 //this is optional so should not be included in the criteria validation
                 if(validLoginResponse.returnRequest) {
@@ -140,23 +113,6 @@ define([
                 throw ('Invalid params passed to the Controller.');
             }
         },
-        
-         /**
-         * @function
-         * @name rishson.control.Controller.registerWidget
-         * @description When this is called, the COntroller will seeif it has wirings for the widget and will create
-         * the relevant pubs and subs.
-         * This behaviour is in a separate function so that teh COntroller can be used withour reference to the AppContainer
-         * @param {rishson.widget._Widget} a widgets that derrives from _Widget
-         */
-        
-        registerWidget : function(widget) {
-            if(widget.declaredClass === this.throwaway.declaredClass){
-                //listen out for events from the AppContainer
-                topic.subscribe(this.throwaway.pubList.LOGOUT, lang.hitch(this, "_handleLogout"));
-            }
-        },
-        
         
          /**
          * @function
@@ -229,7 +185,7 @@ define([
         /**
          * @function
          * @name rishson.control.Controller.hasGrantedAuthority
-         * @description Handles an user logout request.
+         * @description Checks to see if a user has a granted authority
          */
         hasGrantedAuthority : function(authority) {
             return arrayUtil.indexOf(this.grantedAuthorities, authority.toLowerCase()) >= 0;
@@ -272,17 +228,6 @@ define([
                 }
             }, this);
             this.serviceRegistry = serviceArr;	//swap in the service registry
-        },
-    
-    
-        /**
-         * @function
-         * @name rishson.control.Controller._handleLogout
-         * @private
-         * @description Handles an user logout request.
-         */
-        _handleLogout : function() {
-            this.send(this.logoutRequest);
         }
     
     });

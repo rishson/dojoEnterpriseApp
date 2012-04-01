@@ -21,16 +21,25 @@ define([
          * @field
          * @name rishson.view.SimpleFooter.footerText
          * @type {String}
-         * @description the Username of the currently logged in user to display in the header
+         * @description the text to place into the footer
          */
         footerText : '',
+
+        /**
+         * @field
+         * @name rishson.view.SimpleFooter.footerLink
+         * @type {String}
+         * @description the href for the footer link
+         */
+        footerLink : '',
 
         /**
          * @constructor
          * @param {Object} params contains the username and footerText
          */
         constructor : function(params) {
-            var criteria = [{paramName : 'footerText', paramType : 'string'}];
+            var criteria = [{paramName : 'footerText', paramType : 'string',
+                paramName : 'footerLink', paramType : 'string'}];
             var validator = new ObjectValidator(criteria);
             if (validator.validate(params)) {
                 declare.safeMixin(this, params);
@@ -39,16 +48,6 @@ define([
                 validator.logErrorToConsole(params, 'Invalid params passed to the SimpleFooter.');
                 throw ('Invalid params passed to the SimpleFooter.');
             }
-        },
-
-        /**
-         * @function
-         * @name rishson.view.SimpleFooter
-         * @override rishson.widget._Widget
-         */
-        postCreate : function () {
-            this.inherited(arguments);  //rishson.widget._Widget
-            this.dapFooterText.innerHTML = this.footerText;
         },
 
         /**

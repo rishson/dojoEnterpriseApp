@@ -65,13 +65,6 @@ define([
             on(this.domNode, on.selector(".button", mouse.leave), lang.hitch(this, this._handleMouseLeave));
             on(this.dapLogout, "click", lang.hitch(this, this._handleLogout));
             this.inherited(arguments);  //rishson.widget._Widget
-            this._i18n();
-        },
-
-        _i18n : function() {
-            this.dapWelcomeText.innerHTML = this.l10n.WELCOME;
-            this.dapLogout.innerHTML = this.l10n.LOGOUT;
-            this.dapUsername.innerHTML = this.username + '.';
         },
 
         /**
