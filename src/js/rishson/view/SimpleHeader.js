@@ -60,21 +60,14 @@ define([
         postCreate : function () {
             //additions to our pubList
             this.addTopic('LOGOUT', '/user/logout');
+            this.addTopic('USER', '/user/selected');
+
             // A good example of selecting a node based on context.
             on(this.domNode, on.selector(".button", mouse.enter), lang.hitch(this, this._handleMouseEnter));
             on(this.domNode, on.selector(".button", mouse.leave), lang.hitch(this, this._handleMouseLeave));
+            on(this.dapUsername, "click", lang.hitch(this, this._handleUsernameClick));
             on(this.dapLogout, "click", lang.hitch(this, this._handleLogout));
             this.inherited(arguments);  //rishson.widget._Widget
-        },
-
-        /**
-         * @function
-         * @private
-         * @param initialisedWidgetId {Object} the string id of the widget that has just been initialised.
-         * @description Handle a widget becoming initialised.
-         */
-        _handleWidgetInitialisation : function (initialisedWidgetId) {
-
         },
 
         /**
@@ -85,6 +78,16 @@ define([
          */
         _handleLogout : function () {
             topic.publish(this.pubList.LOGOUT, this.username);
+        },
+
+        /**
+         * @function
+         * @private
+         * @description Log the session out. Send a request to the server to logout.
+         * The server should respond with a re-direct and a server side session invalidation.
+         */
+        _handleUsernameClick : function () {
+            topic.publish(this.pubList.USER, this.username);
         },
 
         /**

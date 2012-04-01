@@ -116,8 +116,8 @@ define([
          * @param initialisedWidgetId {Object} the string id of the widget that has just been initialised.
          * @description Handle a widget becoming initialised.
          */
-        _handleWidgetInitialisation : function (initialisedWidgetId) {
-    
+        _handleRishsonWidgetInitialised : function (initialisedWidgetId) {
+            console.debug('Widget initialised: \'' + initialisedWidgetId + '\'');
         },
     
         /**
@@ -128,6 +128,16 @@ define([
          */
         _handleRishsonViewSimpleHeaderUserLogout : function (username) {
             console.debug('Logout request recieved for \'' + username + '\'');
+        },
+
+        /**
+         * @function
+         * @private
+         * @description Log the session out. Send a request to the server to logout.
+         * The server should respond with a re-direct and a server side session invalidation.
+         */
+        _handleRishsonViewSimpleHeaderUserSelected : function (username) {
+            console.debug('Username selection event for \'' + username + '\'');
         }
     
     });

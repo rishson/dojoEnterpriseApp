@@ -70,7 +70,7 @@ define([
             the declared class, but replace the . to be a / so it is standard topic conventions*/
             this._topicNamespace = '/' + this.declaredClass.replace(/\./g, '/');
         
-            this.pubList = {WIDGET_INITIALISED : this._globalTopicNamespace + '/widget/initialised'};
+            this.pubList = {WIDGET_INITIALISED : this._globalTopicNamespace + '/initialised'};
             this.subList = {WIDGET_DISABLE : this._globalTopicNamespace + '/disable',
                 WIDGET_ENABLE : this._globalTopicNamespace + '/enable',
                 ERROR_CME : this._globalTopicNamespace + '/error/cme',

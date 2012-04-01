@@ -68,7 +68,8 @@ define([
                     //capitalise the topic section names and remove slashes
                     var handlerFuncName = this._capitaliseTopicName(topicName);
                     handlerFuncName = '_handle' + handlerFuncName.replace(/[//]/g, '');
-                    //the application widget needs to have _handle[topicName] functions by convention
+
+                    //the implementing class needs to have _handle[topicName] functions by convention
                     var handlerFunc = this[handlerFuncName];
                     if(handlerFunc) {
                         topic.subscribe(topicName, lang.hitch(this, handlerFunc));
@@ -88,7 +89,7 @@ define([
          * @description capitalise the first letter of a topic.
          */
         _capitaliseTopicName : function (topic) {
-            /* e.g. /hello/i/am/a/topic would become Hello/I/Am/A/Topic
+            /* e.g. /hello/i/am/a/topicName would become Hello/I/Am/A/TopicName
             */
             return topic.replace(/\b[a-z]/g, function (w) {
                 return w.toUpperCase();
