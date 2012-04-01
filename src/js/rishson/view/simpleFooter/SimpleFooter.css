@@ -1,0 +1,15 @@
+.SimpleFooter {
+    height: 20px;
+    padding: 2px;
+    border-top: 1px solid #CACACA;
+    text-align: center;
+    padding: 0;
+    background: linear-gradient(#FAFAFA, #EAEAEA) repeat scroll 0 0 transparent;
+    background: -moz-linear-gradient(#FAFAFA, #EAEAEA) repeat scroll 0 0 transparent;
+    background: -webkit-gradient(linear, left top, left bottom, from(#FAFAFA), to(#EAEAEA)) repeat scroll 0 0 transparent;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4), 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.SimpleFooter .footerText {
+    padding-top: 3px;
+}

@@ -1,0 +1,72 @@
+.SimpleHeader {
+    height: 50px;
+    border-bottom: 1px solid #CACACA;
+    padding: 0;
+    background: linear-gradient(#FAFAFA, #EAEAEA) repeat scroll 0 0 transparent;
+    background: -moz-linear-gradient(#FAFAFA, #EAEAEA) repeat scroll 0 0 transparent;
+    background: -webkit-gradient(linear, left top, left bottom, from(#FAFAFA), to(#EAEAEA)) repeat scroll 0 0 transparent;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4), 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.SimpleHeader .headerLeft{
+    height: 100%;
+}
+
+.SimpleHeader .headerRight{
+    border-left: 1px solid #FAFAFA;
+    box-shadow: -1px 0 0 #E0E0E0;
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    float: right;
+    line-height: 40px;
+    padding: 7px 10px 3px;
+}
+
+.SimpleHeader .welcomeText {
+    float: right;
+    padding-left: 10px;
+}
+
+.SimpleHeader .username {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.SimpleHeader .username:hover {
+    color: #FFA500;
+}
+
+.SimpleHeader .headerLink{
+    cursor: pointer;
+}
+
+.SimpleHeader .button {
+    border: 1px solid #cccccc;
+
+    border-radius: 0.35em;
+    -webkit-border-radius: 0.35em;
+    -moz-border-radius: 0.35em;
+    box-shadow: 0 1px 0 #FAFAFA, 0 1px 0 #FAFAFA inset;
+    -webkit-box-shadow: 0 1px 0 #FAFAFA, 0 1px 0 #FAFAFA inset;
+    -moz-box-shadow:0 1px 0 #FAFAFA, 0 1px 0 #FAFAFA inset;
+    background: linear-gradient(#EAEAEA, #CCCCCC) repeat scroll 0 0 transparent;
+    background: -moz-linear-gradient(#EAEAEA, #CCCCCC) repeat scroll 0 0 transparent;
+    background: -webkit-gradient(linear, left top, left bottom, from(#EAEAEA), to(#CCCCCC)) repeat scroll 0 0 transparent;
+    padding: 3px 5px 3px 5px;
+    cursor: pointer;
+    line-height: 20px;
+    margin-top: 6px;
+}
+
+.SimpleHeader .logout {
+    float:right;
+    margin-left: 30px;
+}
+
+.SimpleHeader .mouseEnter {
+    background: #FFA500;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#FFA500'); /* for IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#FFA500)); /* for webkit browsers */
+    background: -moz-linear-gradient(top, #ffffff, #FFA500); /* for firefox 3.6+ */
+}

@@ -33,28 +33,38 @@ define([
     
         /**
          * @field
-         * @name rishson.view.AppContainer.username
+         * @name rishson.view.AppContainer.header
          * @type {String}
          * @description the Username of the currently logged in user to display in the header
          */
-        username : '',
-    
+        header : null,
+
         /**
          * @field
-         * @name rishson.view.AppContainer.footerText
+         * @name rishson.view.AppContainer.app
+         * @type {String}
+         * @description the Username of the currently logged in user to display in the header
+         */
+        app : null,
+
+        /**
+         * @field
+         * @name rishson.view.AppContainer.footer
          * @type {String}
          * @description the text to display in the footer
          */
-        footerText : '',
+        footer : null,
     
         /**
          * @constructor
          * @param {Object} params contains the username and footerText
          */
         constructor : function(params) {
-            var criteria = [{paramName : 'username', paramType : 'string'}, {paramName : 'footerText', paramType : 'string'}];
+            var criteria = [{paramName : 'header', paramType : 'object'},
+                {paramName : 'app', paramType : 'object'},
+                {paramName : 'footer', paramType : 'object'}];
             var validator = new ObjectValidator(criteria);
-            var unwrappedParams = {username: params.username, footerText: params.footerText};
+            var unwrappedParams = {header: params.header, app : params.app, footer: params.footer};
             if (validator.validate(unwrappedParams)) {
                 declare.safeMixin(this, unwrappedParams);
             }
@@ -70,12 +80,15 @@ define([
          * @override rishson.widget._Widget
          */
         postCreate : function () {
+            this.mainContainer.addChild(this.header);
+            this.mainContainer.addChild(this.app);
+            this.mainContainer.addChild(this.footer);
             //additions to our pubList
-            this.addTopic('LOGOUT', '/user/logout');
+            //this.addTopic('LOGOUT', '/user/logout');
 			// A good example of selecting a node based on context.
-            on(this.dapHeader.domNode, on.selector(".button", mouse.enter), lang.hitch(this, this._handleMouseEnter));
-            on(this.dapHeader.domNode, on.selector(".button", mouse.leave), lang.hitch(this, this._handleMouseLeave));
-            on(this.dapLogout, "click", lang.hitch(this, this._handleLogout));
+            //on(this.dapHeader.domNode, on.selector(".button", mouse.enter), lang.hitch(this, this._handleMouseEnter));
+            //on(this.dapHeader.domNode, on.selector(".button", mouse.leave), lang.hitch(this, this._handleMouseLeave));
+            //on(this.dapLogout, "click", lang.hitch(this, this._handleLogout));
             this.inherited(arguments);  //rishson.widget._Widget
             this._i18n();
         },
@@ -101,10 +114,10 @@ define([
         },
     
         _i18n : function() {
-            this.dapWelcomeText.innerHTML = this.l10n.WELCOME;
-            this.dapLogout.innerHTML = this.l10n.LOGOUT;
-            this.dapUsername.innerHTML = this.username + '.';
-            this.dapFooterText.innerHTML = this.footerText;
+            //this.dapWelcomeText.innerHTML = this.l10n.WELCOME;
+            //this.dapLogout.innerHTML = this.l10n.LOGOUT;
+            //this.dapUsername.innerHTML = this.username + '.';
+            //this.dapFooterText.innerHTML = this.footerText;
         },
     
         /**
