@@ -1,5 +1,6 @@
 define([
     "rishson/widget/_Widget",
+    "rishson/control/_ControllerMixin",
     "dijit/layout/_LayoutWidget",
     "dijit/_Container",
     "dijit/_TemplatedMixin",
@@ -16,7 +17,7 @@ define([
     //template widgets
     "dijit/layout/BorderContainer",
     "dijit/layout/ContentPane"
-], function(_Widget, _LayoutWidget, _Container, _TemplatedMixin, _WidgetsInTemplateMixin,
+], function(_Widget, _ControllerLayout, _LayoutWidget, _Container, _TemplatedMixin, _WidgetsInTemplateMixin,
         template, l10n, ObjectValidator, declare, lang, domClass, topic, on, mouse){
     
     /**
@@ -24,7 +25,7 @@ define([
      * @name rishson.view.AppContainer
      * @description This is the topmost widget that is designed to contain your application.
      */
-    return declare('rishson.view.AppContainer', [_Widget, _LayoutWidget,
+    return declare('rishson.view.AppContainer', [_Widget, _ControllerLayout, _LayoutWidget,
             _TemplatedMixin, _WidgetsInTemplateMixin, _Container], {
     
         templateString : template,
@@ -83,14 +84,10 @@ define([
             this.mainContainer.addChild(this.header);
             this.mainContainer.addChild(this.app);
             this.mainContainer.addChild(this.footer);
-            //additions to our pubList
-            //this.addTopic('LOGOUT', '/user/logout');
-			// A good example of selecting a node based on context.
-            //on(this.dapHeader.domNode, on.selector(".button", mouse.enter), lang.hitch(this, this._handleMouseEnter));
-            //on(this.dapHeader.domNode, on.selector(".button", mouse.leave), lang.hitch(this, this._handleMouseLeave));
-            //on(this.dapLogout, "click", lang.hitch(this, this._handleLogout));
+
+            this.injectWidget(this.header);
+
             this.inherited(arguments);  //rishson.widget._Widget
-            this._i18n();
         },
     
         /**
@@ -113,13 +110,6 @@ define([
             this.inherited(arguments);
         },
     
-        _i18n : function() {
-            //this.dapWelcomeText.innerHTML = this.l10n.WELCOME;
-            //this.dapLogout.innerHTML = this.l10n.LOGOUT;
-            //this.dapUsername.innerHTML = this.username + '.';
-            //this.dapFooterText.innerHTML = this.footerText;
-        },
-    
         /**
          * @function
          * @private
@@ -136,36 +126,8 @@ define([
          * @description Log the session out. Send a request to the server to logout.
          * The server should respond with a re-direct and a server side session invalidation.
          */
-        _handleLogout : function () {
-            topic.publish(this.pubList.LOGOUT);
-        },
-
-        /**
-         * @function
-         * @private
-         * @description Do hover styles
-         */
-        _handleMouseEnter : function (evt) {
-            var node = evt.target;
-            var classesToAdd = 'mouseEnter';
-            if(node === this.dapUsername){
-                classesToAdd += ' headerLink';
-            }
-            domClass.add(evt.target, classesToAdd);
-        },
-
-        /**
-         * @function
-         * @private
-         * @description Remove hover styles
-         */
-        _handleMouseLeave : function (evt) {
-            var node = evt.target;
-            var classesToAdd = 'mouseEnter';
-            if(node === this.dapUsername){
-                classesToAdd += ' headerLink';
-            }
-            domClass.remove(evt.target, classesToAdd);
+        _handleRishsonViewSimpleHeaderUserLogout : function (username) {
+            console.debug('Logout request recieved for \'' + username + '\'');
         }
     
     });

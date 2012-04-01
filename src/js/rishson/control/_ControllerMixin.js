@@ -62,17 +62,19 @@ define([
         _autowirePubs : function (widget) {
             //iterate over each published topic of the passed in widget - the application widget need to subscribe to these		
     
-            for(var topic in widget.pubList) {
-                if(widget.pubList.hasOwnProperty(topic)) {
+            for(var topicObj in widget.pubList) {
+                if(widget.pubList.hasOwnProperty(topicObj)) {
+                    var topicName = widget.pubList[topicObj];
                     //capitalise the topic section names and remove slashes
-                    var handlerFuncName = '_handle' + this._capitaliseTopicName(topic).replace('/', '');
+                    var handlerFuncName = this._capitaliseTopicName(topicName);
+                    handlerFuncName = '_handle' + handlerFuncName.replace(/[//]/g, '');
                     //the application widget needs to have _handle[topicName] functions by convention
                     var handlerFunc = this[handlerFuncName];
                     if(handlerFunc) {
-                        topic.subscribe(topic, lang.hitch(this, handlerFunc));
+                        topic.subscribe(topicName, lang.hitch(this, handlerFunc));
                     }
                     else {
-                        console.error('Autowire failure for topic: ' + topic + '. No handler: ' + handlerFuncName);			
+                        console.error('Autowire failure for topic: ' + topicName + '. No handler: ' + handlerFuncName);
                     }    
                 }	
             }
@@ -87,9 +89,8 @@ define([
          */
         _capitaliseTopicName : function (topic) {
             /* e.g. /hello/i/am/a/topic would become Hello/I/Am/A/Topic
-            /\b[a-z]/g		
             */
-            return topic.toLowerCase().replace(/\b[a-z]/g, function (w) {
+            return topic.replace(/\b[a-z]/g, function (w) {
                 return w.toUpperCase();
             });
         }

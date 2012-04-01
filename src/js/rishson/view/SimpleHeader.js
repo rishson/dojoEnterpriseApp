@@ -84,7 +84,7 @@ define([
          * The server should respond with a re-direct and a server side session invalidation.
          */
         _handleLogout : function () {
-            topic.publish(this.pubList.LOGOUT);
+            topic.publish(this.pubList.LOGOUT, this.username);
         },
 
         /**
