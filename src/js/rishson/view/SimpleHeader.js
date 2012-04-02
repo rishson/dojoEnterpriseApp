@@ -1,25 +1,25 @@
 define([
-    "rishson/widget/_Widget",
-    "dijit/_TemplatedMixin",
-    "dijit/_WidgetsInTemplateMixin",
-    "dojo/text!rishson/view/simpleHeader/SimpleHeader.html",
-    "dojo/i18n!rishson/nls/SimpleHeader",
-    "rishson/util/ObjectValidator",
+    "rishson/widget/_Widget",   //mixin
+    "dijit/_TemplatedMixin",    //mixin
+    "dijit/_WidgetsInTemplateMixin",    //mixin
+    "dojo/text!rishson/view/simpleHeader/SimpleHeader.html",    //template
+    "dojo/i18n!rishson/nls/SimpleHeader",   //nls file
+    "rishson/util/ObjectValidator", //validate
     "dojo/_base/declare", // declare + safeMixin
     "dojo/_base/lang", // hitch
     "dojo/dom-class", // add, remove
     "dojo/topic", // publish/subscribe
-    "dojo/on",
-    "dojo/mouse",
-    //template widgets
+    "dojo/on",  //on, selector
+    "dojo/mouse",   //mouse enter/leave events
+    //template widgets found in the template but not in declare
     "dijit/layout/ContentPane"
-], function(_Widget, _TemplatedMixin, _WidgetsInTemplateMixin,
-            template, l10n, ObjectValidator, declare, lang, domClass, topic, on, mouse){
+], function(_Widget, _TemplatedMixin, _WidgetsInTemplateMixin, template, l10n, ObjectValidator, declare, lang, domClass,
+            topic, on, mouse){
 
     /**
      * @class
      * @name rishson.view.SimpleHeader
-     * @description This is the topmost widget that is designed to contain your application.
+     * @description An example widget for a generic header of a single page application.
      */
     return declare('rishson.view.SimpleHeader', [_Widget, _TemplatedMixin, _WidgetsInTemplateMixin], {
 
@@ -58,16 +58,17 @@ define([
          * @override rishson.widget._Widget
          */
         postCreate : function () {
-            //additions to our pubList
+            //additions to our list of topics that we can publish
             this.addTopic('LOGOUT', '/user/logout');
             this.addTopic('USER', '/user/selected');
 
-            // A good example of selecting a node based on context.
+            //Set up all the dom handlers
             on(this.domNode, on.selector(".button", mouse.enter), lang.hitch(this, this._handleMouseEnter));
             on(this.domNode, on.selector(".button", mouse.leave), lang.hitch(this, this._handleMouseLeave));
             on(this.dapUsername, "click", lang.hitch(this, this._handleUsernameClick));
             on(this.dapLogout, "click", lang.hitch(this, this._handleLogout));
             this.inherited(arguments);  //rishson.widget._Widget
+            this._initialised();
         },
 
         /**
@@ -83,8 +84,8 @@ define([
         /**
          * @function
          * @private
-         * @description Log the session out. Send a request to the server to logout.
-         * The server should respond with a re-direct and a server side session invalidation.
+         * @description Handle a click on the username.
+         * This would usually launch a user preferences dialog or similar.
          */
         _handleUsernameClick : function () {
             topic.publish(this.pubList.USER, this.username);
@@ -93,6 +94,7 @@ define([
         /**
          * @function
          * @private
+         * @param {Object} evt the DOM event
          * @description Do hover styles
          */
         _handleMouseEnter : function (evt) {
@@ -107,6 +109,7 @@ define([
         /**
          * @function
          * @private
+         * @param {Object} evt the DOM event
          * @description Remove hover styles
          */
         _handleMouseLeave : function (evt) {
@@ -117,6 +120,5 @@ define([
             }
             domClass.remove(evt.target, classesToAdd);
         }
-
     });
 });

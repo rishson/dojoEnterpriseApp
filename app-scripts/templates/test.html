@@ -5,12 +5,22 @@
     <title>$className$ Tests</title>
     
     <link rel="stylesheet/less" href="$pathToJs$/app/resources/app.less">
+    <style type="text/css">
+        .fixedRegion {
+            border: 1px solid black;
+            height : 600px;
+            width : 900px;
+        }
+    </style>
 </head>
 <body class="claro">
-    <div id="testWidget"></div>
+
+    <div class="fixedRegion">
+        <div id="testWidget"></div>
+    </div>
+
     <script>var less = { env: "development" };</script>
     <script src="$pathToJs$/less/dist/less-1.1.6.min.js"></script>
-
     <script>
         var dojoConfig = {
             async: true,
@@ -22,7 +32,7 @@
     </script>
     <script src="$pathToJs$/dojo/dojo.js"></script>
     <script>
-        require(["$widgetName$", "doh", "domReady!"], function($className$, doh){
+        require(["$widgetName$", "doh", "domReady!", "dom-construct"], function($className$, doh, domConstruct){
             
             var fromRobot = location.search == "?robot";
             
@@ -35,6 +45,27 @@
                         runTest: function(t){
                             t.t(testWidget && testWidget._started,
                                 "Widget should be instantiated and started.");
+                        },
+                        tearDown: function(t){
+                        }
+                    },
+                    {
+                        name: "Destruction and recreation",
+                        setUp: function(t){
+                        },
+                        runTest: function(t){
+                            testWidget.destroy();
+                            t.t(!testWidget,
+                                "Widget should be null.");
+
+                            //create a new testWidget div to use as the placeholder that is 'consumed' during widget creation
+                            var newTestWidgetDomNode = domConstruct.create('div');
+                            domConstruct.place(newTestWidgetDomNode, null, "testWidget");
+                            var testWidget = new $className$({}, newTestWidgetDomNode);
+                            testWidget.startup();
+                            t.t(testWidget && testWidget._started,
+                                "Widget should be instantiated and started.");
+
                         },
                         tearDown: function(t){
                         }

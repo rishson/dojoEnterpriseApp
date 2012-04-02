@@ -85,7 +85,7 @@ define([
             this.mainContainer.addChild(this.app);
             this.mainContainer.addChild(this.footer);
 
-            this.injectWidget(this.header);
+            this.injectWidget(this.header); //hook up to all topics published from the header widget
 
             this.inherited(arguments);  //rishson.widget._Widget
         },
@@ -113,7 +113,7 @@ define([
         /**
          * @function
          * @private
-         * @param initialisedWidgetId {Object} the string id of the widget that has just been initialised.
+         * @param initialisedWidgetId {String} the string id of the widget that has just been initialised.
          * @description Handle a widget becoming initialised.
          */
         _handleRishsonWidgetInitialised : function (initialisedWidgetId) {
@@ -123,6 +123,7 @@ define([
         /**
          * @function
          * @private
+         * @param {String} username the name of the user who has requested a logout
          * @description Log the session out. Send a request to the server to logout.
          * The server should respond with a re-direct and a server side session invalidation.
          */
@@ -133,12 +134,11 @@ define([
         /**
          * @function
          * @private
-         * @description Log the session out. Send a request to the server to logout.
-         * The server should respond with a re-direct and a server side session invalidation.
+         * @param {String} username the name of the user who want to launch a preferences page for their account.
+         * @description The user wants to see details of their user account.
          */
         _handleRishsonViewSimpleHeaderUserSelected : function (username) {
             console.debug('Username selection event for \'' + username + '\'');
         }
-    
     });
 });
