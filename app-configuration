@@ -2,7 +2,8 @@ DOJO_VERSION=1.7.2
 WHEN_VERSION=1.0.2
 AOP_VERSION=0.5.2
 WIRE_VERSION=0.7.6
-LESS_VERSION=1.1.6
+LESS_VERSION=csnover
+RISHSON_VERSION=master
 
 # URL that the project's "src" directory will be exposed at
 SRC_URL=$srcUrl$

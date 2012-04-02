@@ -1,6 +1,6 @@
 define([
-    "dijit/_Widget",
-    "rishson/widget/_WidgetInWidgetMixin",
+    "dijit/_Widget",    //mixin
+    "rishson/widget/_WidgetInWidgetMixin",  //mixin
     "rishson/Globals",
     "dojo/_base/declare", // declare
     "dojo/_base/lang", // hitch mixin
@@ -9,7 +9,7 @@ define([
     /**
      * @class
      * @name rishson.widget._Widget
-     * @description This is the base class for all widgets in Enterprise.<p>
+     * @description This is the base class for all widgets.<p>
      * We mixin Phil Higgin's memory leak mitigation solution that is implemented in _WidgetInWidgetMixin.<p>
      * This base class also adds very generic event pub/sub abilities so that widgets can be completely self-contained and
      * not have to know about their runtime invocation container or understand context concerns such as Ajax request.
