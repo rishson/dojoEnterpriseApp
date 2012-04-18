@@ -35,7 +35,7 @@ define([
         /**
          * @field
          * @name rishson.view.AppContainer.header
-         * @type {String}
+         * @type {string}
          * @description the Username of the currently logged in user to display in the header
          */
         header : null,
@@ -43,7 +43,7 @@ define([
         /**
          * @field
          * @name rishson.view.AppContainer.app
-         * @type {String}
+         * @type {string}
          * @description the Username of the currently logged in user to display in the header
          */
         app : null,
@@ -51,7 +51,7 @@ define([
         /**
          * @field
          * @name rishson.view.AppContainer.footer
-         * @type {String}
+         * @type {string}
          * @description the text to display in the footer
          */
         footer : null,
@@ -113,7 +113,7 @@ define([
         /**
          * @function
          * @private
-         * @param initialisedWidgetId {String} the string id of the widget that has just been initialised.
+         * @param initialisedWidgetId {string} the string id of the widget that has just been initialised.
          * @description Handle a widget becoming initialised.
          */
         _handleRishsonWidgetInitialised : function (initialisedWidgetId) {
@@ -123,7 +123,7 @@ define([
         /**
          * @function
          * @private
-         * @param {String} username the name of the user who has requested a logout
+         * @param {string} username the name of the user who has requested a logout
          * @description Log the session out. Send a request to the server to logout.
          * The server should respond with a re-direct and a server side session invalidation.
          */
@@ -134,7 +134,7 @@ define([
         /**
          * @function
          * @private
-         * @param {String} username the name of the user who want to launch a preferences page for their account.
+         * @param {string} username the name of the user who want to launch a preferences page for their account.
          * @description The user wants to see details of their user account.
          */
         _handleRishsonViewSimpleHeaderUserSelected : function (username) {

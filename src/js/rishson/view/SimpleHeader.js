@@ -30,7 +30,7 @@ define([
         /**
          * @field
          * @name rishson.view.SimpleHeader.username
-         * @type {String}
+         * @type {string}
          * @description the Username of the currently logged in user to display in the header
          */
         username : '',

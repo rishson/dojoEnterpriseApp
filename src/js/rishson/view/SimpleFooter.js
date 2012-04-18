@@ -19,7 +19,7 @@ define([
         /**
          * @field
          * @name rishson.view.SimpleFooter.footerText
-         * @type {String}
+         * @type {string}
          * @description the text to place into the footer
          */
         footerText : '',
@@ -27,7 +27,7 @@ define([
         /**
          * @field
          * @name rishson.view.SimpleFooter.footerLink
-         * @type {String}
+         * @type {string}
          * @description the href for the footer link
          */
         footerLink : '',

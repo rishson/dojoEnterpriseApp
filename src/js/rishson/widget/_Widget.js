@@ -19,7 +19,7 @@ define([
         /**
          * @field
          * @name rishson.widget._Widget._globalTopicNamespace
-         * @type {String}
+         * @type {string}
          * @private
          * @description This namespace is prepended to every topic name used by a derived widget
          */
@@ -44,7 +44,7 @@ define([
         /**
          * @field
          * @name rishson.widget._Widget.isInitialised
-         * @type {Boolean}
+         * @type {boolean}
          * @description Is the widget initialised? Default to false - duh.
          */
         isInitialised : false,
@@ -53,7 +53,7 @@ define([
          * @field
          * @private
          * @name rishson.widget._Widget._widgetId
-         * @type {String}
+         * @type {string}
          * @description The unique id of a widget created with this base class.
          */
         _widgetId : null,
@@ -104,9 +104,9 @@ define([
         /**
          * @function
          * @name rishson.widget._Widget.addTopic
-         * @param topicRef {String} the object property (usually CAPITALISED) of the topic in the pubList
-         * @param topicName {String} the name of topic
-         * @param makeGlobal {Boolean} optional if true use the global topic namespace
+         * @param topicRef {string} the object property (usually CAPITALISED) of the topic in the pubList
+         * @param topicName {string} the name of topic
+         * @param makeGlobal {boolean} optional if true use the global topic namespace
          * @description Syntaatic sugar to add items to a widgets pubList.
          */
         addTopic : function(topicRef, topicName, makeGlobal) {

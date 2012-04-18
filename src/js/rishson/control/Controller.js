@@ -44,7 +44,7 @@ define([
         /**
          * @field
          * @name rishson.control.Controller.returnRequest
-         * @type {Boolean}
+         * @type {boolean}
          * @description should the Request be returned to the callee when a Response is created
          */
         returnRequest : false,
@@ -52,7 +52,7 @@ define([
         /**
          * @field
          * @name rishson.widget._Widget._topicNamespace
-         * @type {String}
+         * @type {string}
          * @private
          * @description This namespace is prepended to every topic
          */
@@ -60,7 +60,8 @@ define([
     
         /**
          * @constructor
-         * @param {Object} transport an implementation of rishson.control.Transport
+         * @param {rishson.control.Transport} transport an implementation of rishson.control.Transport
+         * @param {Object} validLoginResponse object of bootstrap properties
          */
         constructor : function (transport, validLoginResponse) {
             /*validLoginResponse should be in the form:
@@ -117,11 +118,11 @@ define([
          /**
          * @function
          * @name rishson.control.Controller.send
+         * @param {rishson.control.Request} request to send to the server
          * @description Issues the provided <code>rishson.control.Request</code> in an asynchronous manner
          * This function delegates the actual sending of the Request to the injected Transport implementation.
          * rishson.control.Controller.handleRequest will be called for valid responses.
          * rishson.control.Controller.handleError will be called if an error occurred during the send.
-         * @param {rishson.control.Request} request to send to the server
          */
         send : function (request) {
             this.transport.send(request);
@@ -131,9 +132,9 @@ define([
         /**
          * @function
          * @name rishson.control.Controller.handleResponse
-         * @description Handles a valid response from a transport.
          * @param {Object} request an object that is the original request to the server
          * @param {rishson.control.Response} response an object that is the server response
+         * @description Handles a valid response from a transport.
          */
         handleResponse : function (request, response) {
             var scopedCallback;
@@ -159,10 +160,10 @@ define([
                 
                 //return the original request along with the response if required
                 if(this.returnRequest) {
-                        scopedCallback(response, request);
+                    scopedCallback(response, request);
                 }
                 else {
-                  scopedCallback(response);		
+                    scopedCallback(response);
                 }
             }
         },
@@ -170,9 +171,9 @@ define([
         /**
          * @function
          * @name rishson.control.Controller.handleError
-         * @description Handles an unexpected (runtime) error response from a transport.
          * @param {Object} request an object that is the original reuest to the server
          * @param {Object} err an object that is the server error response
+         * @description Handles an unexpected (runtime) error response from a transport.
          */
         handleError : function (request, err) {
             //our generic error handling code goes here

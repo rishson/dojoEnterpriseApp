@@ -54,7 +54,7 @@ define([
          *      var x = this.adopt(my.ui.Button, {});<p>
          *      this.orphan(x, true);
          * @param {Object} widget a widget reference to remove from this parent.
-         * @param {Boolean} destroy an optional boolean used to force immediate destruction of the child. Pass any truthy
+         * @param {boolean} destroy an optional boolean used to force immediate destruction of the child. Pass any truthy
          * value here and the child will be orphaned and killed.
          */
         orphan : function(/*dijit._Widget*/widget, /*Boolean*/destroy){

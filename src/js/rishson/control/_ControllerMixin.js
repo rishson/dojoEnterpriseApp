@@ -42,6 +42,10 @@ define([
          * @function
          * @name rishson.control._ControllerMixin.adopt
          * @override rishson.widget._WidgetInWidgetMixin.adopt
+         * @param {Function} cls a constructor function to run and create an instance of a class
+         * @param {Object} props any properties to mixin to the created class
+         * @param {DomNode} node a domNode to place the created widget's DomNode at
+         * @return {Object} widget an instance of the created widget
          * @description widgets injected into this class will be examined to autowire its publish and subscribes.<p>
          * This function should be called for programatically created widgets.
          */
@@ -85,7 +89,8 @@ define([
          * @function
          * @name rishson.control._ControllerMixin._capitaliseTopicName
          * @private
-         * @param {String} topic a name of a topic to capitalise.
+         * @param {string} topic a name of a topic to capitalise.
+         * @return {string} the capitalised topic name
          * @description capitalise the first letter of a topic.
          */
         _capitaliseTopicName : function (topic) {

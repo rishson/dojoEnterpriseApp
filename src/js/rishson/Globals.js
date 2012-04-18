@@ -13,7 +13,7 @@ define(["exports"], function(exports){
     /**
      * @field
      * @name rishson.Globals.TOPIC_NAMESPACE
-     * @type {String}
+     * @type {string}
      * @description This namespace is prepended to every topic name
      */
     exports.TOPIC_NAMESPACE = "/rishson/widget";
