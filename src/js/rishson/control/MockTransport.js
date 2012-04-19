@@ -4,10 +4,11 @@ define([
     "rishson/control/Transport",
     "rishson/util/ObjectValidator",
     "dojo/_base/declare", // declare
+    "dojo/_base/lang", // lang
     "dojo/_base/array", // indexOf
     "dojo/_base/xhr", // get, etc.
     "require" // context-sensitive require
-], function(script, Response, Transport, ObjectValidator, declare, arrayUtil, xhr, require){
+], function(script, Response, Transport, ObjectValidator, declare, lang, arrayUtil, xhr, require){
 
     /**
      * @class
@@ -24,8 +25,19 @@ define([
          * @description the number of milliseconds that a <code>rishson.control.Request</code> can take before the call is aborted.
          */
         requestTimeout : 5000,  //defaults to 5 seconds
-    
-    
+
+    	/**
+		 * @field
+		 * @name rishson.control.MockTransport.namespace
+		 * @type {String}
+		 * @description Namespace where the test .
+		 */
+		namespace : '../tests/data/',
+
+		constructor : function(params) {
+			lang.mixin(this, params);
+		},
+
         /**
          * @function
          * @name rishson.control.MockTransport.send
@@ -44,7 +56,7 @@ define([
               for a rest service:
               test.data.restResponses.someService.SomeEndpoint
             */
-            var namespace = '../tests/data/';
+            var namespace = this.namespace;
             if (request.declaredClass == 'rishson.control.ServiceRequest') {
                 namespace += 'serviceResponses/' + request.toUrl();
             } else if (request.declaredClass == 'rishson.control.RestRequest') {

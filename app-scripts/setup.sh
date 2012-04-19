@@ -5,10 +5,10 @@ set -P
 # Default versions
 # These can/will be overridden in $PROJECT_DIR/configuration
 DOJO_VERSION=1.7.2
-WHEN_VERSION=1.0.2
+WHEN_VERSION=0.10.4
 AOP_VERSION=0.5.2
 WIRE_VERSION=0.7.6
-LESS_VERSION=1.1.6
+LESS_VERSION=csnover
 RISHSON_VERSION=master
 
 # ${x%/*} is equivalent to dirname
@@ -18,7 +18,7 @@ SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 SCRIPT_NAME="${0##*/}"
 
 function usage {
-	echo "Usage: $SCRIPT_NAME [-hyir]"
+	echo "Usage: $SCRIPT_NAME [-hyg]"
 }
 
 function help_text {
@@ -27,12 +27,12 @@ function help_text {
 	echo
 	echo "  -h                 Display this message"
 	echo "  -y                 Always overwrite files (don't prompt)"
-	echo "  -i                 Add packages to .gitignore"
-	echo "  -r                 Fetch dojoEnterpriseApp from github"
+	echo "  -g                 Enable Git integration by adding packages to .gitignore"
 }
 
 FORCE_CONFIRM_YES=0
-while getopts ":hyir" opt; do
+GIT_INTEGRATION=0
+while getopts ":hyg" opt; do
 	case "$opt" in
 		h)
 			help_text
@@ -41,12 +41,9 @@ while getopts ":hyir" opt; do
 		y)
 			FORCE_CONFIRM_YES=1
 			;;
-	    i)
-	        GIT_IGNORE=1
+	    g)
+	        GIT_INTEGRATION=1
 	        ;;
-		r)	
-			DOWNLOAD_RISHSON=1
-			;;
 		\?)
 			echo "$SCRIPT_NAME: invalid option -- '$OPTARG'" >&2
 			usage
@@ -176,34 +173,34 @@ echo
 
 echo "Setting up less"
 echo "==============="
-confirm_file_overwrite "LESS" "$TARGET_DIR/less"
+LESS_DIR="$TARGET_DIR/less"
+confirm_file_overwrite "LESS" "$LESS_DIR"
 if (($?)); then
 	echo "Fetching LESS $LESS_VERSION"
-	cd "$PROJECT_DIR"
-	npm install "less@$LESS_VERSION"
-	mv "$PROJECT_DIR/node_modules/less" "$TARGET_DIR"
-	echo rm -rf "$PROJECT_DIR/node_modules"
-	echo "LESS fetched"
+	mkdir "$LESS_DIR"
+	$GET "https://github.com/csnover/less.js/tarball/$LESS_VERSION" | tar -C "$LESS_DIR" --strip-components 1 -xzf -
+	echo "LESS extracted"
 fi
 
 echo
 
-if (($DOWNLOAD_RISHSON)); then
 echo "Setting up dojoEnterpriseApp"
 echo "=================="
 RISHSON_DIR="$TARGET_DIR/rishson"
+RISHSON_TMP_DIR="$TARGET_DIR/rishson-tmp"
 confirm_file_overwrite "rishson" "$RISHSON_DIR"
-	if (($?)); then
-		echo "Fetching dojoEnterpriseApp $RISHSON_VERSION"
-		mkdir "$RISHSON_DIR"
-		$GET "https://github.com/rishson/dojoEnterpriseApp/tarball/$RISHSON_VERSION" | tar -C "$RISHSON_DIR" --strip-components 1 -xzf -
-		echo "dojoEnterpriseApp extracted"
-	fi
+if (($?)); then
+    echo "Fetching dojoEnterpriseApp $RISHSON_VERSION"
+    mkdir "$RISHSON_TMP_DIR"
+    $GET "https://github.com/rishson/dojoEnterpriseApp/tarball/$RISHSON_VERSION" | tar -C "$RISHSON_TMP_DIR" --strip-components 1 -xzf -
+        mv "$RISHSON_TMP_DIR/src/js/rishson" "$TARGET_DIR"
+        rm -rf "$RISHSON_TMP_DIR"
+    echo "dojoEnterpriseApp extracted"
 fi
 
 echo
 
-if (($GIT_IGNORE)); then
+if (($GIT_INTEGRATION)); then
     echo "Adding packages to .gitignore"
     for PACKAGE_NAME in aop dijit dojo dojox less rishson util when wire; do
         echo "src/js/$PACKAGE_NAME/" >> "$PROJECT_DIR/.gitignore"

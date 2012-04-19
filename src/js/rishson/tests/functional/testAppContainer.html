@@ -16,6 +16,8 @@
         }
     </style>
     <link rel="stylesheet" href="../../view/appContainer/AppContainer.css" type="text/css"/>
+    <link rel="stylesheet" href="../../view/simpleHeader/SimpleHeader.css" type="text/css"/>
+    <link rel="stylesheet" href="../../view/simpleFooter/SimpleFooter.css" type="text/css"/>
 
     <script type="text/javascript">
         var dojoConfig = {isDebug: true, async: true};
@@ -26,23 +28,32 @@
     <script type="text/javascript">
         require([
             "dojo/dom", // byId
+            "dijit/layout/ContentPane",
             "rishson/view/AppContainer",
-            "rishson/test/Scaffold"
-        ], function(AppContainer, Scaffold){
+            "rishson/view/SimpleHeader",
+            "rishson/view/SimpleFooter",
+            "rishson/tests/Scaffold"
+        ], function(dom, ContentPane, AppContainer, SimpleHeader, SimpleFooter, Scaffold){
         
             function create() {
                 scaffold = new Scaffold();
                 controller = scaffold.createController();
-    
+
                 var placeholder = dom.byId('placeholder');
-    
-                var testParams = {username : 'Rishson',
-                    footerText : '&copy; 2011 Rishson Enterprises.'};
-    
+                var simpleHeader = new SimpleHeader({username : 'Rishson', region : 'top'});
+
+                var exampleApp = new ContentPane({region : 'center'});
+                exampleApp.set('content', 'Your application goes here.');
+
+                var simpleFooter = new SimpleFooter({footerText : '&copy; 2012 Rishson Enterprises.',
+                    footerLink : 'http://github.com/rishson',
+                    region : 'bottom'});
+
+                var testParams = {header : simpleHeader, app: exampleApp, footer : simpleFooter};
                 var widgetToTest = new AppContainer(testParams, placeholder);
                 widgetToTest.startup();
     
-                controller.registerWidget(widgetToTest);
+
             }
             
             dom.byId("create").onclick = create;

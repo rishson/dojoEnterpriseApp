@@ -63,7 +63,7 @@ SCRIPT_NAME="${SCRIPT_PATH##*/}"
 LIB_PATH="${SCRIPT_DIR%/*}"
 
 function usage {
-	echo "Usage: $SCRIPT_NAME [-h] [-u SRC_URL] PROJECT_NAME [TARGET_DIRECTORY]"
+	echo "Usage: $SCRIPT_NAME [-h] [-s] [-g GIT_REMOTE] [-u SRC_URL] PROJECT_NAME [TARGET_DIRECTORY]"
 }
 
 function help_text {
@@ -73,13 +73,16 @@ function help_text {
 	echo
 	echo "  -h                 Display this message"
 	echo "  -s                 Run setup.sh after creating the project"
-	echo "  -u                 The URL of this project's 'src' directory"
+	echo "  -g REMOTE          Enable Git integration by creating a repo and adding the files to local git repo"
+	echo "  -u URL             The URL of this project's 'src' directory"
 	echo "                     (default is http://localhost/PROJECT_NAME/src)"
 }
 
 SRC_URL=""
 RUN_SETUP=0
-while getopts ":hsu:" opt; do
+GIT_INTEGRATION=0
+GIT_REMOTE=""
+while getopts ":hsg:u:" opt; do
 	case "$opt" in
 		h)
 			help_text
@@ -88,6 +91,10 @@ while getopts ":hsu:" opt; do
 		s)
 			RUN_SETUP=1
 			;;
+		g)
+            GIT_INTEGRATION=1
+            GIT_REMOTE="$OPTARG"
+            ;;
 		u)
 			SRC_URL="$OPTARG"
 			;;
@@ -120,9 +127,8 @@ TARGET_DIR="$2"
 if [ -z "$2" ]; then
 	TARGET_DIR=$(pwd -P)
 elif [ ! -d "$2" ]; then
-	echo "TARGET_DIRECTORY must exist"
-	usage
-	exit 1
+	echo "CREATING TARGET_DIRECTORY"
+	mkdir TARGET_DIR
 else
 	TARGET_DIR=$(canonical "$TARGET_DIR")
 fi
@@ -155,3 +161,29 @@ if ((!$RUN_SETUP)); then
 	echo
 	echo "Make sure you run 'scripts/setup.sh' from within the project directory before starting."
 fi
+
+if (($GIT_INTEGRATION)); then
+	echo
+	echo "Initialising git repo for '$PROJECT_NAME'."
+	cd $PROJECT_DIR
+	touch README.md
+	echo "# $PROJECT_NAME" >> "README.md"
+    echo "===================" >> "README.md"
+	touch .gitignore
+	echo "*.~" >> ".gitignore"
+	git init
+	git add README.md
+	git add .gitignore
+	git add configuration
+    git add build.profile.js
+	git add scripts
+	git add src/index.html
+	git add src/js/app
+	git commit -am"Initial commit to add all the files created by running createApplication.sh"
+    if (($GIT_REMOTE)); then
+        git remote add origin $GIT_REMOTE
+        git push -u origin master
+        echo "Pushed initial commit to '$GIT_REMOTE'."
+    fi
+fi
+

@@ -6,6 +6,9 @@ DojoEnterpriseApp is an abstracted application framework for large web applicati
 The project was inspired by dojoBoilerplate from [Rebecca Murphey](http://www.github.com/rmurphey).
 Thanks must also go to [Craig Barker](http://www.github.com/craigbarker) for putting the first version through its paces, and the guys at [Sitepen](http://www.sitepen.com) for their additions of awesomeness.
 
+Please see the wiki for more details on what the scripts and JavaScript objects do.
+
+
 The main features are:
 ----------------------
 
@@ -21,11 +24,16 @@ The main features are:
 - scripts to test widgets in a variety of browsers (chrome, FireFox, Safari and Chromium)
 - scripts to create a compressed, minified build using the dojo builder
 
-#### Abstracted control layer with:
+#### JavaScript code to provide an abstracted control layer with:
 - abstracted communications protocols so that 'real' servers can be mocked during unit tests.
 - abstracted server calls (REST and WebServices) to introduce clean separation of concerns so that code is not littered with Urls and thus easier to refactor.
 - provides a central location to perform work on all server calls (such as applying security policies, auditing, url resolution etc).
 
+#### JavaScript code to provide useful unit testing abilities:
+- mock xhr requests
+- mock server endpoints or 'services'
+- mock dojo data stores
+
 #### Common set of application widgets:
 - _Widget base class that provides life-cycle management based on Phil Higgins's [solution](http://higginsforpresident.net/2010/01/widgets-within-widgets) to memory leaks with custom dojo widgets that programatically create widgets.
-- a full-page container widget with plugins for common 'enterprise' features such as session management.
+- a full-page container widget (with plugins for common 'enterprise' features such as session management - coming soon).
