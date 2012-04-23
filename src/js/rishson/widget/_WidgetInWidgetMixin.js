@@ -1,7 +1,8 @@
 define([
+	"rishson/Globals",	//TOPIC_NAMESPACE
     "dojo/_base/declare", // declare
     "dojo/_base/array" // forEach, indexOf
-], function(declare, arrayUtil){
+], function (Globals, declare, arrayUtil) {
     /**
      * @class
      * @name rishson.widget.WidgetInWidgetMixin
@@ -10,7 +11,7 @@ define([
      * Please see <a href='http://higginsforpresident.net/2010/01/widgets-within-widgets/'>here.</a>
      */
     return declare('rishson.widget._WidgetInWidgetMixin', null, {
-    
+
         /**
          * @function
          * @name rishson.widget._WidgetInWidget.adopt
@@ -64,7 +65,6 @@ define([
             }
             destroy && this.__kill(widget);
         },
-    
         //private functions-------------------------------------------------------------------------------------------------
     
         /**
