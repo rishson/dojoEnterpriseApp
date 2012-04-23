@@ -107,7 +107,7 @@ define([
          * @param topicRef {string} the object property (usually CAPITALISED) of the topic in the pubList
          * @param topicName {string} the name of topic
          * @param makeGlobal {boolean} optional if true use the global topic namespace
-         * @description Syntaatic sugar to add items to a widgets pubList.
+         * @description Syntactic sugar to add items to a widgets pubList.
          */
         addTopic : function(topicRef, topicName, makeGlobal) {
             if(!makeGlobal){
@@ -122,7 +122,7 @@ define([
         /**
          * @function
          * @private
-         * @description When the derrived is ready then it can call this function to publish their state
+         * @description When the derived is ready then it can call this function to publish their state
          */
         _initialised : function () {
             this.isInitialised = true;
@@ -150,7 +150,7 @@ define([
         /**
          * @function
          * @private
-         * @param latestVersionOfObject {Object} the latest version of an object that this widget knows how to render.
+         * @param {Object} latestVersionOfObject the latest version of an object that this widget knows how to render.
          * @description Handle a ConcurrentModificationException
          */
         _cmeHandler : function (latestVersionOfObject) {
@@ -160,12 +160,12 @@ define([
         /**
          * @function
          * @private
-         * @param validationFailures {Object} the validation failures to act on.
+         * @param {Object} validationFailures the validation failures to act on.
          * @description Handle validation errors when performing some mutating action.
          */
         _invalidHandler : function (validationFailures) {
             console.error(this.declaredClass + " : _invalidHandler has to be implemented by derived widgets.");
         }
-    
     });
+
 });

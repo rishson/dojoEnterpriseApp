@@ -14,7 +14,7 @@ define([
         /**
          * @field
          * @name rishson.util.ObjectValidator.validationCriteria
-         * @type {Array}
+         * @type {Array.<Object>}
          * @description contains all the validation criteria to examine
          * Criteria are in the form:
          *  {name : type}

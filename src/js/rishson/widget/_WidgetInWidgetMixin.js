@@ -53,7 +53,7 @@ define([
          *      //Create and destroy a button cleanly:<p>
          *      var x = this.adopt(my.ui.Button, {});<p>
          *      this.orphan(x, true);
-         * @param {Object} widget a widget reference to remove from this parent.
+         * @param {dijit._Widget} widget a widget reference to remove from this parent.
          * @param {boolean} destroy an optional boolean used to force immediate destruction of the child. Pass any truthy
          * value here and the child will be orphaned and killed.
          */
