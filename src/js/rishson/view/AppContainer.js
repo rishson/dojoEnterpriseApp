@@ -10,8 +10,7 @@ define([
     "rishson/util/ObjectValidator",
     "dojo/_base/declare", // declare + safeMixin
     //template widgets
-    "dijit/layout/BorderContainer",
-    "dijit/layout/ContentPane"
+    "dijit/layout/BorderContainer"
 ], function(_Widget, _LayoutWidget, _Container, _TemplatedMixin, _WidgetsInTemplateMixin, _Controller,
         template, l10n, ObjectValidator, declare){
     
@@ -19,6 +18,8 @@ define([
      * @class
      * @name rishson.view.AppContainer
      * @description This is the topmost widget that is designed to contain your application.
+     * N.B. _Controller needs to be mixed in after _Widget so we don't clobber the 'adopt' and 'orphan' functions from
+     * _WidgetInWidgetMixin @FIXME
      */
     return declare('rishson.view.AppContainer', [_Widget, _LayoutWidget, _Container, _TemplatedMixin,
         _WidgetsInTemplateMixin, _Controller], {
@@ -53,7 +54,7 @@ define([
     
         /**
          * @constructor
-         * @param {Object} params contains the username and footerText
+         * @param {{header : object, app : object, footer : object}} params contains the header, footer and app objects
          */
         constructor : function(params) {
             var criteria = [{paramName : 'header', paramType : 'object'},
@@ -81,6 +82,7 @@ define([
             this.mainContainer.addChild(this.footer);
 
             this.injectWidget(this.header); //hook up to all topics published from the header widget
+            //this.injectWidget(this.app) - this would start the auto-wiring of the application
 
             this.inherited(arguments);  //rishson.widget._Widget
         },

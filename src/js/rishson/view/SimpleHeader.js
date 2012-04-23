@@ -37,7 +37,7 @@ define([
 
         /**
          * @constructor
-         * @param {Object} params contains the username and footerText
+         * @param {{username : string}} params contains the username
          */
         constructor : function(params) {
             var criteria = [{paramName : 'username', paramType : 'string'}];

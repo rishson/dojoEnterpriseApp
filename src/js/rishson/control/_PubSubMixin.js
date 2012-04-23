@@ -6,9 +6,7 @@ define([
 	/**
 	 * @class
 	 * @name rishson.control._PubSubMixin
-	 * @description This is a class based version of Phil Higgin's awesome solution to memory leaks that can occur
-	 * when creating widgets programatically inside custom widgets<p>
-	 * Please see <a href='http://higginsforpresident.net/2010/01/widgets-within-widgets/'>here.</a>
+     * @description Mixin to add basic pub/sub abilities
 	 */
 	return declare('rishson.control._PubSubMixin', null, {
 

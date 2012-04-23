@@ -34,7 +34,7 @@ define([
 
         /**
          * @constructor
-         * @param {Object} params contains the footer link and footer text
+         * @param {{footerText : string, footerLink : string}} params contains the footer link and footer text
          */
         constructor : function(params) {
             var criteria = [{paramName : 'footerText', paramType : 'string'},
