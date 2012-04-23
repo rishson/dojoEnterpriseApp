@@ -65,18 +65,6 @@ define([
             }
             destroy && this.__kill(widget);
         },
-        //private functions-------------------------------------------------------------------------------------------------
-    
-        /**
-         * @function
-         * @name rishson.widget._WidgetInWidget.__addItem
-         * @private
-         * @description Add any number of programmaticaly created children to this instance for later cleanup.
-         * @varargs any number of widgets
-         */
-        __addItem : function (/* dijit._Widget... */) {
-            this._supportingWidgets.push.apply(this._supportingWidgets, arguments);
-        },
     
         /**
          * @function

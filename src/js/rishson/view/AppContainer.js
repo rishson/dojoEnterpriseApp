@@ -1,32 +1,27 @@
 define([
     "rishson/widget/_Widget",
-    "rishson/control/_ControllerMixin",
     "dijit/layout/_LayoutWidget",
     "dijit/_Container",
     "dijit/_TemplatedMixin",
     "dijit/_WidgetsInTemplateMixin",
+    "rishson/control/_Controller",
     "dojo/text!rishson/view/appContainer/AppContainer.html",
     "dojo/i18n!rishson/nls/AppContainer",
     "rishson/util/ObjectValidator",
     "dojo/_base/declare", // declare + safeMixin
-    "dojo/_base/lang", // hitch
-    "dojo/dom-class", // add, remove
-    "dojo/topic", // publish/subscribe
-    "dojo/on",
-    "dojo/mouse",
     //template widgets
     "dijit/layout/BorderContainer",
     "dijit/layout/ContentPane"
-], function(_Widget, _ControllerLayout, _LayoutWidget, _Container, _TemplatedMixin, _WidgetsInTemplateMixin,
-        template, l10n, ObjectValidator, declare, lang, domClass, topic, on, mouse){
+], function(_Widget, _LayoutWidget, _Container, _TemplatedMixin, _WidgetsInTemplateMixin, _Controller,
+        template, l10n, ObjectValidator, declare){
     
     /**
      * @class
      * @name rishson.view.AppContainer
      * @description This is the topmost widget that is designed to contain your application.
      */
-    return declare('rishson.view.AppContainer', [_Widget, _ControllerLayout, _LayoutWidget,
-            _TemplatedMixin, _WidgetsInTemplateMixin, _Container], {
+    return declare('rishson.view.AppContainer', [_Widget, _LayoutWidget, _Container, _TemplatedMixin,
+        _WidgetsInTemplateMixin, _Controller], {
     
         templateString : template,
 

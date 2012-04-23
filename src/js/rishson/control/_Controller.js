@@ -1,5 +1,5 @@
 define([
-    "rishson/control/_PubSubMixin",
+    "rishson/control/_PubSubMixin", //createTopicNamespace, _capitaliseTopicName
     "dojo/_base/declare", // declare
     "dojo/_base/array", // forEach
     "dojo/_base/lang", // hitch
@@ -8,7 +8,7 @@ define([
     /**
      * @class
      * @name rishson.control._Controller
-     * @description This is a mixin for Controller classes/widgets<p>
+     * @description This is the base class for Controller classes/widgets<p>
      * Controllers are classes that wire together the view (widgets) and the model.<p>
      * Application widgets are basically 'Controllers' in an MVC paradigm. Application widgets typically provide layout<p>
      * container functionality to child widgets and act as the controller for the enclosed child widgets.<p>
@@ -21,24 +21,24 @@ define([
      * ...<p>
      * myApplicationWidget.injectWidget(myChildWidget);<p>
      * or
-     * myController.adopt(myChildWIdget, {}, someDomNode);<p>
+     * myController.adopt(myChildWidget, {}, someDomNode);<p>
      *<p>
      * At this point, all the topic in mychildWidget.pubList are wired to event handlers in myApplicationWidget.
      */
-    return declare("rishson.control._Controller", _PubSubMixin, {
+    return declare("rishson.control._Controller", [_PubSubMixin], {
 
 		/**
 		 * @constructor
 		 */
-		constructor : function (args) {
+		constructor : function () {
 			this._topicNamespace = this.createTopicNamespace(this.declaredClass);
-			this.pubList = {};
-			this.subList = {};
+			this.pubList = this.pubList || {};
+			this.subList = this.subList || {};
 		},
 
         /**
          * @function
-         * @name rishson.control._ControllerMixin.injectWidget
+         * @name rishson.control._Controller.injectWidget
          * @param {rishson.widget._Widget} widget a widget to examine for topics
          * @description widgets injected into this class will be examined to autowire its publish and subscribes.<p>
          * This function should be called for declarativly created widgets.
@@ -49,8 +49,7 @@ define([
     
         /**
          * @function
-         * @name rishson.control._ControllerMixin.adopt
-         * @override rishson.widget._WidgetInWidgetMixin.adopt
+         * @name rishson.control._Controller.adopt
          * @description widgets injected into this class will be examined to autowire its publish and subscribes.<p>
          * This function should be called for programatically created widgets.
          */
@@ -63,7 +62,7 @@ define([
     
         /**
          * @function
-         * @name rishson.control._ControllerMixin._autowirePubs
+         * @name rishson.control._Controller._autowirePubs
          * @private
          * @param {rishson.widget._Widget} widget a widget that contains a pubList of topics that it can publish.
          * @description autowire the published topics from the widget to event handlers in the Application widget.
@@ -75,7 +74,7 @@ define([
                 if(widget.pubList.hasOwnProperty(topicObj)) {
                     var topicName = widget.pubList[topicObj];
                     //capitalise the topic section names and remove slashes
-                    var handlerFuncName = this._capitaliseTopicName(topicName);
+                    var handlerFuncName = this.capitaliseTopicName(topicName);
                     handlerFuncName = '_handle' + handlerFuncName.replace(/[//]/g, '');
 
                     //the implementing class needs to have _handle[topicName] functions by convention
@@ -88,21 +87,6 @@ define([
                     }    
                 }	
             }
-        },
-    
-        /**
-         * @function
-         * @name rishson.control._ControllerMixin._capitaliseTopicName
-         * @private
-         * @param {String} topic a name of a topic to capitalise.
-         * @description capitalise the first letter of a topic.
-         */
-        _capitaliseTopicName : function (topic) {
-            /* e.g. /hello/i/am/a/topicName would become Hello/I/Am/A/TopicName
-            */
-            return topic.replace(/\b[a-z]/g, function (w) {
-                return w.toUpperCase();
-            });
         }
     
     });

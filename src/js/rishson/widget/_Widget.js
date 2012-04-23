@@ -40,7 +40,9 @@ define([
 			/*create a unique id for every instance of a widget. This is needed for when we publish our events and want to
               publish who we are. If id is blank then we assume there is only 1 instance of the implementing widget.*/
             this._widgetId = this.declaredClass + this.id;
-        
+
+            this._topicNamespace = this.createTopicNamespace(this.declaredClass);
+
             this.pubList = {
 				WIDGET_INITIALISED : this._globalTopicNamespace + '/initialised'
 			};
