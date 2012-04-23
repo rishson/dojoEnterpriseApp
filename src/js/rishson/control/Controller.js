@@ -1,20 +1,20 @@
 define([
     "rishson/Globals",
-    "rishson/control/_ControllerMixin",
+    "rishson/control/_Controller",
     "rishson/util/ObjectValidator",
     "dojo/_base/lang", // mixin, hitch
     "dojo/_base/array", // indexOf, forEach
     "dojo/_base/declare", // declare
     "dojo/topic", // publish/subscribe
     "dojox/rpc/Service"
-], function(Globals, _ControllerMixin, ObjectValidator, lang, arrayUtil, declare, topic, Service){
+], function(Globals, _Controller, ObjectValidator, lang, arrayUtil, declare, topic, Service){
 
     /**
      * @class
      * @name rishson.control.Controller
      * @description This class is the conduit for all client server communication.
      */
-    return declare('rishson.control.Controller', [_ControllerMixin], {
+    return declare('rishson.control.Controller', [_Controller], {
     
         /**
          * @field
