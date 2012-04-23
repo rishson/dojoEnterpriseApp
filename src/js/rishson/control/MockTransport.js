@@ -26,7 +26,7 @@ define([
          */
         requestTimeout : 5000,  //defaults to 5 seconds
 
-    	/**
+		/**
 		 * @field
 		 * @name rishson.control.MockTransport.namespace
 		 * @type {String}
