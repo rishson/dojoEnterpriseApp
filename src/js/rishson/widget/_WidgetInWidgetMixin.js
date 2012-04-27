@@ -1,7 +1,8 @@
 define([
+	"rishson/Globals",	//TOPIC_NAMESPACE
     "dojo/_base/declare", // declare
     "dojo/_base/array" // forEach, indexOf
-], function(declare, arrayUtil){
+], function (Globals, declare, arrayUtil) {
     /**
      * @class
      * @name rishson.widget.WidgetInWidgetMixin
@@ -10,7 +11,7 @@ define([
      * Please see <a href='http://higginsforpresident.net/2010/01/widgets-within-widgets/'>here.</a>
      */
     return declare('rishson.widget._WidgetInWidgetMixin', null, {
-    
+
         /**
          * @function
          * @name rishson.widget._WidgetInWidget.adopt
@@ -53,8 +54,8 @@ define([
          *      //Create and destroy a button cleanly:<p>
          *      var x = this.adopt(my.ui.Button, {});<p>
          *      this.orphan(x, true);
-         * @param {Object} widget a widget reference to remove from this parent.
-         * @param {Boolean} destroy an optional boolean used to force immediate destruction of the child. Pass any truthy
+         * @param {dijit._Widget} widget a widget reference to remove from this parent.
+         * @param {boolean} destroy an optional boolean used to force immediate destruction of the child. Pass any truthy
          * value here and the child will be orphaned and killed.
          */
         orphan : function(/*dijit._Widget*/widget, /*Boolean*/destroy){
@@ -63,19 +64,6 @@ define([
                 this._supportingWidgets.splice(i, 1);
             }
             destroy && this.__kill(widget);
-        },
-    
-        //private functions-------------------------------------------------------------------------------------------------
-    
-        /**
-         * @function
-         * @name rishson.widget._WidgetInWidget.__addItem
-         * @private
-         * @description Add any number of programmaticaly created children to this instance for later cleanup.
-         * @varargs any number of widgets
-         */
-        __addItem : function (/* dijit._Widget... */) {
-            this._supportingWidgets.push.apply(this._supportingWidgets, arguments);
         },
     
         /**

@@ -19,7 +19,7 @@ define([
         /**
          * @field
          * @name rishson.view.SimpleFooter.footerText
-         * @type {String}
+         * @type {string}
          * @description the text to place into the footer
          */
         footerText : '',
@@ -27,14 +27,14 @@ define([
         /**
          * @field
          * @name rishson.view.SimpleFooter.footerLink
-         * @type {String}
+         * @type {string}
          * @description the href for the footer link
          */
         footerLink : '',
 
         /**
          * @constructor
-         * @param {Object} params contains the footer link and footer text
+         * @param {{footerText : string, footerLink : string}} params contains the footer link and footer text
          */
         constructor : function(params) {
             var criteria = [{paramName : 'footerText', paramType : 'string'},

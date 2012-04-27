@@ -30,14 +30,14 @@ define([
         /**
          * @field
          * @name rishson.view.SimpleHeader.username
-         * @type {String}
+         * @type {string}
          * @description the Username of the currently logged in user to display in the header
          */
         username : '',
 
         /**
          * @constructor
-         * @param {Object} params contains the username and footerText
+         * @param {{username : string}} params contains the username
          */
         constructor : function(params) {
             var criteria = [{paramName : 'username', paramType : 'string'}];

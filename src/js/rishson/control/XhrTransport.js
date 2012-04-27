@@ -18,7 +18,7 @@ define([
         /**
          * @field
          * @name rishson.control.XhrTransport.baseUrl
-         * @type {String}
+         * @type {string}
          * @description a URL that usually specifies the domain and a global context, e.g. http://www.mydomain.com:myport/mycontext
          */
         baseUrl : null,
@@ -26,7 +26,7 @@ define([
         /**
          * @field
          * @name rishson.control.XhrTransport.requestTimeout
-         * @type {Number}
+         * @type {number}
          * @description the number of milliseconds that a <code>rishson.control.Request</code> can take before the call is aborted.
          */
         requestTimeout : 5000,  //defaults to 5 seconds
@@ -34,8 +34,8 @@ define([
     
         /**
          * @constructor
-         * @param {Object} params Must contain the following:
-         *  baseUrl {String} root and context of the web application. e.g. http://www.mydomain.com:myport/mycontext
+         * @param {{baseUrl: string}} params Must contain the following:
+         * baseUrl {string} root and context of the web application. e.g. http://www.mydomain.com:myport/mycontext
          */
         constructor : function (params) {
             var criteria = [{paramName : 'baseUrl', paramType : 'string'}];
@@ -53,9 +53,9 @@ define([
         /**
          * @function
          * @name rishson.control.XhrTransport.send
-         * @description Issues the provided <code>rishson.control.Request</code> in an asynchronous manner
          * @override Transport.send
          * @param {rishson.control.Request} request to send to the server
+         * @description Issues the provided <code>rishson.control.Request</code> in an asynchronous manner
          */
         send : function (request) {	
             var postParams = json.stringify(this.createBasePostParams(request));

@@ -62,17 +62,17 @@ define([
          * @field
          * @name rishson.control.Response.mappedStatusCodes
          * @static
-         * @type {Array}
+         * @type {Array.<number>}
          * @description The status codes that are handled in a rishson.control.Response.
          */
         mappedStatusCodes : [200, 400, 403, 409],
     
-        /**
-         * @constructor
-         * @param {Object} params the server response
-         * @param {booelan} wasRestRequest was the server request a REST request
-         * @param {Object} ioArgs the HTTP response header
-         */
+       /**
+        * @constructor
+        * @param {Object} response the server response
+        * @param {boolean} wasRestRequest was the server request a REST request
+        * @param {Object} ioArgs the HTTP response header
+        */
         constructor : function (response, wasRestRequest, ioArgs) {
     
             //@todo remove {}&& prefix if added - should we be allowing comment-filtered anymore or is it an antipattern?
@@ -88,7 +88,14 @@ define([
                 lang.mixin(this, response);
             }
         },
-    
+
+        /**
+         * @function
+         * @name rishson.control.Response._createFromRestResponse
+         * @param {Object} response
+         * @param {Object }ioArgs
+         * @private
+         */
         _createFromRestResponse : function(response, ioArgs) {
             
             switch(ioArgs.xhr.status) {
