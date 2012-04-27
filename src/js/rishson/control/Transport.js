@@ -3,7 +3,7 @@ define([
     "dojo/_base/lang", // mixin
     "dojo/_base/array", // forEach
     "dojo/cookie"
-], function(declare, lang, arrayUtil, cookie){
+], function (declare, lang, arrayUtil, cookie) {
 
     /**
      * @class
@@ -77,13 +77,14 @@ define([
          * @return {Object} simple map object with the basic set of POST params in tag : value format
          */
         createBasePostParams : function (request) {
-            var postContent = {};
-            var postParams = request.getParams() || {};	//allow for empty request content, e.g. a REST DELETE
+            var postContent = {},
+				postParams = request.getParams() || {};	//allow for empty request content, e.g. a REST DELETE
             
             //if we have managed to resolve the current sessionId, then this can be used in double-cookie submission.
             if(this._sessionId) {
                 postParams[this.sidParamName] = this._sessionId;    //add CSRF taken to all requests
             }
+
             //unwrap the param objects into a single object
             arrayUtil.forEach(postParams, function (param) {
                 lang.mixin(postContent, param);

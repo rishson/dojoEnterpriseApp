@@ -5,7 +5,7 @@ define([
     "dijit/_WidgetsInTemplateMixin",    //mixin
     "dojo/text!rishson/view/simpleFooter/SimpleFooter.html",    //template
     "dojo/_base/declare"    // declare + safeMixin
-], function(_Widget, ObjectValidator, _TemplatedMixin, _WidgetsInTemplateMixin, template, declare){
+], function (_Widget, ObjectValidator, _TemplatedMixin, _WidgetsInTemplateMixin, template, declare) {
 
     /**
      * @class
@@ -36,10 +36,11 @@ define([
          * @constructor
          * @param {{footerText : string, footerLink : string}} params contains the footer link and footer text
          */
-        constructor : function(params) {
+        constructor : function (params) {
             var criteria = [{paramName : 'footerText', paramType : 'string'},
-                {paramName : 'footerLink', paramType : 'string'}];
-            var validator = new ObjectValidator(criteria);
+					{paramName : 'footerLink', paramType : 'string'}],
+				validator = new ObjectValidator(criteria);
+
             if (validator.validate(params)) {
                 declare.safeMixin(this, params);
             }

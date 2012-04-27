@@ -2,7 +2,7 @@ define([
     "dojo/_base/declare", // declare
     "dojo/_base/lang", // mixin
     "rishson/util/ObjectValidator"
-], function(declare, lang, ObjectValidator){
+], function (declare, lang, ObjectValidator) {
     /**
      * @class
      * @name rishson.control.Request
@@ -60,10 +60,11 @@ define([
          */
         constructor : function (params) {
             //see if the request contains a callback
-            var criteria = [];
+            var criteria = [],
+				validator = new ObjectValidator(criteria);
+
             criteria.push({paramName : 'callback', paramType : 'function'});
             criteria.push({paramName : 'callbackScope', paramType : 'object'});
-            var validator = new ObjectValidator(criteria);
     
             if (validator.validate(params)) {
                 lang.mixin(this, params);
@@ -113,6 +114,5 @@ define([
         getParams : function () {
             return this.params;
         }
-        
     });
 });

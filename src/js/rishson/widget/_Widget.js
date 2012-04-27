@@ -23,7 +23,7 @@ define([
          * @description Is the widget initialised? Default to false - duh.
          */
         isInitialised : false,
-    
+
         /**
          * @field
          * @private

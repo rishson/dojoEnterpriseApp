@@ -1,15 +1,16 @@
 define([], function(){
     function parseModules(deps, object){
-        for(var name in object){
-            var value = object[name];
+		var name, value;
+        for(name in object){
+            value = object[name];
 
-            if((name == "module" || name == "create" || name == "wire" || name == "spec") && typeof value == "string"){
+            if((name === "module" || name === "create" || name === "wire" || name === "spec") && typeof value === "string"){
                 deps.push(value);
             }
 
             if(Array.isArray(value)){
                 value.forEach(parseModules.bind(this, deps));
-            }else if(typeof value == "object"){
+            }else if(typeof value === "object"){
                 parseModules(deps, value);
             }
         }

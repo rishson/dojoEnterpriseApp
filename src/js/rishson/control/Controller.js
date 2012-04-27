@@ -7,7 +7,7 @@ define([
     "dojo/_base/declare", // declare
     "dojo/topic", // publish/subscribe
     "dojox/rpc/Service"
-], function(Globals, _Controller, ObjectValidator, lang, arrayUtil, declare, topic, Service){
+], function (Globals, _Controller, ObjectValidator, lang, arrayUtil, declare, topic, Service) {
 
     /**
      * @class
@@ -72,14 +72,17 @@ define([
                 {paramName : 'validLoginResponse', paramType : 'criteria', criteria :
                     [{paramName : 'serviceRegistry', paramType : 'array'},
                     {paramName : 'grantedAuthorities', paramType : 'array'}]
-                }];
-            var validator = new ObjectValidator(criteria);
+                }],
+				validator = new ObjectValidator(criteria),
+				params = {'transport' : transport, 'validLoginResponse' : validLoginResponse},
+				unwrappedParams,
+				index;
+
     
             //collect up the params and validate
-            var params = {'transport' : transport, 'validLoginResponse' : validLoginResponse};
             if(validator.validate(params)) {
                 //unwrap the object contents for validation and to do a mixin
-                var unwrappedParams = {'transport' : transport,
+                unwrappedParams = {'transport' : transport,
                 'serviceRegistry': validLoginResponse.serviceRegistry,
                 'grantedAuthorities': validLoginResponse.grantedAuthorities};
                 
@@ -98,6 +101,7 @@ define([
                     else {
                         //remove invalid permissions that are not strings
                         console.error("Invalid authority passed to Controller: " + authority);
+						index = arrayUtil.indexOf(authority);
                         this.grantedAuthorities.splice(index, 1);				
                     }	
                 }, this);
@@ -137,11 +141,12 @@ define([
          * @description Handles a valid response from a transport.
          */
         handleResponse : function (request, response) {
-            var scopedCallback;
+            var scopedCallback,
+				topicData;
     
             //if the request has a topic specified then publish the response to the topic
             if(request.topic) {
-                var topicData = [request.topic, response];
+                topicData = [request.topic, response];
                 //return the original request along with the response if required
                 if(this.returnRequest) {
                     topicData.push(request);
@@ -221,14 +226,14 @@ define([
         _validateServices : function() {
             arrayUtil.forEach(this.serviceRegistry, function(service) {
                 try {
-                //call the test function
-                  //service.__validate();  
+					//call the test function
+					//service.__validate();
                 }
                 catch(e) {
-                console.error("Invalid SMD definition: " + SMD);	
+					console.error("Invalid SMD definition: " + service);
                 }
             }, this);
-            this.serviceRegistry = serviceArr;	//swap in the service registry
+            //this.serviceRegistry = serviceArr;	//swap in the service registry
         }
     
     });

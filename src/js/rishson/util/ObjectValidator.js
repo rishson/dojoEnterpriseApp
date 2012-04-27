@@ -2,7 +2,7 @@ define([
     "dojo/_base/declare", // declare
     "dojo/_base/lang", // isString, etc.
     "dojo/_base/array" // forEach
-], function(declare, lang, arrayUtil){
+], function (declare, lang, arrayUtil) {
 
     /**
      * @class
@@ -49,8 +49,9 @@ define([
          * @returns {string} list of all failing parameters and the reason for type failure
          */
         getValidationFailuresAsString : function (params) {
-            var errStr = "Validation failures:";
-            var requiredType;
+            var errStr = "Validation failures:",
+				requiredType;
+
             arrayUtil.forEach(this.validationCriteria, function (criteria) {
                 if(! this._validateParam(params, criteria)) {
                     requiredType = 'a ' + criteria.paramType;
@@ -111,15 +112,15 @@ define([
             var paramValue = param[criteria.paramName],
                 paramType = criteria.paramType;
     
-            if (paramType == 'string') {
+            if (paramType === 'string') {
                 return lang.isString(paramValue);
-            } else if (paramType == 'array') {
+            } else if (paramType === 'array') {
                 return lang.isArray(paramValue);
-            } else if (paramType == 'function') {
+            } else if (paramType === 'function') {
                 return lang.isFunction(paramValue);
-            } else if (paramType == 'object') {
+            } else if (paramType === 'object') {
                 return lang.isObject(paramValue);
-            } else if (paramType == 'criteria') {
+            } else if (paramType === 'criteria') {
                 return this._validate(criteria.criteria, paramValue);
             } else {
                 return false;

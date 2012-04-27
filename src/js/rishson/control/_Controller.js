@@ -53,8 +53,8 @@ define([
          * @description widgets injected into this class will be examined to autowire its publish and subscribes.<p>
          * This function should be called for programatically created widgets.
          */
-        adopt : function (/*Function*/cls, /*Object*/props, /*DomNode*/node) {
-            var widget = new cls(props, node);
+        adopt : function (/*Function*/Cls, /*Object*/props, /*DomNode*/node) {
+            var widget = new Cls(props, node);
             this._autowirePubs(widget);
             return widget;
         },
@@ -68,17 +68,18 @@ define([
          * @description autowire the published topics from the widget to event handlers in the Application widget.
          */
         _autowirePubs : function (widget) {
-            //iterate over each published topic of the passed in widget - the application widget need to subscribe to these		
-    
-            for(var topicObj in widget.pubList) {
+			var topicObj, topicName, handlerFuncName, handlerFunc;
+
+            //iterate over each published topic of the passed in widget - the application widget need to subscribe to these
+            for(topicObj in widget.pubList) {
                 if(widget.pubList.hasOwnProperty(topicObj)) {
-                    var topicName = widget.pubList[topicObj];
+                    topicName = widget.pubList[topicObj];
                     //capitalise the topic section names and remove slashes
-                    var handlerFuncName = this.capitaliseTopicName(topicName);
+                    handlerFuncName = this.capitaliseTopicName(topicName);
                     handlerFuncName = '_handle' + handlerFuncName.replace(/[//]/g, '');
 
                     //the implementing class needs to have _handle[topicName] functions by convention
-                    var handlerFunc = this[handlerFuncName];
+                    handlerFunc = this[handlerFuncName];
                     if(handlerFunc) {
                         topic.subscribe(topicName, lang.hitch(this, handlerFunc));
                     }

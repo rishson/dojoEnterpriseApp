@@ -1,7 +1,7 @@
 define([
     "dojo/_base/declare", // declare
     "dojo/_base/lang" // mixin
-], function(declare, lang){
+], function (declare, lang) {
 
     /**
      * @class

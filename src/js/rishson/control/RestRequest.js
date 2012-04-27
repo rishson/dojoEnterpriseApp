@@ -3,7 +3,7 @@ define([
     "dojo/_base/lang", // mixin
     "rishson/control/Request",
     "rishson/util/ObjectValidator"
-], function(declare, lang, Request, ObjectValidator){
+], function (declare, lang, Request, ObjectValidator) {
 
     return declare('rishson.control.RestRequest', Request, {
     
@@ -31,10 +31,11 @@ define([
         *  method {string} the name of a service method to call
         */
         constructor : function (params) {
-            var criteria = [];
+            var criteria = [],
+				validator = new ObjectValidator(criteria);
+
             criteria.push({paramName : 'service', paramType : 'string'});
             criteria.push({paramName : 'verb', paramType : 'string'});
-            var validator = new ObjectValidator(criteria);
     
             if (validator.validate(params)) {
                 lang.mixin(this, params);

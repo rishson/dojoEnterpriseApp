@@ -3,20 +3,21 @@ define([
     "rishson/control/Controller",
     "rishson/control/MockTransport",
     "rishson/control/ServiceRequest"
-], function(declare, Controller, MockTransport, ServiceRequest){
+], function (declare, Controller, MockTransport, ServiceRequest) {
 
     return declare('tests.Scaffold', null, {
     
-        createController : function() {
-            var mockTransport = new MockTransport();
-            var validLoginResponse = {serviceRegistry : [],
+        createController : function () {
+            var mockTransport = new MockTransport(),
+				validLoginResponse = {serviceRegistry : [],
                 grantedAuthorities : [],
                 returnRequest : true};
+
             return new Controller(mockTransport, validLoginResponse);
         },
     
-        createLogoutRequest : function() {
-            return new ServiceRequest({callback : function(){},
+        createLogoutRequest : function () {
+            return new ServiceRequest({callback : function () {},
                 callbackScope : this,
                 service : 'userService',
                 method : 'logout',
@@ -24,8 +25,8 @@ define([
             });
         },
     
-        createRequest : function() {
-            return new ServiceRequest({callback : function(){},
+        createRequest : function () {
+            return new ServiceRequest({callback : function () {},
                 callbackScope : this,
                 service : 'userService',
                 method : 'logout',

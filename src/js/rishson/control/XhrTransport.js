@@ -6,7 +6,7 @@ define([
     "rishson/control/Response",
     "rishson/control/Transport",
     "rishson/util/ObjectValidator"
-], function(declare, lang, xhr, json, Response, Transport, ObjectValidator){
+], function (declare, lang, xhr, json, Response, Transport, ObjectValidator) {
 
     /**
      * @class
@@ -38,8 +38,8 @@ define([
          * baseUrl {string} root and context of the web application. e.g. http://www.mydomain.com:myport/mycontext
          */
         constructor : function (params) {
-            var criteria = [{paramName : 'baseUrl', paramType : 'string'}];
-            var validator = new ObjectValidator(criteria);
+            var criteria = [{paramName : 'baseUrl', paramType : 'string'}],
+				validator = new ObjectValidator(criteria);
     
             if (validator.validate(params)) {
                 lang.mixin(this, params);
@@ -58,12 +58,11 @@ define([
          * @description Issues the provided <code>rishson.control.Request</code> in an asynchronous manner
          */
         send : function (request) {	
-            var postParams = json.stringify(this.createBasePostParams(request));
+            var postParams = json.stringify(this.createBasePostParams(request)),
+				xhrFunction;	//default to post as this is used for service requests as well as rest
+
             //do autoincrement sendID if required
             //profiling can be enabled here
-    
-            //default to post as this is used for service requests as well as rest
-            var xhrFunction;
         
             //Can't use 'then' in Dojo 1.6 if you need the ioArgs. See #12126 on dojo trac
             var xhrParams = {

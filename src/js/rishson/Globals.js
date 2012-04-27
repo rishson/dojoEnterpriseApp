@@ -1,4 +1,4 @@
-define(["exports"], function(exports){
+define(["exports"], function (exports) {
 
     /**
      * @class
@@ -17,6 +17,5 @@ define(["exports"], function(exports){
      * @description This namespace is prepended to every topic name
      */
     exports.TOPIC_NAMESPACE = "/rishson/widget";
-    
-    exports.SEND_REQUEST = exports.TOPIC_NAMESPACE + "/request/send";
+	exports.SEND_REQUEST = exports.TOPIC_NAMESPACE + "/request/send";
 });

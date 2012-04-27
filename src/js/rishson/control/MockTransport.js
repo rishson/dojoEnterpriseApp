@@ -8,7 +8,7 @@ define([
     "dojo/_base/array", // indexOf
     "dojo/_base/xhr", // get, etc.
     "require" // context-sensitive require
-], function(script, Response, Transport, ObjectValidator, declare, lang, arrayUtil, xhr, require){
+], function (script, Response, Transport, ObjectValidator, declare, lang, arrayUtil, xhr, require) {
 
     /**
      * @class
@@ -51,36 +51,40 @@ define([
          * @description Issues the provided <code>rishson.control.Request</code> in an asynchronous manner
          */
         send : function (request) {
-            var testFuncName = 'processRequest';   //name of the function to call on the TestMethod module
-            var self = this; //maintain self-reference for inside require callback
-    
-            /*get the full namespace of the module to provide the response
-              The namespace is in the form test.data.[typeOfResponse].[request.url]
-              e.g. for a service request:
-              test.data.serviceResponses.someService.SomeMethod
-              for a rest service:
-              test.data.restResponses.someService.SomeEndpoint
-            */
-            var namespace = this.namespace;
-            if (request.declaredClass == 'rishson.control.ServiceRequest') {
+            var testFuncName = 'processRequest',   //name of the function to call on the TestMethod module
+				self = this, //maintain self-reference for inside require callback
+				/*get the full namespace of the module to provide the response
+				 The namespace is in the form test.data.[typeOfResponse].[request.url]
+				 e.g. for a service request:
+				 test.data.serviceResponses.someService.SomeMethod
+				 for a rest service:
+				 test.data.restResponses.someService.SomeEndpoint
+				 */
+				namespace = this.namespace,
+				indexOfClassName,
+				testMethodClass,
+				methodParams,
+				mockResponse,
+				wrappedResponse;
+
+            if (request.declaredClass === 'rishson.control.ServiceRequest') {
                 namespace += 'serviceResponses/' + request.toUrl();
-            } else if (request.declaredClass == 'rishson.control.RestRequest') {
+            } else if (request.declaredClass === 'rishson.control.RestRequest') {
                 namespace += 'restResponses/' + request.toUrl() + '/' + request.verb;
             } else {
                 throw ('Unknown request type supplied: ' + request.declaredClass);
             }
             
             //capitalise the module name
-            var indexOfClassName = namespace.lastIndexOf('/') + 1;
+            indexOfClassName = namespace.lastIndexOf('/') + 1;
             namespace = namespace.slice(0, indexOfClassName) +
                 namespace.charAt(indexOfClassName).toUpperCase() + namespace.slice(indexOfClassName + 1);
             
             //get the TestModule
-            require([namespace], function(testMethod){
-                var testMethodClass = new testMethod(); //create an instance of the TestMethod class
-                var methodParams = self.createBasePostParams(request);
-                var mockResponse = testMethodClass[testFuncName](methodParams);	//call the test method
-                var wrappedResponse;
+            require([namespace], function(TestModule){
+                testMethodClass = new TestModule(); //create an instance of the TestMethod class
+                methodParams = self.createBasePostParams(request);
+                mockResponse = testMethodClass[testFuncName](methodParams);	//call the test method
                 
                 if(request.type === 'rest') {
                     wrappedResponse = new Response(mockResponse.payload, 
@@ -93,8 +97,7 @@ define([
                     }
                 } else {
                     try {
-                        wrappedResponse = new Response(mockResponse, false,
-                            mockResponse.ioArgs);
+                        wrappedResponse = new Response(mockResponse, false, mockResponse.ioArgs);
                         self.handleResponseFunc(request, wrappedResponse);
                     } catch (err) {
                         self.handleErrorFunc(request, wrappedResponse);

@@ -11,8 +11,8 @@ define([
     "dojo/_base/declare", // declare + safeMixin
     //template widgets
     "dijit/layout/BorderContainer"
-], function(_Widget, _LayoutWidget, _Container, _TemplatedMixin, _WidgetsInTemplateMixin, _Controller,
-        template, l10n, ObjectValidator, declare){
+], function (_Widget, _LayoutWidget, _Container, _TemplatedMixin, _WidgetsInTemplateMixin, _Controller,
+        template, l10n, ObjectValidator, declare) {
     
     /**
      * @class
@@ -23,11 +23,11 @@ define([
      */
     return declare('rishson.view.AppContainer', [_Widget, _LayoutWidget, _Container, _TemplatedMixin,
         _WidgetsInTemplateMixin, _Controller], {
-    
+
         templateString : template,
 
         l10n : l10n,
-    
+
         /**
          * @field
          * @name rishson.view.AppContainer.header
@@ -51,18 +51,20 @@ define([
          * @description the text to display in the footer
          */
         footer : null,
-    
+
         /**
          * @constructor
          * @param {{header : object, app : object, footer : object}} params contains the header, footer and app objects
          */
-        constructor : function(params) {
+        constructor : function (params) {
             var criteria = [{paramName : 'header', paramType : 'object'},
                 {paramName : 'app', paramType : 'object'},
-                {paramName : 'footer', paramType : 'object'}];
-            var validator = new ObjectValidator(criteria);
-            var unwrappedParams = {header: params.header, app : params.app, footer: params.footer};
-            if (validator.validate(unwrappedParams)) {
+                {paramName : 'footer', paramType : 'object'}],
+
+				validator = new ObjectValidator(criteria),
+				unwrappedParams = {header: params.header, app : params.app, footer: params.footer};
+
+			if (validator.validate(unwrappedParams)) {
                 declare.safeMixin(this, unwrappedParams);
             }
             else {
@@ -102,7 +104,7 @@ define([
          * @name rishson.view.AppContainer
          * @override dijit.layout._LayoutWidget
          */
-        resize : function() {
+        resize : function () {
             this.mainContainer.resize();
             this.inherited(arguments);
         },

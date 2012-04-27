@@ -13,8 +13,8 @@ define([
     "dojo/mouse",   //mouse enter/leave events
     //template widgets found in the template but not in declare
     "dijit/layout/ContentPane"
-], function(_Widget, _TemplatedMixin, _WidgetsInTemplateMixin, template, l10n, ObjectValidator, declare, lang, domClass,
-            topic, on, mouse){
+], function (_Widget, _TemplatedMixin, _WidgetsInTemplateMixin, template, l10n, ObjectValidator, declare, lang, domClass,
+            topic, on, mouse) {
 
     /**
      * @class
@@ -39,14 +39,15 @@ define([
          * @constructor
          * @param {{username : string}} params contains the username
          */
-        constructor : function(params) {
-            var criteria = [{paramName : 'username', paramType : 'string'}];
-            var validator = new ObjectValidator(criteria);
-            var unwrappedParams = {username: params.username};
+        constructor : function (params) {
+            var criteria = [{paramName : 'username', paramType : 'string'}],
+				validator = new ObjectValidator(criteria),
+				unwrappedParams = {username: params.username};
+
             if (validator.validate(unwrappedParams)) {
                 declare.safeMixin(this, unwrappedParams);
             }
-            else {
+			else {
                 validator.logErrorToConsole(params, 'Invalid params passed to the SimpleHeader.');
                 throw ('Invalid params passed to the SimpleHeader.');
             }
@@ -98,9 +99,10 @@ define([
          * @description Do hover styles
          */
         _handleMouseEnter : function (evt) {
-            var node = evt.target;
-            var classesToAdd = 'mouseEnter';
-            if(node === this.dapUsername){
+            var node = evt.target,
+				classesToAdd = 'mouseEnter';
+
+            if (node === this.dapUsername) {
                 classesToAdd += ' headerLink';
             }
             domClass.add(evt.target, classesToAdd);
@@ -113,9 +115,10 @@ define([
          * @description Remove hover styles
          */
         _handleMouseLeave : function (evt) {
-            var node = evt.target;
-            var classesToAdd = 'mouseEnter';
-            if(node === this.dapUsername){
+            var node = evt.target,
+				classesToAdd = 'mouseEnter';
+
+            if (node === this.dapUsername) {
                 classesToAdd += ' headerLink';
             }
             domClass.remove(evt.target, classesToAdd);
