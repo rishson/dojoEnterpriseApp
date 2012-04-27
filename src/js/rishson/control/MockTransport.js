@@ -4,7 +4,7 @@ define([
     "rishson/control/Transport",
     "rishson/util/ObjectValidator",
     "dojo/_base/declare", // declare
-    "dojo/_base/lang", // lang
+    "dojo/_base/lang", // mixin
     "dojo/_base/array", // indexOf
     "dojo/_base/xhr", // get, etc.
     "require" // context-sensitive require
@@ -21,19 +21,24 @@ define([
         /**
          * @field
          * @name rishson.control.MockTransport.requestTimeout
-         * @type {Number}
-         * @description the number of milliseconds that a <code>rishson.control.Request</code> can take before the call is aborted.
+         * @type {number}
+         * @description the number of milliseconds that a <code>rishson.control.Request</code> can take before the call
+         * is aborted.
          */
         requestTimeout : 5000,  //defaults to 5 seconds
 
 		/**
 		 * @field
 		 * @name rishson.control.MockTransport.namespace
-		 * @type {String}
+		 * @type {string}
 		 * @description Namespace where the test .
 		 */
 		namespace : '../tests/data/',
 
+        /**
+         * @constructor
+         * @param {object} params
+         */
 		constructor : function(params) {
 			lang.mixin(this, params);
 		},
@@ -41,9 +46,9 @@ define([
         /**
          * @function
          * @name rishson.control.MockTransport.send
-         * @description Issues the provided <code>rishson.control.Request</code> in an asynchronous manner
          * @override Transport.send
          * @param {rishson.control.Request} request to send to the server
+         * @description Issues the provided <code>rishson.control.Request</code> in an asynchronous manner
          */
         send : function (request) {
             var testFuncName = 'processRequest';   //name of the function to call on the TestMethod module
@@ -96,55 +101,7 @@ define([
                     }
                 }
             });
-        },
-    
-        _getFile : function(filePath) {
-            var path = document.location.pathname;
-            var dir = path.substr(0, path.indexOf('/dojoEnterpriseApp')+18);
-            var callback = function(data){
-                console.debug(data);
-            };
-            filePath = dir + filePath;
-    
-            var def = xhr.get({
-                url: 'file://' + filePath,
-                handleAs: "json"
-            });
-            def.then(function(response){
-                    return response;
-                },
-                function err(e){
-                    console.error(e);
-                }
-            );
-    
-            /**var jsonpArgs = {
-                url: "file://" + filePath,
-                callbackParamName: "callback",
-                load: function(data) {
-                    return data;
-                },
-                error: function(error) {
-                    console.error(error);
-                }
-            };
-            script.get(jsonpArgs);
-            **/
-    
-            /**this.fs.root.getFile(filePath, {}, function(fileEntry) {
-                Get a File object representing the file,
-                then use FileReader to read its contents.
-                fileEntry.file(function(file) {
-    
-                    var fileReader = new FileReader();
-                    fileReader.onload = function(testData) {
-                        return testData;
-                    };
-                    fileReader.readAsText(filePath);
-                });
-            });
-             **/
         }
-    
     });
+
 });

@@ -15,7 +15,7 @@ define([
         /**
          * @field
          * @name rishson.Transport.sidParamName
-         * @type {String}
+         * @type {string}
          * @description the name of the parameter to use for passing the CSRF mitigation token to the server
          */
         sidParamName : 'sid',
@@ -23,7 +23,7 @@ define([
         /**
          * @field
          * @name rishson.Transport._sessionId
-         * @type {String}
+         * @type {string}
          * @description Mitigate CSRF attacks using Double Cookie Submission technique
          * Get the id of the current browser session from this domain's cookies
          */
@@ -32,7 +32,7 @@ define([
         /**
          * @field
          * @name rishson.Transport.handleResponseFunc
-         * @type {Function}
+         * @type {function}
          * @description this function will be called when the Transport implementation receives a valid server response
          */
         handleResponseFunc : null,
@@ -40,7 +40,7 @@ define([
         /**
          * @field
          * @name rishson.Transport.handleErrorFunc
-         * @type {Function}
+         * @type {function}
          * @description this function will be called when the Transport implementation receives an error server response
          */
         handleErrorFunc : null,
@@ -49,8 +49,8 @@ define([
          * @function
          * @name rishson.Transport.addResponseFunctions
          * @description adds response functions to the Transport.
-         * @param {Function} responseFunc this function will be called to handle a valid response
-         * @param {Function} errorFunc this function will be called to handle a response that contains an error
+         * @param {function} responseFunc this function will be called to handle a valid response
+         * @param {function} errorFunc this function will be called to handle a response that contains an error
          */
         addResponseFunctions : function (responseFunc, errorFunc) {
             this.handleResponseFunc = responseFunc;
@@ -80,9 +80,9 @@ define([
             var postContent = {};
             var postParams = request.getParams() || {};	//allow for empty request content, e.g. a REST DELETE
             
-            //if we have managed to resolve the current sessionId, tehn this can be used in double-cookie submission.
+            //if we have managed to resolve the current sessionId, then this can be used in double-cookie submission.
             if(this._sessionId) {
-                postParams[this.sidParamName] = this._sessionId;	//add CSRF taken to all requests
+                postParams[this.sidParamName] = this._sessionId;    //add CSRF taken to all requests
             }
             //unwrap the param objects into a single object
             arrayUtil.forEach(postParams, function (param) {
@@ -90,6 +90,6 @@ define([
             });
             return postContent;
         }
-    
     });
+
 });

@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>MainLayout Tests</title>
+    
+    <link rel="stylesheet/less" href="../../../app/resources/app.less">
+</head>
+<body class="claro">
+    <div style="width:1024px;height:768px;border: 1px solid #000000;">
+        <div id="testWidget"></div>
+    </div>
+    <script>var less = { env: "development" };</script>
+    <script src="../../../less/dist/less-1.1.6.min.js"></script>
+
+    <script>
+        var dojoConfig = {
+            async: true,
+            isDebug: true,
+            aliases: [
+                ["domReady", "dojo/domReady"]
+            ]
+        };
+    </script>
+    <script src="../../../dojo/dojo.js"></script>
+    <script>
+        require(["app/view/MainLayout", "doh", "domReady!"], function(MainLayout, doh){
+            
+            var fromRobot = location.search == "?robot";
+            
+            if(!fromRobot){
+                doh.register("ScreeningLayout Tests", [
+                    {
+                        name: "Instantiation",
+                        setUp: function(t){
+                        },
+                        runTest: function(t){
+                            t.t(testWidget && testWidget._started,
+                                "Widget should be instantiated and started.");
+                        },
+                        tearDown: function(t){
+                        }
+                    }
+                ]);
+            }
+            
+            var testWidget = new ScreeningLayout({}, "testWidget");
+            testWidget.startup();
+            
+            if(!fromRobot){
+                doh.run();
+            }
+        });
+    </script>
+</body>
+</html>

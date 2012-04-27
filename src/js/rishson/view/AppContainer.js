@@ -1,32 +1,28 @@
 define([
     "rishson/widget/_Widget",
-    "rishson/control/_ControllerMixin",
     "dijit/layout/_LayoutWidget",
     "dijit/_Container",
     "dijit/_TemplatedMixin",
     "dijit/_WidgetsInTemplateMixin",
+    "rishson/control/_Controller",
     "dojo/text!rishson/view/appContainer/AppContainer.html",
     "dojo/i18n!rishson/nls/AppContainer",
     "rishson/util/ObjectValidator",
     "dojo/_base/declare", // declare + safeMixin
-    "dojo/_base/lang", // hitch
-    "dojo/dom-class", // add, remove
-    "dojo/topic", // publish/subscribe
-    "dojo/on",
-    "dojo/mouse",
     //template widgets
-    "dijit/layout/BorderContainer",
-    "dijit/layout/ContentPane"
-], function(_Widget, _ControllerLayout, _LayoutWidget, _Container, _TemplatedMixin, _WidgetsInTemplateMixin,
-        template, l10n, ObjectValidator, declare, lang, domClass, topic, on, mouse){
+    "dijit/layout/BorderContainer"
+], function(_Widget, _LayoutWidget, _Container, _TemplatedMixin, _WidgetsInTemplateMixin, _Controller,
+        template, l10n, ObjectValidator, declare){
     
     /**
      * @class
      * @name rishson.view.AppContainer
      * @description This is the topmost widget that is designed to contain your application.
+     * N.B. _Controller needs to be mixed in after _Widget so we don't clobber the 'adopt' and 'orphan' functions from
+     * _WidgetInWidgetMixin @FIXME
      */
-    return declare('rishson.view.AppContainer', [_Widget, _ControllerLayout, _LayoutWidget,
-            _TemplatedMixin, _WidgetsInTemplateMixin, _Container], {
+    return declare('rishson.view.AppContainer', [_Widget, _LayoutWidget, _Container, _TemplatedMixin,
+        _WidgetsInTemplateMixin, _Controller], {
     
         templateString : template,
 
@@ -35,7 +31,7 @@ define([
         /**
          * @field
          * @name rishson.view.AppContainer.header
-         * @type {String}
+         * @type {string}
          * @description the Username of the currently logged in user to display in the header
          */
         header : null,
@@ -43,7 +39,7 @@ define([
         /**
          * @field
          * @name rishson.view.AppContainer.app
-         * @type {String}
+         * @type {string}
          * @description the Username of the currently logged in user to display in the header
          */
         app : null,
@@ -51,14 +47,14 @@ define([
         /**
          * @field
          * @name rishson.view.AppContainer.footer
-         * @type {String}
+         * @type {string}
          * @description the text to display in the footer
          */
         footer : null,
     
         /**
          * @constructor
-         * @param {Object} params contains the username and footerText
+         * @param {{header : object, app : object, footer : object}} params contains the header, footer and app objects
          */
         constructor : function(params) {
             var criteria = [{paramName : 'header', paramType : 'object'},
@@ -86,6 +82,7 @@ define([
             this.mainContainer.addChild(this.footer);
 
             this.injectWidget(this.header); //hook up to all topics published from the header widget
+            //this.injectWidget(this.app) - this would start the auto-wiring of the application
 
             this.inherited(arguments);  //rishson.widget._Widget
         },
@@ -113,7 +110,7 @@ define([
         /**
          * @function
          * @private
-         * @param initialisedWidgetId {String} the string id of the widget that has just been initialised.
+         * @param initialisedWidgetId {string} the string id of the widget that has just been initialised.
          * @description Handle a widget becoming initialised.
          */
         _handleRishsonWidgetInitialised : function (initialisedWidgetId) {
@@ -123,7 +120,7 @@ define([
         /**
          * @function
          * @private
-         * @param {String} username the name of the user who has requested a logout
+         * @param {string} username the name of the user who has requested a logout
          * @description Log the session out. Send a request to the server to logout.
          * The server should respond with a re-direct and a server side session invalidation.
          */
@@ -134,7 +131,7 @@ define([
         /**
          * @function
          * @private
-         * @param {String} username the name of the user who want to launch a preferences page for their account.
+         * @param {string} username the name of the user who want to launch a preferences page for their account.
          * @description The user wants to see details of their user account.
          */
         _handleRishsonViewSimpleHeaderUserSelected : function (username) {

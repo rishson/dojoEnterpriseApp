@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>SearchController Tests</title>
+    
+    <link rel="stylesheet/less" href="../../app/resources/app.less">
+</head>
+<body class="claro">
+    <div id="testWidget"></div>
+    <script>var less = { env: "development" };</script>
+    <script src="../../../less/dist/less-1.1.6.min.js"></script>
+
+    <script>
+        var dojoConfig = {
+            async: true,
+            isDebug: true,
+            aliases: [
+                ["domReady", "dojo/domReady"]
+            ]
+        };
+    </script>
+    <script src="../../../dojo/dojo.js"></script>
+    <script>
+        require(["app/SearchController", "doh", "domReady!"], function(SearchController, doh){
+            
+            var fromRobot = location.search == "?robot";
+            
+            if(!fromRobot){
+                doh.register("SearchController Tests", [
+                    {
+                        name: "Instantiation",
+                        setUp: function(t){
+                        },
+                        runTest: function(t){
+                            t.t(testWidget && testWidget._started,
+                                "Widget should be instantiated and started.");
+                        },
+                        tearDown: function(t){
+                        }
+                    }
+                ]);
+            }
+            
+            var testWidget = new SearchController({}, "testWidget");
+            testWidget.startup();
+            
+            if(!fromRobot){
+                doh.run();
+            }
+        });
+    </script>
+</body>
+</html>

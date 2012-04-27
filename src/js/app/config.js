@@ -15,7 +15,8 @@ var dojoConfig = {
         { name: "aop", location: "aop", main: "aop" },
         { name: "wire", location: "wire", main: "wire" },
         { name: "rishson", location: "rishson" },
-        { name: "app", location: "app" }
+        { name: "app", location: "app" },
+        { name: "test", location: "../test" }
     ],
     deps: [ "wire!app/loader.spec" ]
 };

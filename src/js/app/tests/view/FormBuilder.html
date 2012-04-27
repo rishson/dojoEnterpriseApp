@@ -1,0 +1,133 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>FormBuilder Tests</title>
+    
+    <link rel="stylesheet/less" href="../../view/resources/app.less">
+</head>
+<body class="claro">
+    <div id="testWidget"></div>
+    <script>var less = { env: "development" };</script>
+    <script src="../../../less/dist/less-1.1.6.min.js"></script>
+
+    <script>
+        var dojoConfig = {
+            async: true,
+            isDebug: true,
+            aliases: [
+                ["domReady", "dojo/domReady"]
+            ]
+        };
+    </script>
+    <script src="../../../dojo/dojo.js"></script>
+    <script>
+        require(["app/view/FormBuilder", "doh", "dojo/_base/array", "dojo/on", "dojo/_base/event","domReady!"], function(FormBuilder, doh,
+           array, on, event){
+            
+            var fromRobot = location.search == "?robot";
+            
+            if(!fromRobot){
+                doh.register("FormBuilder Tests", [
+                    {
+                        name: "Instantiation",
+                        setUp: function(t){
+                        },
+                        runTest: function(t){
+                            t.t(testWidget && testWidget._started,
+                                "Widget should be instantiated and started.");
+                        },
+                        tearDown: function(t){
+                        }
+                    },
+                    {
+                        name: "Check for JSON for Form",
+                        setUp: function(t){
+
+                        },
+                        runTest: function(t){
+                            t.t(testWidget.formData,
+                                    "formData should have the JSON object.");
+                        },
+                        tearDown: function(t){
+                        }
+                    },
+
+                    {
+                        name: "Form has been created",
+                        setUp: function(t){
+                        },
+                        runTest: function(t){
+                            t.t(dojo.byId("searchForm"),
+                                    "Form Widget should be created.");
+                        },
+                        tearDown: function(t){
+                        }
+                    },
+                    {
+                        name: "Test for the form children",
+                        setUp: function(t){
+                        },
+                        runTest: function(t){
+
+                            var formData = testWidget.formData;
+                            array.forEach(formData.fields, function(field){
+
+                                t.t(dijit.byId(field.name),
+                                        field.name + " Child Widget need to be created"
+                                );
+
+                            });
+
+                        },
+                        tearDown: function(t){
+                        }
+                    }
+                ]);
+            }
+
+            var formDataJSON = {'fields':[
+                { 'name': 'searchName',
+                  'type':'input',
+                  'label':'Name',
+                  'mandatory':'true'
+                },
+                { 'name': 'searchDOB',
+                  'type':'date',
+                  'label':'Date of Birth'
+                },
+                { 'name': 'groupList',
+                  'type':'list',
+                  'label':'Group Name',
+                  'options': [
+                        {name:"Group A", value:"1"},
+                        {name:"Group B", value:"2"},
+                        {name:"Group C", value:"3"},
+                        {name:"Group D", value:"4"}
+                    ]
+                }
+            ],
+                "formDetails":{
+                    "name":"searchForm"
+                }
+            };
+
+            var testWidget = new FormBuilder({data:formDataJSON,tableCustomClass:"labelsAndValues"},"testWidget");
+            testWidget.startup();
+
+            var formObj = testWidget.formObject;
+            var formInputData = null;
+            on(formObj,'submit',function(e){
+                event.stop(e);
+                formInputData = testWidget.formInputData;
+
+                console.log(formInputData);
+            });
+            
+            if(!fromRobot){
+                doh.run();
+            }
+        });
+    </script>
+</body>
+</html>

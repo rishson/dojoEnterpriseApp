@@ -14,7 +14,7 @@ define([
         /**
          * @field
          * @name rishson.util.ObjectValidator.validationCriteria
-         * @type {Array}
+         * @type {Array.<Object>}
          * @description contains all the validation criteria to examine
          * Criteria are in the form:
          *  {name : type}
@@ -35,7 +35,7 @@ define([
          * @name rishson.util.ObjectValidator.validate
          * @description validates all the criteria for basic type safety
          * @param {Array} params contains parameter data to validate against the criteria given in the constructor
-         * @returns {Boolean} true if the params are of the required types, else false
+         * @returns {boolean} true if the params are of the required types, else false
          */
         validate : function (params) {
             return this._validate(this.validationCriteria, params);
@@ -46,7 +46,7 @@ define([
          * @name rishson.util.ObjectValidator.getValidationFailuresAsString
          * @description Pretty print the validation failures
          * @param {Array} params contains parameter data to validate against the criteria given in the constructor
-         * @returns {String} list of all failing parameters and the reason for type failure
+         * @returns {string} list of all failing parameters and the reason for type failure
          */
         getValidationFailuresAsString : function (params) {
             var errStr = "Validation failures:";
@@ -68,7 +68,7 @@ define([
          * @name rishson.util.ObjectValidator.logErrorToConsole
          * @description Send the validation failures to the console as a complete group
          * @param {Array} params contains parameter data to validate against the criteria given in the constructor
-         * @param {String} title a string that will be placed in the console group as a title for the error report
+         * @param {string} title a string that will be placed in the console group as a title for the error report
          */
         logErrorToConsole : function (params, title) {
             console.group(title);
@@ -82,7 +82,7 @@ define([
          * @private
          * @description validates all the criteria for basic type safety
          * @param {Array} params contains parameter data to validate against the criteria given in the constructor
-         * @returns {Boolean} true if the params are of the required types, else false
+         * @returns {boolean} true if the params are of the required types, else false
          */
         _validate : function(criteriaArray, params){
             /*
@@ -105,7 +105,7 @@ define([
          * validated. If the param is not of these types, then this method will return false.
          * @param {Array} param a parameter to validate
          * @param {Object} criteria the criteria to validate the parameter against
-         * @return {Boolean} return true if the parameter is of the type required by the criteria, else false
+         * @return {boolean} return true if the parameter is of the type required by the criteria, else false
          */
         _validateParam : function (param, criteria) {
             var paramValue = param[criteria.paramName],

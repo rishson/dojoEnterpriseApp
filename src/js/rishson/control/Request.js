@@ -37,7 +37,7 @@ define([
         /**
          * @field
          * @name rishson.control.Request.topic
-         * @type {String}
+         * @type {string}
          * @description The name of a topic to publish the response to when it has returned from the server.
          */
         topic : null,
@@ -45,18 +45,18 @@ define([
         /**
          * @field
          * @name rishson.control.Request.type
-         * @type {String}
+         * @type {string}
          * @description The type of the request, REST, WebService etc..
          */
         type : null,
     
         /**
          * @constructor
-         * @param {Object} params Must contain either of the following:
-         *  callback {Function} a function to call when a Response is returned from the server in response to this Request
+         * @param {{callback: function|Object}} params Must contain either of the following:
+         *  callback {function} a function to call when a Response is returned from the server in response to this Request
          *  callbackScope {Object} a scope in which to call the callback function
          *  or
-         *  topic {String} the name of a topic to publish to when the server returns a response
+         *  topic {string} the name of a topic to publish to when the server returns a response
          */
         constructor : function (params) {
             //see if the request contains a callback
@@ -97,6 +97,7 @@ define([
         /**
          * @function
          * @name rishson.control.Request.setParam
+         * @param {object} param params to set
          * @description sets a param on the request
          */
         setParam : function (param) {
@@ -106,6 +107,7 @@ define([
         /**
          * @function
          * @name rishson.control.Request.getParams
+         * @return {object} parameter object
          * @description returns the params to be posted to the server
          */
         getParams : function () {

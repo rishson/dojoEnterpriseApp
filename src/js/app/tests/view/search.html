@@ -1,0 +1,80 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>search Tests</title>
+    
+    <link rel="stylesheet/less" href="../../app/resources/app.less">
+</head>
+<body class="claro">
+    <div id="testWidget"></div>
+    <script>var less = { env: "development" };</script>
+    <script src="../../../less/dist/less-1.1.6.min.js"></script>
+
+    <script>
+        var dojoConfig = {
+            async: true,
+            isDebug: true,
+            aliases: [
+                ["domReady", "dojo/domReady"]
+            ]
+        };
+    </script>
+    <script src="../../../dojo/dojo.js"></script>
+    <script>
+        require(["app/search", "doh", "dojo/dom","dojo/topic","domReady!"], function(search, doh, dom,topic){
+            var fromRobot = location.search == "?robot";
+            
+            if(!fromRobot){
+                doh.register("search Tests", [
+                    {
+                        name: "Instantiation",
+                        setUp: function(t){
+                        },
+                        runTest: function(t){
+                            t.t(testWidget && testWidget._started,
+                                "Widget should be instantiated and started.");
+                        },
+                        tearDown: function(t){
+                        }
+                    },
+					{
+						name: "Groups FilteringSelect construction",
+						runTest: function(t){
+
+							var grouplistWidget = dom.byId("groupList");
+							t.t(grouplistWidget, "Group list widget has not been created");
+						}
+					},					{
+						name: "Groups FilteringSelect populated with values and default selected",
+						setUp: function(t){
+							var defaultItem = {id:"2", name:"Test Item 2"};
+
+							var data = [
+								{id:"1", name:"Test Item 1", "default": "false"},
+								{id:"2", name:"Test Item 2", "default": "true"}
+							];
+							topic.publish(testWidget.subList.GROUP_RESPONSE, data);
+						},
+						runTest: function(t){
+							var defaultItem = {id:"2", name:"Test Item 2"};
+							var groupListWidget = dom.byId('groupList');
+
+							// assert that items in filtering select are equal to those in data
+							// assert that default selected item is that of defaultItem
+
+						}
+					}
+                ]);
+            }
+            
+            var testWidget = new search({}, "testWidget");
+            testWidget.startup();
+            
+            if(!fromRobot){
+                doh.run();
+            }
+        });
+    </script>
+</body>
+</html>

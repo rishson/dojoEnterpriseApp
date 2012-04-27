@@ -1,0 +1,150 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>searchType Tests</title>
+
+	<link rel="stylesheet/less" href="../../view/resources/app.less">
+</head>
+<body class="claro">
+    <div id="testWidget"></div>
+    <script>var less = { env: "development" };</script>
+    <script src="../../../less/dist/less-1.1.6.min.js"></script>
+
+    <script>
+        var dojoConfig = {
+            async: true,
+            isDebug: true,
+            aliases: [
+                ["domReady", "dojo/domReady"]
+            ]
+        };
+    </script>
+    <script src="../../../dojo/dojo.js"></script>
+    <script>
+        require(["app/view/SearchType", "doh","dojo/dom","dijit/dijit","dojo/query","dojo/_base/array","dojo/_base/lang",
+			"domReady!"],
+			function(SearchType, doh, dom,dijit,query,array,lang){
+				var fromRobot = location.search == "?robot";
+
+
+				widgetTestId = 'testingWidget';
+
+				function createNewTestWidget(extraArgs){
+					var newWidget = new SearchType(extraArgs, this.widgetTestId).placeAt(dom.byId('testWidget'));
+					return newWidget;
+				}
+
+				function foundSearchItem(title,testWidgetNode){
+					//get all the li / searchItems
+					var searchItems = query('ul > li',testWidgetNode),
+						searchItemFound = false;
+					array.forEach(searchItems,lang.hitch(this,function(searchItem){
+						//check if the title is one of the attributes for this li
+						if(title === searchItem.title){
+							searchItemFound = true;
+						}
+					}));
+					return searchItemFound;
+				}
+
+				//Set up test to be run
+				if(!fromRobot){
+					doh.register("searchType Tests", [
+						{
+							name: "Instantiation",
+							setUp: function(t){
+								this.testIndividualWidget = createNewTestWidget({});
+								this.testIndividualWidget.startup();
+							},
+							runTest: function(t){
+								t.t(this.testIndividualWidget && this.testIndividualWidget._started,
+									"Widget should be instantiated and started.");
+							},
+							tearDown: function(t){
+							}
+						},
+
+						{
+							name: "Search type showing 'Individual'",
+							testIndividualWidget: null,
+							setUp: function(t){
+								var searchTypesToDisplay = [{title:'Individual',itemClass:'userIcon32x32'}];
+
+								this.testIndividualWidget = createNewTestWidget({searchTypeOptions : searchTypesToDisplay});
+								this.testIndividualWidget.startup();
+							},
+							runTest: function(t){
+								var searchItems = query('ul > li',this.testIndividualWidget.domNode);
+								t.t(searchItems[0].title='Individual' && this.testIndividualWidget._started,
+										"There should be an icon or list item called 'Individual'");
+							},
+							tearDown: function(t){
+							}
+						},
+
+						{
+							name: "Search type showing 'Individual' and 'Vessels'",
+							testIndividualWidget: null,
+							setUp: function(t){
+								var searchTypesToDisplay = [{title:'Individual',itemClass:'userIcon32x32'},{title:'Vessels',itemClass:'vesselIcon32x32'}];
+
+								this.testIndividualWidget = createNewTestWidget({searchTypeOptions : searchTypesToDisplay});
+								this.testIndividualWidget.startup();
+							},
+							runTest: function(t){
+								//var test = foundSearchItem('Individual',this.testIndividualWidget.domNode);
+								t.t(foundSearchItem('Individual',this.testIndividualWidget.domNode)
+										&& foundSearchItem('Vessels',this.testIndividualWidget.domNode)
+										&& this.testIndividualWidget._started,
+										"There should be search items  called 'Individual' and 'Vessels'");
+							},
+							tearDown: function(t){
+							}
+						},
+
+						{
+							name: "Search type showing 'Individual', 'Vessels' and 'Organisation'",
+							testIndividualWidget: null,
+							setUp: function(t){
+								var searchTypesToDisplay = [
+									{title:'Individual',itemClass:'userIcon32x32'},
+									{title:'Vessels',itemClass:'vesselIcon32x32'},
+									{title:'Organisation',itemClass:'buildingsIcon32x32'}
+								];
+
+								this.testIndividualWidget = createNewTestWidget({searchTypeOptions : searchTypesToDisplay});
+								this.testIndividualWidget.startup();
+							},
+							runTest: function(t){
+								var searchItems = query('ul > li',this.testIndividualWidget.domNode);
+								t.t(foundSearchItem('Individual',this.testIndividualWidget.domNode)
+										&& foundSearchItem('Vessels',this.testIndividualWidget.domNode)
+										&& foundSearchItem('Organisation',this.testIndividualWidget.domNode)
+										&& this.testIndividualWidget._started,
+										"There should be search items  called 'Individual', 'Vessels' and 'Organisation' showing");
+							},
+							tearDown: function(t){
+							}
+						}
+
+
+					    /*** stuff to test:
+						 * - What if we pass empty searchTypes array ie no searchtypes passed
+						 * - what is the current active searchType?
+						 *
+						 * backlog tests?
+						 * - what if we pass all three types of searches?
+						 * - what if we pass two types of searches?
+					     */
+
+					]);
+				}
+				if(!fromRobot){
+					doh.run();
+				}
+        });
+    </script>
+    <div class='test'></div>
+</body>
+</html>

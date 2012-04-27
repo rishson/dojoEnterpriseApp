@@ -1,0 +1,98 @@
+.userIcon32x32{
+	background-image:url("img/user_32x32.png");
+}
+
+.vesselIcon32x32{
+	background-image:url("img/anchor_32x32.png");
+}
+
+.buildingsIcon32x32{
+	background-image:url("img/buildings_32x32.png");
+}
+
+@separatorColour : #828282;
+
+.searchType {
+    border: 2px solid @separatorColour;
+    -moz-border-radius: 0.5em;
+    border-radius : 0.5em;
+    width: 272px;
+    height: 100px;
+    margin: 10px;
+
+    /* Safari 4-5, Chrome 1-9 */
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFF), to(#CCC));
+
+    /* Safari 5.1, Chrome 10+ */
+    background: -webkit-linear-gradient(top, #FFF, #CCC);
+
+    /* Firefox 3.6+ */
+    background: -moz-linear-gradient(top, #FFF, #CCC);
+
+    /* IE 10 */
+    background: -ms-linear-gradient(top, #FFF, #CCC);
+
+    /* Opera 11.10+ */
+    background: -o-linear-gradient(top, #FFF, #CCC);
+
+	/***
+	/* these styles get searchType appended automatically as it sit within {} */
+	*{
+		font-family: arial,helvetica;
+		padding: 0px;
+		margin: 0px;
+		overflow: hidden;
+	}
+
+	ul {
+		list-style-type: none;
+	}
+
+	ul {
+		li:hover {
+			background-color: #63B8FF;
+		}
+
+		li:first-child,li:nth-child(2) {
+			border-right: solid 1px @separatorColour;
+		}
+
+		/*li:last-child{*/
+			/*border-radius : 0 0.4em 0.4em 0;*/
+			/*border-left: solid 1px #828282;*/
+		/*}*/
+
+		li .iconName{
+			text-overflow: ellipsis;
+		} 
+
+		li .iconName{
+			margin: 10px 0 0 20px;
+
+		}
+
+
+		.iconImg{
+			height: 32px;
+			width: 32px;
+			margin: 30px 0 0 25px;
+		}
+	}
+
+	ul li{
+		display: block;
+		height: 100px;
+		width: 90px;
+		float: left;
+	}
+
+	ul li.active{
+		background: -moz-linear-gradient(top, #FFE5CC,#FF8100);
+		background-color: #FF8100;
+	}
+	ul li.mid{
+		border-left: solid 1px #828282;
+	}
+}
+
+
