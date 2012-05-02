@@ -5,10 +5,10 @@ define([
 
 	/**
 	 * @class
-	 * @name rishson.control._PubSubMixin
+	 * @name rishson.control.Base
      * @description Mixin to add basic pub/sub abilities
 	 */
-	return declare('rishson.control._PubSubMixin', null, {
+	return declare('rishson.control.Base', null, {
 
 		/**
 		 * @field
@@ -21,7 +21,7 @@ define([
 
 		/**
 		 * @field
-		 * @name rishson.control._PubSubMixin._topicNamespace
+		 * @name rishson.control.Base._topicNamespace
 		 * @type {string}
 		 * @private
 		 * @description This namespace is prepended to every topic name used by a derived class
@@ -30,7 +30,7 @@ define([
 
 		/**
 		 * @field
-		 * @name rishson.control._PubSubMixin.pubList
+		 * @name rishson.control.Base.pubList
 		 * @type {{string : string}}
 		 * @description Object that contains the list of topics that any derived class can publish
 		 */
@@ -38,7 +38,7 @@ define([
 
 		/**
 		 * @field
-		 * @name rishson.control._PubSubMixin.subList
+		 * @name rishson.control.Base.subList
 		 * @type {{string : string}}
 		 * @description Object that contains the list of topics that any derived class can listen out for
 		 */
@@ -46,7 +46,7 @@ define([
 
         /**
          * @function
-         * @name rishson.control._PubSubMixin.createTopicNamespace
+         * @name rishson.control.Base.createTopicNamespace
          * @param namespace {string} a class namespace (. separated) that will be turned into a topic (/ separated)
          * @description Replace all '.' with '/'
          */
@@ -58,7 +58,7 @@ define([
 
 		/**
 		 * @function
-		 * @name rishson.control._PubSubMixin.addTopic
+		 * @name rishson.control.Base.addTopic
 		 * @param topicRef {String} the object property (usually CAPITALISED) of the topic in the pubList
 		 * @param topicName {String} the name of topic
 		 * @param makeGlobal {Boolean} optional if true use the global topic namespace
@@ -75,7 +75,7 @@ define([
 
         /**
          * @function
-         * @name rishson.control._PubSubMixin.capitaliseTopicName
+         * @name rishson.control.Base.capitaliseTopicName
          * @param {String} topic a name of a topic to capitalise.
          * @description capitalise the first letter of a topic.
          */

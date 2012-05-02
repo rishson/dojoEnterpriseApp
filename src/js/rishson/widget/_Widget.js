@@ -1,11 +1,11 @@
 define([
+	"dojo/_base/declare", // declare
     "dijit/_Widget",    //mixin
-    "rishson/widget/_WidgetInWidgetMixin",  //mixin
-	"rishson/control/_PubSubMixin",  //mixin
-    "dojo/_base/declare", // declare
+	"rishson/Base",  //mixin
     "dojo/_base/lang", // hitch
-    "dojo/topic" // publish/subscribe
-], function (_Widget, _WidgetInWidgetMixin, _PubSubMixin, declare, lang, topic) {
+    "dojo/topic", // publish/subscribe
+	"rishson/Globals"
+], function (declare, _Widget, Base, lang, topic, Globals) {
     /**
      * @class
      * @name rishson.widget._Widget
@@ -14,43 +14,20 @@ define([
      * This base class also adds very generic event pub/sub abilities so that widgets can be completely self-contained and
      * not have to know about their runtime invocation container or understand context concerns such as Ajax request.
      */
-    return declare("rishson.widget._Widget", [_Widget, _WidgetInWidgetMixin, _PubSubMixin], {
-
-        /**
-         * @field
-         * @name rishson.widget._Widget.isInitialised
-         * @type {boolean}
-         * @description Is the widget initialised? Default to false - duh.
-         */
-        isInitialised : false,
-
-        /**
-         * @field
-         * @private
-         * @name rishson.widget._Widget._widgetId
-         * @type {string}
-         * @description The unique id of a widget created with this base class.
-         */
-        _widgetId : null,
-    
+    return declare("rishson.widget._Widget", [_Widget, Base], {
         /**
          * @constructor
          */
 		constructor : function () {
 			/*create a unique id for every instance of a widget. This is needed for when we publish our events and want to
               publish who we are. If id is blank then we assume there is only 1 instance of the implementing widget.*/
-            this._widgetId = this.declaredClass + this.id;
+            this._id = this.declaredClass + this.id;
 
-            this._topicNamespace = this.createTopicNamespace(this.declaredClass);
-
-            this.pubList = {
-				WIDGET_INITIALISED : this._globalTopicNamespace + '/initialised'
-			};
             this.subList = {
-				WIDGET_DISABLE : this._globalTopicNamespace + '/disable',
-                WIDGET_ENABLE : this._globalTopicNamespace + '/enable',
-                ERROR_CME : this._globalTopicNamespace + '/error/cme',
-                ERROR_INVALID : this._globalTopicNamespace + '/error/invalid'
+				WIDGET_DISABLE : Globals.TOPIC_NAMESPACE + '/disable',
+                WIDGET_ENABLE : Globals.TOPIC_NAMESPACE + '/enable',
+                ERROR_CME : Globals.TOPIC_NAMESPACE + '/error/cme',
+                ERROR_INVALID : Globals.TOPIC_NAMESPACE + '/error/invalid'
             };
         },
     
@@ -65,16 +42,7 @@ define([
             topic.subscribe(this.subList.WIDGET_ENABLE, lang.hitch(this, "_enable"));
             topic.subscribe(this.subList.ERROR_CME, lang.hitch(this, "_cmeHandler"));
             topic.subscribe(this.subList.ERROR_INVALID, lang.hitch(this, "_invalidHandler"));
-        },
-
-        /**
-         * @function
-         * @private
-         * @description When the derived is ready then it can call this function to publish their state
-         */
-        _initialised : function () {
-            this.isInitialised = true;
-            topic.publish(this.pubList.WIDGET_INITIALISED, this._widgetId);
+			this.inherited(arguments);
         },
     
         /**

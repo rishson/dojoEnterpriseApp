@@ -1,10 +1,11 @@
 define([
-    "rishson/control/_PubSubMixin", //createTopicNamespace, _capitaliseTopicName
-    "dojo/_base/declare", // declare
+	"dojo/_base/declare", // declare
+    "rishson/Base", //createTopicNamespace, _capitaliseTopicName
+	"rishson/Globals",	//TOPIC_NAMESPACE
     "dojo/_base/array", // forEach
     "dojo/_base/lang", // hitch
     "dojo/topic" // publish/subscribe
-], function (_PubSubMixin, declare, arrayUtil, lang, topic) {
+], function (declare, Base, Globals, arrayUtil, lang, topic) {
     /**
      * @class
      * @name rishson.control._Controller
@@ -25,15 +26,23 @@ define([
      *<p>
      * At this point, all the topic in mychildWidget.pubList are wired to event handlers in myApplicationWidget.
      */
-    return declare("rishson.control._Controller", [_PubSubMixin], {
+    return declare("rishson.control._Controller", [Base], {
+
+		_topicNamespace: '',
 
 		/**
 		 * @constructor
 		 */
 		constructor : function () {
+			// Create this controllers personalised topic namespace.
 			this._topicNamespace = this.createTopicNamespace(this.declaredClass);
-			this.pubList = this.pubList || {};
+			this._id = this.declaredClass;
+
 			this.subList = this.subList || {};
+
+			// Add event listener for child widget initialisation events.
+			// Must be done before child adoption/creation otherwise this class cannot listen to child's published events.
+			this._wireSinglePub(this._topicNamespace + Globals.CHILD_INTIALISED_TOPIC_NAME, true);
 		},
 
         /**
@@ -53,42 +62,93 @@ define([
          * @description widgets injected into this class will be examined to autowire its publish and subscribes.<p>
          * This function should be called for programatically created widgets.
          */
-        adopt : function (/*Function*/Cls, /*Object*/props, /*DomNode*/node) {
-            var widget = new Cls(props, node);
-            this._autowirePubs(widget);
-            return widget;
-        },
+        adopt : function (Cls, props, node) {
+			var child;
+			// Pass in parents topic name space to all child views and controllers.
+			props.parentTopicNamespace = this._topicNamespace;
 
+            child = new Cls(props, node);
+
+			if (!this._supportingWidgets) {
+				this._supportingWidgets = [];	//awkward but this is a mixin class
+			}
+			this._supportingWidgets.push(child);
+
+            this._autowirePubs(child);
+            return child;
+        },
     
         /**
          * @function
          * @name rishson.control._Controller._autowirePubs
          * @private
          * @param {rishson.widget._Widget} widget a widget that contains a pubList of topics that it can publish.
-         * @description autowire the published topics from the widget to event handlers in the Application widget.
+         * @description autowire the published topics from the child widget to event handlers on the controller widget.
          */
-        _autowirePubs : function (widget) {
-			var topicObj, topicName, handlerFuncName, handlerFunc;
+        _autowirePubs : function (child) {
+			var topicObj;
 
-            //iterate over each published topic of the passed in widget - the application widget need to subscribe to these
-            for(topicObj in widget.pubList) {
-                if(widget.pubList.hasOwnProperty(topicObj)) {
-                    topicName = widget.pubList[topicObj];
-                    //capitalise the topic section names and remove slashes
-                    handlerFuncName = this.capitaliseTopicName(topicName);
-                    handlerFuncName = '_handle' + handlerFuncName.replace(/[//]/g, '');
-
-                    //the implementing class needs to have _handle[topicName] functions by convention
-                    handlerFunc = this[handlerFuncName];
-                    if(handlerFunc) {
-                        topic.subscribe(topicName, lang.hitch(this, handlerFunc));
-                    }
-                    else {
-                        console.error('Autowire failure for topic: ' + topicName + '. No handler: ' + handlerFuncName);
-                    }    
+            //iterate over each published topic of the passed in child - the application child need to subscribe to these
+            for (topicObj in child.pubList) {
+                if (child.pubList.hasOwnProperty(topicObj)) {
+					this._wireSinglePub(child.pubList[topicObj]);
                 }	
             }
-        }
+        },
+
+		/**
+		 * @function
+		 * @name rishson.control._Controller._createHandlerFuncName
+		 * @private
+		 * @param {string} str the topicNamespace and topic string value
+		 * @description returns a capitalised and slashes removed string.
+		 * @return {string}
+		 */
+		_createHandlerFuncName : function (str) {
+			var ret;
+			if (str) {
+				//capitalise the topic section names and remove slashes
+				ret = this.capitaliseTopicName(str);
+				ret = '_handle' + ret.replace(/[//]/g, '');
+				if (ret) {
+					return ret;
+				}
+			}
+			return '';
+		},
+
+		/**
+		 * @function
+		 * @name rishson.control._Controller._wireSinglePub
+		 * @private
+		 * @param {string} topicName the string of the topic name
+		 * @description autowire a single published topic from the child widget to an event handler on the controller widget.
+		 */
+		_wireSinglePub : function (topicName, initialWire) {
+			var handlerFuncName, handlerFunc;
+
+			// If event to wire is child initialised skip wiring as this was already wired in constructor.
+			if (!initialWire && topicName.indexOf(Globals.CHILD_INTIALISED_TOPIC_NAME) !== -1) {
+				return;
+			}
+
+			handlerFuncName = this._createHandlerFuncName(topicName);
+
+			//the implementing class needs to have _handle[topicName] functions by convention
+			handlerFunc = this[handlerFuncName];
+			if (handlerFuncName && handlerFunc) {
+				topic.subscribe(topicName, lang.hitch(this, handlerFunc));
+			}
+			else {
+				console.error('Autowire failure for topic: ' + topicName + '. No handler: ' + handlerFuncName);
+			}
+		},
+
+		getLayoutDomNode : function () {
+			if (this.layout) {
+				return this.layout.domNode;
+			}
+		}
     
     });
 });

@@ -16,6 +16,29 @@ define(["exports"], function (exports) {
      * @type {string}
      * @description This namespace is prepended to every topic name
      */
-    exports.TOPIC_NAMESPACE = "/rishson/widget";
+    exports.TOPIC_NAMESPACE = "/rishson";
+
+	/**
+	 * @field
+	 * @name rishson.Globals.INTIALISED_TOPIC_NAME
+	 * @type {string}
+	 * @description This namespace is prepended to every topic initialisation
+	 */
+	exports.INTIALISED_TOPIC_NAME = "/initialised";
+
+	/**
+	 * @field
+	 * @name rishson.Globals.INTIALISED_TOPIC_NAME
+	 * @type {string}
+	 * @description This namespace is prepended to every topic initialisation
+	 */
+	exports.CHILD_INTIALISED_TOPIC_NAME = "/child/initialised";
+
+	/**
+	 * @field
+	 * @name rishson.Globals.SEND_REQUEST
+	 * @type {string}
+	 * @description This namespace is prepended to every topic name
+	 */
 	exports.SEND_REQUEST = exports.TOPIC_NAMESPACE + "/request/send";
 });
