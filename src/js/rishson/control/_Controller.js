@@ -28,6 +28,12 @@ define([
      */
     return declare("rishson.control._Controller", [Base], {
 
+        /**
+         * @field
+         * @name rishson.control._Controller._topicNamespace
+         * @type {string}
+         * @description The namespace of this class. This will be injected into widgets created by this class.
+         */
 		_topicNamespace: '',
 
 		/**
@@ -77,12 +83,12 @@ define([
             this._autowirePubs(child);
             return child;
         },
-    
+
         /**
          * @function
          * @name rishson.control._Controller._autowirePubs
          * @private
-         * @param {rishson.widget._Widget} widget a widget that contains a pubList of topics that it can publish.
+         * @param {rishson.widget._Widget} child a widget that contains a pubList of topics that it can publish.
          * @description autowire the published topics from the child widget to event handlers on the controller widget.
          */
         _autowirePubs : function (child) {
@@ -92,7 +98,7 @@ define([
             for (topicObj in child.pubList) {
                 if (child.pubList.hasOwnProperty(topicObj)) {
 					this._wireSinglePub(child.pubList[topicObj]);
-                }	
+                }
             }
         },
 
@@ -138,8 +144,7 @@ define([
 			handlerFunc = this[handlerFuncName];
 			if (handlerFuncName && handlerFunc) {
 				topic.subscribe(topicName, lang.hitch(this, handlerFunc));
-			}
-			else {
+			} else {
 				console.error('Autowire failure for topic: ' + topicName + '. No handler: ' + handlerFuncName);
 			}
 		},
@@ -149,6 +154,5 @@ define([
 				return this.layout.domNode;
 			}
 		}
-    
     });
 });

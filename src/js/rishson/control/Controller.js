@@ -15,7 +15,7 @@ define([
      * @description This class is the conduit for all client server communication.
      */
     return declare('rishson.control.Controller', [_Controller], {
-    
+
         /**
          * @field
          * @name rishson.control.Controller.transport
@@ -23,7 +23,7 @@ define([
          * @description an implementation of rishson.control.Transport
          */
         transport : null,
-    
+
         /**
          * @field
          * @name rishson.control.Controller.serviceRegistry
@@ -80,30 +80,29 @@ define([
 
     
             //collect up the params and validate
-            if(validator.validate(params)) {
+            if (validator.validate(params)) {
                 //unwrap the object contents for validation and to do a mixin
                 unwrappedParams = {'transport' : transport,
-                'serviceRegistry': validLoginResponse.serviceRegistry,
-                'grantedAuthorities': validLoginResponse.grantedAuthorities};
+                    'serviceRegistry': validLoginResponse.serviceRegistry,
+                    'grantedAuthorities': validLoginResponse.grantedAuthorities};
                 
                 lang.mixin(this, unwrappedParams);
 
                 //this is optional so should not be included in the criteria validation
-                if(validLoginResponse.returnRequest) {
-                  this.returnRequest = true;			
+                if (validLoginResponse.returnRequest) {
+                    this.returnRequest = true;
                 }
                 
                 //convert authorities to lower case so we can do case-insensitive search for authorities
-                arrayUtil.forEach(this.grantedAuthorities, function(authority){
-                    if(lang.isString(authority)){				
+                arrayUtil.forEach(this.grantedAuthorities, function (authority) {
+                    if (lang.isString(authority)) {
                         authority = authority.toLowerCase();
-                    }
-                    else {
+                    } else {
                         //remove invalid permissions that are not strings
                         console.error("Invalid authority passed to Controller: " + authority);
 						index = arrayUtil.indexOf(authority);
-                        this.grantedAuthorities.splice(index, 1);				
-                    }	
+                        this.grantedAuthorities.splice(index, 1);
+                    }
                 }, this);
                 
                 //decorate the transport with the response and error handling functions in this class (need hitching)
@@ -112,8 +111,7 @@ define([
                 
                 //listen out for other classes wanting to send requests to the server
                 topic.subscribe(Globals.SEND_REQUEST, lang.hitch(this, "send"));
-            }
-            else {
+            } else {
                 validator.logErrorToConsole(params, 'Invalid params passed to the Controller.');
                 throw ('Invalid params passed to the Controller.');
             }
@@ -145,29 +143,26 @@ define([
 				topicData;
     
             //if the request has a topic specified then publish the response to the topic
-            if(request.topic) {
+            if (request.topic) {
                 topicData = [request.topic, response];
                 //return the original request along with the response if required
-                if(this.returnRequest) {
+                if (this.returnRequest) {
                     topicData.push(request);
                 }
                 //dojo/topic's publish doesn't take an array, so send arguments in series
                 topic.publish.apply(topic, topicData);
-            }
-            else{
+            } else {
                 //call the request's provide callback with the response - but hitch it's scope first if needs be
                 if (request.callbackScope) {
                     scopedCallback = lang.hitch(request.callbackScope, request.callback);
-                }
-                else {
+                } else {
                     scopedCallback = request.callback;  //if no scope is specified then assume the callback must already be scoped
                 }
                 
                 //return the original request along with the response if required
-                if(this.returnRequest) {
+                if (this.returnRequest) {
                     scopedCallback(response, request);
-                }
-                else {
+                } else {
                     scopedCallback(response);
                 }
             }
@@ -203,15 +198,14 @@ define([
          * @name rishson.control.Controller._instantiateServiceRegistry
          * @description convert all the given SMDs into dojox.rpc.Service instances.
          */
-        _instantiateServiceRegistry : function() {
-            var serviceArr = [];		
-            arrayUtil.forEach(this.serviceRegistry, function(SMD) {
-              try {
-                serviceArr.push(new Service(SMD));		
-              }
-              catch(e) {
-                console.error("Invalid SMD definition: " + SMD);	
-              }
+        _instantiateServiceRegistry : function () {
+            var serviceArr = [];
+            arrayUtil.forEach(this.serviceRegistry, function (SMD) {
+                try {
+                    serviceArr.push(new Service(SMD));
+                } catch (e) {
+                    console.error("Invalid SMD definition: " + SMD);
+                }
             }, this);
             this.serviceRegistry = serviceArr;	//swap in the service registry
         },
@@ -224,12 +218,11 @@ define([
          * Each service should have a pre-defined test function (__validate) that can be called to validate that the service is up.
          */
         _validateServices : function() {
-            arrayUtil.forEach(this.serviceRegistry, function(service) {
+            arrayUtil.forEach(this.serviceRegistry, function (service) {
                 try {
 					//call the test function
 					//service.__validate();
-                }
-                catch(e) {
+                } catch (e) {
 					console.error("Invalid SMD definition: " + service);
                 }
             }, this);

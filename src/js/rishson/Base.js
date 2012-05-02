@@ -12,6 +12,7 @@ define([
 	 * @description Base class for all objects
 	 */
 	return declare('rishson.Base', null, {
+
 		/**
 		 * @field
 		 * @name rishson.Base.isInitialised
@@ -58,7 +59,6 @@ define([
 		 * @constructor
 		 */
 		constructor : function (args) {
-			//declare.safeMixin(this, Stateful);
 
 			this.pubList = {};
 			if (args) {
