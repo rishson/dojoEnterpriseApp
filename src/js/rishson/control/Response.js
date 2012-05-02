@@ -76,14 +76,13 @@ define([
         constructor : function (response, wasRestRequest, ioArgs) {
     
             //@todo remove {}&& prefix if added - should we be allowing comment-filtered anymore or is it an antipattern?
-            if(wasRestRequest) {
-                this._createFromRestResponse(response, ioArgs);    
-            }
-            else {
+            if (wasRestRequest) {
+                this._createFromRestResponse(response, ioArgs);
+            } else {
                 //service responses should not have a blank payload
-                if(! response.payload) {
+                if (! response.payload) {
                     console.error('Invalid server response. No payload.');
-                    throw('Invalid server response. No payload.');
+                    throw ('Invalid server response. No payload.');
                 }
                 lang.mixin(this, response);
             }
@@ -96,27 +95,27 @@ define([
          * @param {Object }ioArgs
          * @private
          */
-        _createFromRestResponse : function(response, ioArgs) {
+        _createFromRestResponse : function (response, ioArgs) {
             
-            switch(ioArgs.xhr.status) {
-                case 200:
-                    this.isOk = true;
-                    break;
-                case 400:
-                    this.isInvalid = true;
-                    break;
-                case 403:
-                    this.isUnauthorised = true;
-                    break;		
-                case 409:
-                    this.isConflicted = true;
-                    break;
+            switch (ioArgs.xhr.status) {
+            case 200:
+                this.isOk = true;
+                break;
+            case 400:
+                this.isInvalid = true;
+                break;
+            case 403:
+                this.isUnauthorised = true;
+                break;
+            case 409:
+                this.isConflicted = true;
+                break;
             }
             
             //if the rest response just has data in its body, then make it a payload. If a payload is specified in the
             //response already then just add to this class.
-            if(response) {		
-                this.payload = response.payload || response;		
+            if (response) {
+                this.payload = response.payload || response;
             }
         }
      

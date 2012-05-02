@@ -3,10 +3,11 @@ var profile = (function () {
     var mids = {
         "rishson/rishson.profile": 1,
         "rishson/package.json": 1
-    };
-    var testRE = /^rishson\/tests\//,
+    },
+        testRE = /^rishson\/tests\//,
         buildRE = /^rishson\/build\//;
-    function copyOnly (mid) {
+    
+    function copyOnly(mid) {
         return mid in mids || testRE.test(mid);
     }
 

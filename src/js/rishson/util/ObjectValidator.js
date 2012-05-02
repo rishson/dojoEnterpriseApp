@@ -27,7 +27,7 @@ define([
          * @param {Array} validationCriteria contains all the validation criteria to examine
          */
         constructor : function (validationCriteria) {
-           this.validationCriteria = validationCriteria;
+            this.validationCriteria = validationCriteria;
         },
     
         /**
@@ -53,9 +53,9 @@ define([
 				requiredType;
 
             arrayUtil.forEach(this.validationCriteria, function (criteria) {
-                if(! this._validateParam(params, criteria)) {
+                if (! this._validateParam(params, criteria)) {
                     requiredType = 'a ' + criteria.paramType;
-                    if(criteria.paramType === 'criteria'){
+                    if (criteria.paramType === 'criteria') {
                         requiredType = 'correctly populated';
                     }
                     errStr += ' [' + criteria.paramName + ' is not ' + requiredType + ']';
@@ -85,14 +85,14 @@ define([
          * @param {Array} params contains parameter data to validate against the criteria given in the constructor
          * @returns {boolean} true if the params are of the required types, else false
          */
-        _validate : function(criteriaArray, params){
+        _validate : function (criteriaArray, params) {
             /*
                 This looks horrid.
                 If a param is invalid then teh loop return TRUE.
                 We use arrayUtil.some to see if any return TRUE (i.e.they failed) and then negate the arrayUtil.some
              */
-            return ! arrayUtil.some(criteriaArray, function (criteria) {
-                if(! this._validateParam(params, criteria)) {
+            return !arrayUtil.some(criteriaArray, function (criteria) {
+                if (!this._validateParam(params, criteria)) {
                     return true;
                 }
             }, this);
@@ -126,6 +126,5 @@ define([
                 return false;
             }
         }
-        
     });
 });

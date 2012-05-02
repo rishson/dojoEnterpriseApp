@@ -74,23 +74,22 @@ define([
             } else {
                 throw ('Unknown request type supplied: ' + request.declaredClass);
             }
-            
+
             //capitalise the module name
             indexOfClassName = namespace.lastIndexOf('/') + 1;
             namespace = namespace.slice(0, indexOfClassName) +
                 namespace.charAt(indexOfClassName).toUpperCase() + namespace.slice(indexOfClassName + 1);
             
             //get the TestModule
-            require([namespace], function(TestModule){
+            require([namespace], function (TestModule) {
                 testMethodClass = new TestModule(); //create an instance of the TestMethod class
                 methodParams = self.createBasePostParams(request);
                 mockResponse = testMethodClass[testFuncName](methodParams);	//call the test method
                 
-                if(request.type === 'rest') {
-                    wrappedResponse = new Response(mockResponse.payload, 
-                    true,
-                    mockResponse.ioArgs);
-                    if(arrayUtil.indexOf(wrappedResponse.mappedStatusCodes, mockResponse.ioArgs.xhr.status) === -1) {
+                if (request.type === 'rest') {
+                    wrappedResponse = new Response(mockResponse.payload, true, mockResponse.ioArgs);
+                    
+                    if (arrayUtil.indexOf(wrappedResponse.mappedStatusCodes, mockResponse.ioArgs.xhr.status) === -1) {
                         self.handleErrorFunc(request, wrappedResponse);
                     } else {
                         self.handleResponseFunc(request, wrappedResponse);

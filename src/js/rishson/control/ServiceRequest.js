@@ -38,11 +38,10 @@ define([
     
             if (validator.validate(params)) {
                 lang.mixin(this, params);
-                this.type = "service";        
-            }
-            else {
+                this.type = "service";     
+            } else {
                 validator.logErrorToConsole(params, 'Invalid ServiceRequest construction.');
-                throw('Invalid ServiceRequest construction.');
+                throw ('Invalid ServiceRequest construction.');
             }
         },
     
@@ -56,6 +55,5 @@ define([
         toUrl : function () {
             return this.service + "/" + this.method;
         }
-    
     });
 });

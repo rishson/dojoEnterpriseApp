@@ -68,8 +68,7 @@ define([
     
             if (validator.validate(params)) {
                 lang.mixin(this, params);
-            }
-            else {
+            } else {
                 //see if the request contains a topic
                 criteria = [];
                 criteria.push({paramName : 'topic', paramType : 'string'});
@@ -77,10 +76,9 @@ define([
     
                 if (validator.validate(params)) {
                     lang.mixin(this, params);
-                }
-                else {
+                } else {
                     validator.logErrorToConsole(params, 'Invalid Request construction.');
-                    throw('Invalid Request construction.');
+                    throw ('Invalid Request construction.');
                 }
             }
             this.params = [];
@@ -92,7 +90,7 @@ define([
          * @description Converts the <code>rishson.control.Request</code> derived class into a String representing a URL.
          */
         toUrl : function () {
-            throw('toUrl must be implemented in derived classes');
+            throw ('toUrl must be implemented in derived classes');
         },
     
         /**

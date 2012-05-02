@@ -40,13 +40,12 @@ define([
             if (validator.validate(params)) {
                 lang.mixin(this, params);
                 this.type = "rest";
-            }
-            else {
+            } else {
                 validator.logErrorToConsole(params, 'Invalid RestRequest construction.');
-                throw('Invalid RestRequest construction.');
+                throw ('Invalid RestRequest construction.');
             }
         },
-    
+   
         /**
          * @function
          * @override rishson.control.Request.toUrl
@@ -58,5 +57,4 @@ define([
             return this.service;
         }
     });
-
 });

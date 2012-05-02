@@ -81,7 +81,7 @@ define([
 				postParams = request.getParams() || {};	//allow for empty request content, e.g. a REST DELETE
             
             //if we have managed to resolve the current sessionId, then this can be used in double-cookie submission.
-            if(this._sessionId) {
+            if (this._sessionId) {
                 postParams[this.sidParamName] = this._sessionId;    //add CSRF taken to all requests
             }
 
