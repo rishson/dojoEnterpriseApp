@@ -18,7 +18,7 @@ define([
          * @description Instantiate some new item from a passed Class, with props with an optional srcNode (node)
          * reference. Also tracks this widget as if it were a child to be destroyed when this parent widget
          * is removed.
-         * @param {Function} cls the class to instantiate. Cannot be a string. Use lang.getObject to get a full class object
+         * @param {Function} Cls the class to instantiate. Cannot be a string. Use lang.getObject to get a full class object
          * if you must.<p>
          * example:<p>
          *      this.adopt(my.ui.Button, { onClick: function(){} }).placeAt(this.domNode);<p>
@@ -31,13 +31,13 @@ define([
          *      if(4 > 5){ t = new my.ui.Button(); }else{ t = new joost.ui.OtherButton() }<p>
          *      this.__addItem(t);
          * @param {Object} props optional an object mixed into the constructor of said cls.
-         * @param {DOMNode} node optional a srcNodeRef to use with dijit._Widget. This thinger will be instantiated using
+         * @param {Object} node optional a srcNodeRef to use with dijit._Widget. This thinger will be instantiated using
          * this passed node as the target if passed. Otherwise a new node is created and you must placeAt() your
          * instance somewhere in the dom for it to be useful.
          * @returns {Object} the created Widget instance
          */
-        adopt : function (/*Function*/cls, /*Object*/props, /*DomNode*/node) {
-            var x = new cls(props, node);
+        adopt : function (Cls, props, node) {
+            var x = new Cls(props, node);
             this._supportingWidgets.push(x);
             return x; // my.Widget
         },
@@ -54,16 +54,18 @@ define([
          *      //Create and destroy a button cleanly:<p>
          *      var x = this.adopt(my.ui.Button, {});<p>
          *      this.orphan(x, true);
-         * @param {dijit._Widget} widget a widget reference to remove from this parent.
+         * @param {Object} widget a widget reference to remove from this parent.
          * @param {boolean} destroy an optional boolean used to force immediate destruction of the child. Pass any truthy
          * value here and the child will be orphaned and killed.
          */
-        orphan : function(/*dijit._Widget*/widget, /*Boolean*/destroy){
+        orphan : function (widget, destroy) {
             var i = arrayUtil.indexOf(this._supportingWidgets, widget);
             if (i >= 0) {
                 this._supportingWidgets.splice(i, 1);
             }
-            destroy && this.__kill(widget);
+            if (destroy) {
+				this.__kill(widget);
+			}
         },
     
         /**
@@ -78,8 +80,7 @@ define([
                 if (w && w.destroyRecursive) {
                     w.destroyRecursive();
                 }
-            }
-            catch (e){
+            } catch (e) {
                 //ignore errors thrown by IE when doing teardown of Grids whose domNode's get removed early
             }
         }
