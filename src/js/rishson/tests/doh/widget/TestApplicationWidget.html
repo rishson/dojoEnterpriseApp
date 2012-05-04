@@ -1,72 +1,72 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
 		"http://www.w3.org/TR/html4/strict.dtd">
 <html>
-	<head>
-		<title>doh.robot ApplicationWidget Test</title>
+<head>
+	<title>doh.robot ApplicationWidget Test</title>
 
-		<style>
-			@import "../../../../util/doh/robot/robot.css";
-		</style>
+	<style>
+		@import "../../../../util/doh/robot/robot.css";
+	</style>
 
-		<!-- required: dojo.js -->
-		<script type="text/javascript" src="../../../../dojo/dojo.js"
+	<!-- required: dojo.js -->
+	<script type="text/javascript" src="../../../../dojo/dojo.js"
 			data-dojo-config="isDebug: true"></script>
 
 
-		<script type="text/javascript">
+	<script type="text/javascript">
 
-			require([
-				"doh",
-				"rishson/widget/_Widget",
-				"rishson/widget/_ApplicationWidget",
-				"dojo/_base/declare", // declare
-				"dojo/topic", // publish/subscribe
-				"dojo/window",
-				"dijit/robotx",
-				"dojo/domReady!"
-			], function(doh, _Widget, _ApplicationWidget, declare, topic, win){
-				doh.robot.initRobot('../../functional/testApplicationWidget.html');
-				
-				doh.register("_ApplicationWidget tests", [	
-					{
-						name: "Pub/sub tests",
-						setUp: function(){
-							
-						},
-						runTest: function(){
+		require([
+			"doh",
+			"rishson/widget/_Widget",
+			"rishson/widget/_ApplicationWidget",
+			"dojo/_base/declare", // declare
+			"dojo/topic", // publish/subscribe
+			"dojo/window",
+			"dijit/robotx",
+			"dojo/domReady!"
+		], function (doh, _Widget, _ApplicationWidget, declare, topic, win) {
+			doh.robot.initRobot('../../functional/testApplicationWidget.html');
 
-							var childWidget = declare(null, _Widget, {
-								constructor : function(params) {
-									this.pubList.SOME_TOPIC = this._topicNamespace + '/some/topicName';			
-								}			
-							});
+			doh.register("_ApplicationWidget tests", [
+				{
+					name: "Pub/sub tests",
+					setUp: function () {
 
-							var appWidget = declare(null, _ApplicationWidget, {
-								constructor : function(params) {
-								},
-	
+					},
+					runTest: function () {
 
-								_handleSomeTopicName : function(data){
-									horribleGlobalScopeHack = true;
-									doh.assertTrue(data[0] === 'hello world');
-								}			
-							});
-							
-							var myAppWidget = new appWidget();
-							var myChildWidget = new childWidget();
-							myAppWidget.injectWidget(myChildWidget);
+						var childWidget = declare(null, _Widget, {
+							constructor: function (params) {
+								this.pubList.SOME_TOPIC = this._topicNamespace + '/some/topicName';
+							}
+						});
 
-							topic.publish(myChildWidget.pubList.SOME_TOPIC, 'hello world');
-			
-							doh.assertTrue(horribleGlobalScopeHack, 'Autowire failed.');
-						},
-						tearDown: function(){
-						}
+						var appWidget = declare(null, _ApplicationWidget, {
+							constructor: function (params) {
+							},
+
+
+							_handleSomeTopicName: function (data) {
+								horribleGlobalScopeHack = true;
+								doh.assertTrue(data[0] === 'hello world');
+							}
+						});
+
+						var myAppWidget = new appWidget();
+						var myChildWidget = new childWidget();
+						myAppWidget.injectWidget(myChildWidget);
+
+						topic.publish(myChildWidget.pubList.SOME_TOPIC, 'hello world');
+
+						doh.assertTrue(horribleGlobalScopeHack, 'Autowire failed.');
+					},
+					tearDown: function () {
 					}
+				}
 
-				]);
-				doh.run();
-			});
-		</script>
-	</head>
+			]);
+			doh.run();
+		});
+	</script>
+</head>
 </html>

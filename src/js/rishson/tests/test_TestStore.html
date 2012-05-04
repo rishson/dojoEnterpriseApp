@@ -1,230 +1,242 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>TestStore Test</title>
-        <script type="text/javascript" src="../../dojo/dojo.js"
-            data-dojo-config="isDebug: true, async: true"></script>
-        <script type="text/javascript">
-            require([
-                "doh",
-                "dojo/_base/lang",
-                "rishson/tests/TestStore",
-                "dojo/domReady!"
-            ], function(doh, lang, TestStore){
-                var data = [
-                        { id: "1", name: "foo" },
-                        { id: "2", name: "bar" }
-                    ];
-                
-                doh.register("TestStore tests", [
-                    {
-                        name: "test sync store get/add/put/delete",
-                        runTest: function(t){
-                            var store = new TestStore({ data: lang.clone(data) }),
-                                result;
-                            
-                            // test get
-                            result = store.get("1");
-                            t.f(result.then, "sync get should not return a promise");
-                            t.t(result.name == "foo",
-                                "get should return expected result");
-                            
-                            // test add
-                            result = store.add({ id: "3", name: "baz" });
-                            t.f(result.then,
-                                "sync add should not return a promise");
-                            t.t(result === "3",
-                                "add should return expected result");
-                            result = store.get(result);
-                            t.t(result.name && result.name == "baz",
-                                "get for added item should return expected result");
-                            
-                            // test put to update added item
-                            result = store.put({ id: "3", name: "bim" });
-                            t.f(result.then,
-                                "sync put should not return a promise");
-                            t.t(result === "3",
-                                "put should return expected result");
-                            result = store.get(result);
-                            t.t(result.name && result.name == "bim",
-                                "get for modified item should return expected result");
-                            
-                            // test remove on added item
-                            result = store.remove("3");
-                            t.f(result.then,
-                                "sync remove should not return a promise");
-                            t.t(result === true,
-                                "remove should return expected result");
-                            t.f(store.get("3"),
-                                "get for removed item should not return an item");
-                        }
-                    },
-                    {
-                        name: "test sync store query (non-Observable)",
-                        runTest: function(t){
-                            var store = new TestStore({ data: lang.clone(data) }),
-                                result;
-                            
-                            result = store.query();
-                            t.f(result.then,
-                                "sync query should not return a promise");
-                            t.t(result.total === 2,
-                                "sync query should return expected total");
-                            t.t(result.forEach && result.filter && result.map,
-                                "query results should have expected methods");
-                            t.f(result.observe,
-                                "non-observable store should have no observe method on results");
-                        }
-                    },
-                    {
-                        name: "test sync store query (Observable)",
-                        runTest: function(t){
-                            var store = new TestStore({
-                                    data: lang.clone(data),
-                                    observable: true
-                                }),
-                                result;
-                            
-                            result = store.query();
-                            t.f(result.then,
-                                "sync query should not return a promise");
-                            t.t(typeof result.observe == "function",
-                                "observable store should have observe method on results");
-                        }
-                    },
-                    {
-                        name: "test async store get/add/put/delete",
-                        timeout: 3000, // allow enough time for async ops to run
-                        runTest: function(t){
-                            var store = new TestStore({
-                                    data: lang.clone(data),
-                                    async: true
-                                }),
-                                dfd = new doh.Deferred(),
-                                derr = function(err){ dfd.errback(err); },
-                                getResult;
-                            
-                            // test get
-                            getResult = store.get("1");
-                            t.t(getResult.then,
-                                "async get should return a promise");
-                            
-                            getResult.then(function(result){
-                                var nextResult; // for next step
-                                
-                                t.t(result.name == "foo",
-                                    "get should return expected result");
-                                
-                                // test add, chaining into next callback
-                                nextResult = store.add({ id: "3", name: "baz" });
-                                t.t(nextResult.then,
-                                    "async add should return a promise");
-                                return nextResult;
-                            }, derr).then(function(result){
-                                t.t(result === "3",
-                                    "add should return expected result");
-                                
-                                return store.get(result);
-                            }, derr).then(function(result){
-                                var nextResult; // for next step
-                                
-                                t.t(result.name && result.name == "baz",
-                                    "get for added item should return expected result");
-                                
-                                // test put to update added item
-                                nextResult = store.put({ id: "3", name: "bim" });
-                                t.t(nextResult.then,
-                                    "async put should return a promise");
-                                return nextResult;
-                            }, derr).then(function(result){
-                                t.t(result === "3",
-                                    "put should return expected result");
-                                
-                                return store.get(result);
-                            }, derr).then(function(result){
-                                var nextResult; // for next step
-                                
-                                t.t(result.name && result.name == "bim",
-                                    "get for modified item should return expected result");
-                                
-                                // test remove on added item
-                                nextResult = store.remove("3");
-                                t.t(nextResult.then,
-                                    "async remove should return a promise");
-                                return nextResult;
-                            }, derr).then(function(result){
-                                t.t(result === true,
-                                    "remove should return expected result");
-                                
-                                return store.get("3");
-                            }, derr).then(function(result){
-                                t.f(result,
-                                    "get for removed item should not return an item");
-                            }, derr).then(function(){
-                                // passed all tests
-                                // (this is a separate function in the chain
-                                // in order to catch errors from the previous one)
-                                dfd.callback(true);
-                            }, derr);
-                            
-                            return dfd;
-                        }
-                    },
-                    {
-                        name: "test async store query (non-Observable)",
-                        runTest: function(t){
-                            var store = new TestStore({
-                                    data: lang.clone(data),
-                                    async: true
-                                }),
-                                dfd = new doh.Deferred(),
-                                derr = function(err){ dfd.errback(err); },
-                                result;
-                            
-                            result = store.query();
-                            t.t(result.then,
-                                "async query should return a promise");
-                            t.t(result.total.then,
-                                "async query results total should be a promise");
-                            t.t(result.forEach && result.filter && result.map,
-                                "query results should have expected methods");
-                            t.f(result.observe,
-                                "non-observable store should have no observe method on results");
-                            
-                            // chain onto total promise to test resolved value
-                            result.total.then(function(total){
-                                t.t(total === 2,
-                                    "query should return expected total");
-                            }, derr).then(function(){
-                                // passed all tests
-                                dfd.callback(true);
-                            }, derr);
-                            
-                            return dfd;
-                        }
-                    },
-                    {
-                        name: "test async store query (Observable)",
-                        runTest: function(t){
-                            var store = new TestStore({
-                                    data: lang.clone(data),
-                                    observable: true,
-                                    async: true
-                                }),
-                                result;
-                            
-                            result = store.query();
-                            t.t(result.then,
-                                "async query should return a promise");
-                            t.t(typeof result.observe == "function",
-                                "observable store should have observe method on results");
-                        }
-                    }
-                ]);
-                doh.run();
-            });
-        </script>
-    </head>
-    <body>
-    </body>
+<head>
+<title>TestStore Test</title>
+<script type="text/javascript" src="../../dojo/dojo.js"
+		data-dojo-config="isDebug: true, async: true"></script>
+<script type="text/javascript">
+require([
+	"doh",
+	"dojo/_base/lang",
+	"rishson/tests/TestStore",
+	"dojo/domReady!"
+], function (doh, lang, TestStore) {
+	var data = [
+		{ id: "1", name: "foo" },
+		{ id: "2", name: "bar" }
+	];
+
+	doh.register("TestStore tests", [
+		{
+			name: "test sync store get/add/put/delete",
+			runTest: function (t) {
+				var store = new TestStore({ data: lang.clone(data) }),
+						result;
+
+				// test get
+				result = store.get("1");
+				t.f(result.then, "sync get should not return a promise");
+				t.t(result.name == "foo",
+						"get should return expected result");
+
+				// test add
+				result = store.add({ id: "3", name: "baz" });
+				t.f(result.then,
+						"sync add should not return a promise");
+				t.t(result === "3",
+						"add should return expected result");
+				result = store.get(result);
+				t.t(result.name && result.name == "baz",
+						"get for added item should return expected result");
+
+				// test put to update added item
+				result = store.put({ id: "3", name: "bim" });
+				t.f(result.then,
+						"sync put should not return a promise");
+				t.t(result === "3",
+						"put should return expected result");
+				result = store.get(result);
+				t.t(result.name && result.name == "bim",
+						"get for modified item should return expected result");
+
+				// test remove on added item
+				result = store.remove("3");
+				t.f(result.then,
+						"sync remove should not return a promise");
+				t.t(result === true,
+						"remove should return expected result");
+				t.f(store.get("3"),
+						"get for removed item should not return an item");
+			}
+		},
+		{
+			name: "test sync store query (non-Observable)",
+			runTest: function (t) {
+				var store = new TestStore({ data: lang.clone(data) }),
+						result;
+
+				result = store.query();
+				t.f(result.then,
+						"sync query should not return a promise");
+				t.t(result.total === 2,
+						"sync query should return expected total");
+				t.t(result.forEach && result.filter && result.map,
+						"query results should have expected methods");
+				t.f(result.observe,
+						"non-observable store should have no observe method on results");
+			}
+		},
+		{
+			name: "test sync store query (Observable)",
+			runTest: function (t) {
+				var store = new TestStore({
+							data: lang.clone(data),
+							observable: true
+						}),
+						result;
+
+				result = store.query();
+				t.f(result.then,
+						"sync query should not return a promise");
+				t.t(typeof result.observe == "function",
+						"observable store should have observe method on results");
+			}
+		},
+		{
+			name: "test async store get/add/put/delete",
+			timeout: 3000, // allow enough time for async ops to run
+			runTest: function (t) {
+				var store = new TestStore({
+							data: lang.clone(data),
+							async: true
+						}),
+						dfd = new doh.Deferred(),
+						derr = function (err) {
+							dfd.errback(err);
+						},
+						getResult;
+
+				// test get
+				getResult = store.get("1");
+				t.t(getResult.then,
+						"async get should return a promise");
+
+				getResult.then(
+						function (result) {
+							var nextResult; // for next step
+
+							t.t(result.name == "foo",
+									"get should return expected result");
+
+							// test add, chaining into next callback
+							nextResult = store.add({ id: "3", name: "baz" });
+							t.t(nextResult.then,
+									"async add should return a promise");
+							return nextResult;
+						}, derr).then(
+						function (result) {
+							t.t(result === "3",
+									"add should return expected result");
+
+							return store.get(result);
+						}, derr).then(
+						function (result) {
+							var nextResult; // for next step
+
+							t.t(result.name && result.name == "baz",
+									"get for added item should return expected result");
+
+							// test put to update added item
+							nextResult = store.put({ id: "3", name: "bim" });
+							t.t(nextResult.then,
+									"async put should return a promise");
+							return nextResult;
+						}, derr).then(
+						function (result) {
+							t.t(result === "3",
+									"put should return expected result");
+
+							return store.get(result);
+						}, derr).then(
+						function (result) {
+							var nextResult; // for next step
+
+							t.t(result.name && result.name == "bim",
+									"get for modified item should return expected result");
+
+							// test remove on added item
+							nextResult = store.remove("3");
+							t.t(nextResult.then,
+									"async remove should return a promise");
+							return nextResult;
+						}, derr).then(
+						function (result) {
+							t.t(result === true,
+									"remove should return expected result");
+
+							return store.get("3");
+						}, derr).then(
+						function (result) {
+							t.f(result,
+									"get for removed item should not return an item");
+						}, derr).then(function () {
+							// passed all tests
+							// (this is a separate function in the chain
+							// in order to catch errors from the previous one)
+							dfd.callback(true);
+						}, derr);
+
+				return dfd;
+			}
+		},
+		{
+			name: "test async store query (non-Observable)",
+			runTest: function (t) {
+				var store = new TestStore({
+							data: lang.clone(data),
+							async: true
+						}),
+						dfd = new doh.Deferred(),
+						derr = function (err) {
+							dfd.errback(err);
+						},
+						result;
+
+				result = store.query();
+				t.t(result.then,
+						"async query should return a promise");
+				t.t(result.total.then,
+						"async query results total should be a promise");
+				t.t(result.forEach && result.filter && result.map,
+						"query results should have expected methods");
+				t.f(result.observe,
+						"non-observable store should have no observe method on results");
+
+				// chain onto total promise to test resolved value
+				result.total.then(
+						function (total) {
+							t.t(total === 2,
+									"query should return expected total");
+						}, derr).then(function () {
+							// passed all tests
+							dfd.callback(true);
+						}, derr);
+
+				return dfd;
+			}
+		},
+		{
+			name: "test async store query (Observable)",
+			runTest: function (t) {
+				var store = new TestStore({
+							data: lang.clone(data),
+							observable: true,
+							async: true
+						}),
+						result;
+
+				result = store.query();
+				t.t(result.then,
+						"async query should return a promise");
+				t.t(typeof result.observe == "function",
+						"observable store should have observe method on results");
+			}
+		}
+	]);
+	doh.run();
+});
+</script>
+</head>
+<body>
+</body>
 </html>
