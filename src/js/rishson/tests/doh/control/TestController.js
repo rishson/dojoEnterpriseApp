@@ -105,7 +105,7 @@ define([
 				controller = new Controller(mockTransport, validLoginResponse);
 
 				//check that the transport has been decorated with handler functions
-				//doh.assertEqual(controller.handleResponse, controller.transport.handleResponseFunc);
+				//doh.assertEqual(ccontroller.transport.ontroller.handleResponse, handleResponseFunc);
 				//doh.assertEqual(controller.handleError, controller.transport.handleErrorFunc);
 			},
 			tearDown: function () {

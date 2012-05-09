@@ -109,9 +109,7 @@ define([
 					delete (xhrParams.content);
 				}
 			}
-
-			xhrFunction(xhrParams); //returns a defered
+			xhrFunction(xhrParams); //returns a deferred
 		}
-
 	});
 });

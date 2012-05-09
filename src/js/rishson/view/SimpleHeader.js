@@ -13,7 +13,8 @@ define([
 	"dojo/mouse", //mouse enter/leave events
 	//template widgets found in the template but not in declare
 	"dijit/layout/ContentPane"
-], function (_Widget, _TemplatedMixin, _WidgetsInTemplateMixin, template, l10n, ObjectValidator, declare, lang, domClass, topic, on, mouse) {
+], function (_Widget, _TemplatedMixin, _WidgetsInTemplateMixin, template, l10n, ObjectValidator, declare, lang,
+			 domClass, topic, on, mouse) {
 
 	/**
 	 * @class

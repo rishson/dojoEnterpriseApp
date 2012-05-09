@@ -17,8 +17,7 @@ define([
 		},
 
 		createLogoutRequest: function () {
-			return new ServiceRequest({callback: function () {
-			},
+			return new ServiceRequest({callback: function () {},
 				callbackScope: this,
 				service: 'userService',
 				method: 'logout',
@@ -29,8 +28,7 @@ define([
 		},
 
 		createRequest: function () {
-			return new ServiceRequest({callback: function () {
-			},
+			return new ServiceRequest({callback: function () {},
 				callbackScope: this,
 				service: 'userService',
 				method: 'logout',

@@ -11,7 +11,8 @@ define([
 	"dojo/_base/declare", // declare + safeMixin
 	//template widgets
 	"dijit/layout/BorderContainer"
-], function (_Widget, _LayoutWidget, _Container, _TemplatedMixin, _WidgetsInTemplateMixin, _Controller, template, l10n, ObjectValidator, declare) {
+], function (_Widget, _LayoutWidget, _Container, _TemplatedMixin, _WidgetsInTemplateMixin, _Controller, template, l10n,
+			 ObjectValidator, declare) {
 
 	/**
 	 * @class

@@ -6,13 +6,13 @@ define([
 			var status = params.status;
 			if (status == 200) {
 				return {payload: params, isOk: true};
-			} else if (status == 400) {
+			} else if (status === 400) {
 				return {payload: params, isInvalid: true};
-			} else if (status == 403) {
+			} else if (status === 403) {
 				return {payload: params, isUnauthorised: true};
-			} else if (status == 409) {
+			} else if (status === 409) {
 				return {payload: params, isConflicted: true};
-			} else if (status == 123) {
+			} else if (status === 123) {
 				return {};
 			}
 		}
