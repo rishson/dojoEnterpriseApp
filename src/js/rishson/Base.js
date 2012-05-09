@@ -12,7 +12,6 @@ define([
 	 * @description Base class for all objects
 	 */
 	return declare('rishson.Base', null, {
-
 		/**
 		 * @field
 		 * @name rishson.Base.isInitialised
@@ -25,7 +24,6 @@ define([
 		 * @field
 		 * @name rishson.Base._parentTopicNamespace
 		 * @type {string}
-		 * @private
 		 * @description This namespace is prepended to every topic name used by a derived class
 		 */
 		parentTopicNamespace: '',
@@ -59,24 +57,12 @@ define([
 		 * @constructor
 		 */
 		constructor: function (args) {
-
 			this.pubList = {};
 			if (args) {
 				lang.mixin(this, args);
 
 				this.addTopic('INITIALISED', Globals.CHILD_INTIALISED_TOPIC_NAME);
 			}
-		},
-
-		/**
-		 * @function
-		 * @name rishson.Base.postscript
-		 * @description Implement the standard dijit lifecycle 'postscript' function. This function fires AFTER the
-		 * constructor. We override so that we can call initialise
-		 */
-		postscript: function () {
-			this._initialised();
-			this.inherited(arguments);	//DO NOT REMOVE - needed for postCreate to run.
 		},
 
 		/**
@@ -194,7 +180,7 @@ define([
 		 * @private
 		 * @description When the derived is ready then it can call this function to publish their state
 		 */
-		_initialised: function () {
+		_initialise: function () {
 			this.isInitialised = true;
 			topic.publish(this.pubList.INITIALISED, this._id, this);
 		}
