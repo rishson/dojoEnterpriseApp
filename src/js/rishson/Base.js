@@ -1,6 +1,6 @@
 define([
-	"dojo/_base/declare",	// declare
-	"rishson/Globals",	//TOPIC_NAMESPACE
+	"dojo/_base/declare", // declare
+	"rishson/Globals", //TOPIC_NAMESPACE
 	"dojo/_base/lang",
 	"dojo/topic", // publish/subscribe
 	"dojo/_base/array" // forEach, indexOf
@@ -18,16 +18,15 @@ define([
 		 * @type {boolean}
 		 * @description Is the widget initialised? Default to false - duh.
 		 */
-		isInitialised : false,
+		isInitialised: false,
 
 		/**
 		 * @field
 		 * @name rishson.Base._parentTopicNamespace
 		 * @type {string}
-		 * @private
 		 * @description This namespace is prepended to every topic name used by a derived class
 		 */
-		parentTopicNamespace : '',
+		parentTopicNamespace: '',
 
 		/**
 		 * @field
@@ -35,7 +34,7 @@ define([
 		 * @type {string}
 		 * @description Object that contains the list of topics that any derived class can publish
 		 */
-		pubList : null,
+		pubList: null,
 
 		/**
 		 * @field
@@ -43,7 +42,7 @@ define([
 		 * @type {string}
 		 * @description Object that contains the list of topics that any derived class can listen out for
 		 */
-		subList : null,
+		subList: null,
 
 		/**
 		 * @field
@@ -52,14 +51,12 @@ define([
 		 * @type {string}
 		 * @description The unique id of a widget created with this base class.
 		 */
-		_id : null,
+		_id: null,
 
 		/**
 		 * @constructor
 		 */
-		constructor : function (args) {
-			//declare.safeMixin(this, Stateful);
-
+		constructor: function (args) {
 			this.pubList = {};
 			if (args) {
 				lang.mixin(this, args);
@@ -74,7 +71,7 @@ define([
 		 * @param namespace {string} a class namespace (. separated) that will be turned into a topic (/ separated)
 		 * @description Replace all '.' with '/'
 		 */
-		createTopicNamespace : function (namespace) {
+		createTopicNamespace: function (namespace) {
 			/*any derived widget can publish events on their own namespace so construct the widget namespace from
 			 the declared class, but replace the . to be a / so it is standard topic conventions*/
 			return '/' + namespace.replace(/\./g, '/');
@@ -88,7 +85,7 @@ define([
 		 * @param makeGlobal {boolean=} makeGlobal if true use the global topic namespace
 		 * @description Syntaatic sugar to add items to a class's pubList.
 		 */
-		addTopic : function (topicRef, topicName, makeGlobal) {
+		addTopic: function (topicRef, topicName, makeGlobal) {
 			if (!makeGlobal) {
 				this.pubList[topicRef] = this.parentTopicNamespace + topicName;
 			} else {
@@ -102,7 +99,7 @@ define([
 		 * @param {string} topic a name of a topic to capitalise.
 		 * @description capitalise the first letter of a topic.
 		 */
-		capitaliseTopicName : function (topic) {
+		capitaliseTopicName: function (topic) {
 			/* e.g. /hello/i/am/a/topicName would become Hello/I/Am/A/TopicName
 			 */
 			return topic.replace(/\b[a-z]/g, function (w) {
@@ -134,7 +131,7 @@ define([
 		 * instance somewhere in the dom for it to be useful.
 		 * @returns {Object} the created Widget instance
 		 */
-		adopt : function (Cls, props, node) {
+		adopt: function (Cls, props, node) {
 			props = props || {};
 			var x = new Cls(props, node);
 			if (!this._supportingWidgets) {
@@ -161,7 +158,7 @@ define([
 		 * @param {boolean} destroy an optional boolean used to force immediate destruction of the child.
 		 * Pass any truthy value here and the child will be orphaned and killed.
 		 */
-		orphan : function (widget, destroy) {
+		orphan: function (widget, destroy) {
 			var i = arrayUtil.indexOf(this._supportingWidgets, widget);
 			if (i >= 0) {
 				this._supportingWidgets.splice(i, 1);
@@ -183,7 +180,7 @@ define([
 		 * @private
 		 * @description When the derived is ready then it can call this function to publish their state
 		 */
-		_initialise : function () {
+		_initialise: function () {
 			this.isInitialised = true;
 			topic.publish(this.pubList.INITIALISED, this._id, this);
 		}
