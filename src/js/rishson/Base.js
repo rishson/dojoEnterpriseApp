@@ -1,7 +1,7 @@
 define([
 	"dojo/_base/declare", // declare
 	"rishson/Globals", //TOPIC_NAMESPACE
-	"dojo/_base/lang",
+	"dojo/_base/lang",	//mixin
 	"dojo/topic", // publish/subscribe
 	"dojo/_base/array" // forEach, indexOf
 ], function (declare, Globals, lang, topic, arrayUtil) {
@@ -61,6 +61,10 @@ define([
 			if (args) {
 				lang.mixin(this, args);
 
+				if (!this._supportingWidgets) {
+					this._supportingWidgets = [];	//anything that does not derive from _Widget will not have this
+				}
+
 				this.addTopic('INITIALISED', Globals.CHILD_INTIALISED_TOPIC_NAME);
 			}
 		},
@@ -83,7 +87,7 @@ define([
 		 * @param topicRef {string} the object property (usually CAPITALISED) of the topic in the pubList
 		 * @param topicName {string} the name of topic
 		 * @param makeGlobal {boolean=} makeGlobal if true use the global topic namespace
-		 * @description Syntaatic sugar to add items to a class's pubList.
+		 * @description Syntactic sugar to add items to a class's pubList.
 		 */
 		addTopic: function (topicRef, topicName, makeGlobal) {
 			if (!makeGlobal) {
@@ -98,10 +102,9 @@ define([
 		 * @name rishson.Base.capitaliseTopicName
 		 * @param {string} topic a name of a topic to capitalise.
 		 * @description capitalise the first letter of a topic.
+		 * e.g. /hello/i/am/a/topicName would become Hello/I/Am/A/TopicName
 		 */
 		capitaliseTopicName: function (topic) {
-			/* e.g. /hello/i/am/a/topicName would become Hello/I/Am/A/TopicName
-			 */
 			return topic.replace(/\b[a-z]/g, function (w) {
 				return w.toUpperCase();
 			});
@@ -134,9 +137,6 @@ define([
 		adopt: function (Cls, props, node) {
 			props = props || {};
 			var x = new Cls(props, node);
-			if (!this._supportingWidgets) {
-				this._supportingWidgets = [];	//awkward but this is a mixin class
-			}
 			this._supportingWidgets.push(x);
 
 			return x; // my.class
