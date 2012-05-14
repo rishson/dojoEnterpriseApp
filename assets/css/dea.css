@@ -1,0 +1,23 @@
+.hero_icon {
+	display: inline;
+	margin-right: 20px;
+	margin-bottom: 12px;
+}
+
+.sectionHeading {
+	color: orange;
+	display: inline;
+}
+
+.section {
+	border: 1px solid #CCCCCC;
+	border-radius: 2px;
+}
+
+.hero-unit {
+	box-shadow: #dddddd 1px 1px;
+}
+
+.hero-unit p {
+	margin-top: 10px;
+}
