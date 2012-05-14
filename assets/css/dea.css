@@ -21,3 +21,11 @@
 .hero-unit p {
 	margin-top: 10px;
 }
+
+.dojo_icon {
+	border-radius: 5px;
+	padding: 10px;
+	background-color: #778899;
+	margin-right: 57px;
+
+}
