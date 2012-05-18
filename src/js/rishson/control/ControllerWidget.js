@@ -2,8 +2,9 @@ define([
 	"dojo/_base/declare", // declare
 	"rishson/Base", //createTopicNamespace, _capitaliseTopicName
 	"rishson/widget/_Widget", //
+	"rishson/control/_Controller", //
 	"dojo/_base/lang" //isArray
-], function (declare, Base, _Widget, lang) {
+], function (declare, Base, _Widget, _Controller, lang) {
 	/**
 	 * @class
 	 * @name rishson.control.ControllerWidget
@@ -13,7 +14,7 @@ define([
 	 * dramatically. Additionally, this is a very 'dojo' way of doing things because a widget is the basic module
 	 * pattern of dojo.
 	 */
-	return declare("rishson.control.ControllerWidget", [Base, _Widget], {
+	return declare("rishson.control.ControllerWidget", [Base, _Widget, _Controller], {
 		/**
 		 * @field
 		 * @name rishson.control.ControllerWidget.models
