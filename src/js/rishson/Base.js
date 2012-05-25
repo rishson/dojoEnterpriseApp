@@ -3,8 +3,9 @@ define([
 	"rishson/Globals", //TOPIC_NAMESPACE
 	"dojo/_base/lang",	//mixin
 	"dojo/topic", // publish/subscribe
-	"dojo/_base/array" // forEach, indexOf
-], function (declare, Globals, lang, topic, arrayUtil) {
+	"dojo/_base/array", // forEach, indexOf
+	"dojo/_base/Deferred"
+], function (declare, Globals, lang, topic, arrayUtil, Deferred) {
 
 	/**
 	 * @class
@@ -108,6 +109,25 @@ define([
 			return topic.replace(/\b[a-z]/g, function (w) {
 				return w.toUpperCase();
 			});
+		},
+
+		/**
+		 * @function
+		 * @name rishson.Base.asyncRequire
+		 * @description Instantiate a widget asynchronously within the application flow.
+		 * If the requiring widget is a controller (inherits from rishson.control._Controller) then it will also
+		 * autowire the widget.
+		 * @param {Object} widget
+		 * @return {Object} deferred
+		 */
+		asyncRequire: function (widget) {
+			var deferred = new Deferred();
+
+			require([widget], lang.hitch(this, function (WidgetConstructor) {
+				var widgetInstance = this.adopt(WidgetConstructor, {});
+				deferred.resolve(widgetInstance);
+			}));
+			return deferred;
 		},
 
 		/**
