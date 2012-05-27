@@ -1,19 +1,19 @@
 define([
 	"dojo/_base/declare",
-	"rishson/control/Controller",
+	"../control/Dispatcher",
 	"rishson/control/MockTransport",
 	"rishson/control/ServiceRequest"
-], function (declare, Controller, MockTransport, ServiceRequest) {
+], function (declare, Dispatcher, MockTransport, ServiceRequest) {
 
 	return declare('tests.Scaffold', null, {
 
-		createController: function () {
+		createDispatcher: function () {
 			var mockTransport = new MockTransport(),
 				validLoginResponse = {serviceRegistry: [],
 					grantedAuthorities: [],
 					returnRequest: true};
 
-			return new Controller(mockTransport, validLoginResponse);
+			return new Dispatcher(mockTransport, validLoginResponse);
 		},
 
 		createLogoutRequest: function () {
@@ -24,7 +24,7 @@ define([
 				params: [
 					{username: 'andy'}
 				]
-			});
+				});
 		},
 
 		createRequest: function () {
@@ -35,8 +35,7 @@ define([
 				params: [
 					{username: 'andy'}
 				]
-			});
+				});
 		}
-
 	});
 });

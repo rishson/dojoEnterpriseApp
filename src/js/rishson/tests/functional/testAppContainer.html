@@ -37,7 +37,7 @@
 
 			function create() {
 				scaffold = new Scaffold();
-				controller = scaffold.createController();
+				controller = scaffold.createDispatcher();
 
 				var placeholder = dom.byId('placeholder');
 				var simpleHeader = new SimpleHeader({username: 'Rishson', region: 'top'});

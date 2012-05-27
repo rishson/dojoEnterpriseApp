@@ -3,7 +3,7 @@ define([
 	"dojo/topic",
 	"dojo/cookie",
 	"rishson/tests/Scaffold",
-	"rishson/control/Controller",
+	"../../../control/Dispatcher",
 	"rishson/control/MockTransport",
 	"rishson/control/Request",
 	"rishson/control/ServiceRequest",

@@ -10,14 +10,14 @@ define([
 
 	/**
 	 * @class
-	 * @name rishson.control.Controller
+	 * @name rishson.control.Dispatcher
 	 * @description This class is the conduit for all client server communication.
 	 */
-	return declare('rishson.control.Controller', null, {
+	return declare('rishson.control.Dispatcher', null, {
 
 		/**
 		 * @field
-		 * @name rishson.control.Controller.transport
+		 * @name rishson.control.Dispatcher.transport
 		 * @type {rishson.control.Transport}
 		 * @description an implementation of rishson.control.Transport
 		 */
@@ -25,7 +25,7 @@ define([
 
 		/**
 		 * @field
-		 * @name rishson.control.Controller.serviceRegistry
+		 * @name rishson.control.Dispatcher.serviceRegistry
 		 * @type {Array}
 		 * @description an array of dojox.RpcService(s). This is populated from a list of SMD definitions
 		 */
@@ -33,7 +33,7 @@ define([
 
 		/**
 		 * @field
-		 * @name rishson.control.Controller.grantedAuthorities
+		 * @name rishson.control.Dispatcher.grantedAuthorities
 		 * @type {Array}
 		 * @description an array of permission to grant to the currently logged on user. Permissions will be coerced to
 		 * lower case.
@@ -42,7 +42,7 @@ define([
 
 		/**
 		 * @field
-		 * @name rishson.control.Controller.returnRequest
+		 * @name rishson.control.Dispatcher.returnRequest
 		 * @type {boolean}
 		 * @description should the Request be returned to the callee when a Response is created
 		 */
@@ -50,7 +50,7 @@ define([
 
 		/**
 		 * @field
-		 * @name rishson.widget._Widget._topicNamespace
+		 * @name rishson.control.Dispatcher._topicNamespace
 		 * @type {string}
 		 * @private
 		 * @description This namespace is prepended to every topic
@@ -121,12 +121,12 @@ define([
 
 		/**
 		 * @function
-		 * @name rishson.control.Controller.send
+		 * @name rishson.control.Dispatcher.send
 		 * @param {rishson.control.Request} request to send to the server
 		 * @description Issues the provided <code>rishson.control.Request</code> in an asynchronous manner
 		 * This function delegates the actual sending of the Request to the injected Transport implementation.
-		 * rishson.control.Controller.handleRequest will be called for valid responses.
-		 * rishson.control.Controller.handleError will be called if an error occurred during the send.
+		 * rishson.control.Dispatcher.handleRequest will be called for valid responses.
+		 * rishson.control.Dispatcher.handleError will be called if an error occurred during the send.
 		 */
 		send: function (request) {
 			this.transport.send(request);
@@ -135,7 +135,7 @@ define([
 
 		/**
 		 * @function
-		 * @name rishson.control.Controller.handleResponse
+		 * @name rishson.control.Dispatcher.handleResponse
 		 * @param {Object} request an object that is the original request to the server
 		 * @param {rishson.control.Response} response an object that is the server response
 		 * @description Handles a valid response from a transport.
@@ -172,7 +172,7 @@ define([
 
 		/**
 		 * @function
-		 * @name rishson.control.Controller.handleError
+		 * @name rishson.control.Dispatcher.handleError
 		 * @param {Object} request an object that is the original reuest to the server
 		 * @param {Object} err an object that is the server error response
 		 * @description Handles an unexpected (runtime) error response from a transport.
@@ -187,7 +187,7 @@ define([
 
 		/**
 		 * @function
-		 * @name rishson.control.Controller.hasGrantedAuthority
+		 * @name rishson.control.Dispatcher.hasGrantedAuthority
 		 * @description Checks to see if a user has a granted authority
 		 */
 		hasGrantedAuthority: function (authority) {
@@ -197,7 +197,7 @@ define([
 		/**
 		 * @function
 		 * @private
-		 * @name rishson.control.Controller._instantiateServiceRegistry
+		 * @name rishson.control.Dispatcher._instantiateServiceRegistry
 		 * @description convert all the given SMDs into dojox.rpc.Service instances.
 		 */
 		_instantiateServiceRegistry: function () {
@@ -215,7 +215,7 @@ define([
 		/**
 		 * @function
 		 * @private
-		 * @name rishson.control.Controller._validateServices
+		 * @name rishson.control.Dispatcher._validateServices
 		 * @description Call the validation function for all services.
 		 * Each service should have a pre-defined test function (__validate) that can be called to validate that the service is up.
 		 */

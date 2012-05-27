@@ -2,7 +2,7 @@ define([
 	"doh",
 	"dojo/topic",
 	"rishson/tests/Scaffold",
-	"rishson/control/Controller",
+	"../../../control/Dispatcher",
 	"rishson/control/MockTransport",
 	"rishson/control/ServiceRequest",
 	"rishson/control/RestRequest"
