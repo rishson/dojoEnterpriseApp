@@ -33,7 +33,7 @@ define([
 		 * @type {string}
 		 * @description Namespace where the test .
 		 */
-		namespace: '../tests/data/',
+		namespace: 'rishson/tests/data/',
 
 		/**
 		 * @constructor
@@ -87,7 +87,7 @@ define([
 				mockResponse = testMethodClass[testFuncName](methodParams);	//call the test method
 
 				if (request.type === 'rest') {
-					wrappedResponse = new Response(mockResponse.payload, true, mockResponse.ioArgs);
+					wrappedResponse = new Response(mockResponse.payload, mockResponse.ioArgs);
 
 					if (arrayUtil.indexOf(wrappedResponse.mappedStatusCodes, mockResponse.ioArgs.xhr.status) === -1) {
 						self.handleErrorFunc(request, wrappedResponse);
@@ -96,10 +96,9 @@ define([
 					}
 				} else {
 					try {
-						wrappedResponse = new Response(mockResponse, false, mockResponse.ioArgs);
-						self.handleResponseFunc(request, wrappedResponse);
+						self.handleResponseFunc(request, mockResponse);
 					} catch (err) {
-						self.handleErrorFunc(request, wrappedResponse);
+						self.handleErrorFunc(request, mockResponse);
 					}
 				}
 			});

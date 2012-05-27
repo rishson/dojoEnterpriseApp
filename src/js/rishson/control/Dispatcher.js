@@ -72,7 +72,7 @@ define([
 					{paramName: 'validLoginResponse', paramType: 'criteria', criteria: [
 						{paramName: 'serviceRegistry', paramType: 'array'},
 						{paramName: 'grantedAuthorities', paramType: 'array'}
-					]
+						]
 					}
 				],
 				validator = new ObjectValidator(criteria),
@@ -108,8 +108,9 @@ define([
 				}, this);
 
 				//decorate the transport with the response and error handling functions in this class (need hitching)
-				this.transport.addResponseFunctions(lang.hitch(this, this.handleResponse),
-					lang.hitch(this.handleError));
+				var hitchedHandleResponse = lang.hitch(this, this.handleResponse);
+				var hitchedHandleError = lang.hitch(this, this.handleError);
+				this.transport.addResponseFunctions(hitchedHandleResponse, hitchedHandleError);
 
 				//listen out for other classes wanting to send requests to the server
 				topic.subscribe(Globals.SEND_REQUEST, lang.hitch(this, "send"));

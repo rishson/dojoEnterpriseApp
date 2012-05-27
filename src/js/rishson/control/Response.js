@@ -70,7 +70,7 @@ define([
 		 * @param {boolean} wasRestRequest was the server request a REST request
 		 * @param {Object} ioArgs the HTTP response header
 		 */
-		constructor: function (response, wasRestRequest, ioArgs) {
+		constructor: function (response, ioArgs) {
 			//@todo remove {}&& prefix if added - should we be allowing comment-filtered anymore or is it an antipattern?
 			this._processHttpStatusCodes(response, ioArgs);
 			//service responses should not have a blank payload

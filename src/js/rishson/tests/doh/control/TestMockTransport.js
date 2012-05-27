@@ -2,7 +2,7 @@ define([
 	"doh",
 	"dojo/topic",
 	"rishson/tests/Scaffold",
-	"../../../control/Dispatcher",
+	"rishson/control/Dispatcher",
 	"rishson/control/MockTransport",
 	"rishson/control/ServiceRequest",
 	"rishson/control/RestRequest"
@@ -13,7 +13,7 @@ define([
 			name: "Send tests",
 			setUp: function () {
 				var scaffold = new Scaffold();
-				controller = scaffold.createController();
+				controller = scaffold.createDispatcher();
 			},
 			runTest: function () {
 				try {

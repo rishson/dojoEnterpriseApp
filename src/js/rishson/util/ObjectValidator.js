@@ -120,6 +120,8 @@ define([
 				return lang.isFunction(paramValue);
 			} else if (paramType === 'object') {
 				return lang.isObject(paramValue);
+			} else if (paramType === 'boolean') {
+				return paramValue && (paramValue instanceof Boolean || typeof paramValue === "boolean");
 			} else if (paramType === 'criteria') {
 				return this._validate(criteria.criteria, paramValue);
 			} else {
