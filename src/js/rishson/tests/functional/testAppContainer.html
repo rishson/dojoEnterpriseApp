@@ -1,70 +1,70 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-        "http://www.w3.org/TR/html4/loose.dtd">
+		"http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-    <title>AppContainer test page</title>
+	<title>AppContainer test page</title>
 
-    <style type="text/css">
+	<style type="text/css">
 
-        @import "../../../dijit/themes/claro/claro.css";
-        @import "../../../dojo/resources/dojo.css";
+		@import "../../../dijit/themes/claro/claro.css";
+		@import "../../../dojo/resources/dojo.css";
 
-        .fixedRegion {
-            border: 1px solid black;
-            height : 600px;
-            width : 900px;
-        }
-    </style>
-    <link rel="stylesheet" href="../../view/appContainer/AppContainer.css" type="text/css"/>
-    <link rel="stylesheet" href="../../view/simpleHeader/SimpleHeader.css" type="text/css"/>
-    <link rel="stylesheet" href="../../view/simpleFooter/SimpleFooter.css" type="text/css"/>
+		.fixedRegion {
+			border: 1px solid black;
+			height: 600px;
+			width: 900px;
+		}
+	</style>
+	<link rel="stylesheet" href="../../view/appContainer/AppContainer.css" type="text/css"/>
+	<link rel="stylesheet" href="../../view/simpleHeader/SimpleHeader.css" type="text/css"/>
+	<link rel="stylesheet" href="../../view/simpleFooter/SimpleFooter.css" type="text/css"/>
 
-    <script type="text/javascript">
-        var dojoConfig = {isDebug: true, async: true};
-    </script>
+	<script type="text/javascript">
+		var dojoConfig = {isDebug: true, async: true};
+	</script>
 
-    <script type="text/javascript" src="../../../dojo/dojo.js"></script>
+	<script type="text/javascript" src="../../../dojo/dojo.js"></script>
 
-    <script type="text/javascript">
-        require([
-            "dojo/dom", // byId
-            "dijit/layout/ContentPane",
-            "rishson/view/AppContainer",
-            "rishson/view/SimpleHeader",
-            "rishson/view/SimpleFooter",
-            "rishson/tests/Scaffold"
-        ], function(dom, ContentPane, AppContainer, SimpleHeader, SimpleFooter, Scaffold){
-        
-            function create() {
-                scaffold = new Scaffold();
-                controller = scaffold.createController();
+	<script type="text/javascript">
+		require([
+			"dojo/dom", // byId
+			"dijit/layout/ContentPane",
+			"rishson/view/AppContainer",
+			"rishson/view/SimpleHeader",
+			"rishson/view/SimpleFooter",
+			"rishson/tests/Scaffold"
+		], function (dom, ContentPane, AppContainer, SimpleHeader, SimpleFooter, Scaffold) {
 
-                var placeholder = dom.byId('placeholder');
-                var simpleHeader = new SimpleHeader({username : 'Rishson', region : 'top'});
+			function create() {
+				scaffold = new Scaffold();
+				controller = scaffold.createController();
 
-                var exampleApp = new ContentPane({region : 'center'});
-                exampleApp.set('content', 'Your application goes here.');
+				var placeholder = dom.byId('placeholder');
+				var simpleHeader = new SimpleHeader({username: 'Rishson', region: 'top'});
 
-                var simpleFooter = new SimpleFooter({footerText : '&copy; 2012 Rishson Enterprises.',
-                    footerLink : 'http://github.com/rishson',
-                    region : 'bottom'});
+				var exampleApp = new ContentPane({region: 'center'});
+				exampleApp.set('content', 'Your application goes here.');
 
-                var testParams = {header : simpleHeader, app: exampleApp, footer : simpleFooter};
-                var widgetToTest = new AppContainer(testParams, placeholder);
-                widgetToTest.startup();
+				var simpleFooter = new SimpleFooter({footerText: '&copy; 2012 Rishson Enterprises.',
+					footerLink: 'http://github.com/rishson',
+					region: 'bottom'});
 
-            }
-            
-            dom.byId("create").onclick = create;
-        });
-    </script>
+				var testParams = {header: simpleHeader, app: exampleApp, footer: simpleFooter};
+				var widgetToTest = new AppContainer(testParams, placeholder);
+				widgetToTest.startup();
+
+			}
+
+			dom.byId("create").onclick = create;
+		});
+	</script>
 </head>
 <body class="claro">
-    <div class="testPageButtonStrip">
-        <button id="create">Create</button>
-    </div>
-    <div class="fixedRegion">
-        <div id='placeholder'></div>
-    </div>
+<div class="testPageButtonStrip">
+	<button id="create">Create</button>
+</div>
+<div class="fixedRegion">
+	<div id='placeholder'></div>
+</div>
 </body>
 </html>

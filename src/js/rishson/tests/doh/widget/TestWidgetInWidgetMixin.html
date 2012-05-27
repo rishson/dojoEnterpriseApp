@@ -1,124 +1,124 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
 		"http://www.w3.org/TR/html4/strict.dtd">
 <html>
-	<head>
-		<title>doh _WidgetInWidgetMixin Test</title>
-		<link rel="stylesheet" href="../../../../dijit/themes/claro/claro.css"
-		<!-- required: dojo.js -->
-		<script type="text/javascript" src="../../../../dojo/dojo.js"
+<head>
+	<title>doh _WidgetInWidgetMixin Test</title>
+	<link rel="stylesheet" href="../../../../dijit/themes/claro/claro.css"
+	<!-- required: dojo.js -->
+	<script type="text/javascript" src="../../../../dojo/dojo.js"
 			data-dojo-config="isDebug: true, async: true"></script>
 
 
-		<script type="text/javascript">
+	<script type="text/javascript">
 
-			require([
-				"doh",
-				"dojo/_base/declare",
-				"dijit/registry",
-				"dijit/_WidgetBase",
-				"rishson/widget/_WidgetInWidgetMixin",
-				"dijit/form/Button",
-				"dojo/domReady!"
-			], function(doh, declare, registry, _WidgetBase, _WidgetInWidgetMixin, Button){
-				// variables used in tests
-				var WidgetInWidget = declare([_WidgetBase, _WidgetInWidgetMixin]),
+		require([
+			"doh",
+			"dojo/_base/declare",
+			"dijit/registry",
+			"dijit/_WidgetBase",
+			"rishson/widget/_WidgetInWidgetMixin",
+			"dijit/form/Button",
+			"dojo/domReady!"
+		], function (doh, declare, registry, _WidgetBase, _WidgetInWidgetMixin, Button) {
+			// variables used in tests
+			var WidgetInWidget = declare([_WidgetBase, _WidgetInWidgetMixin]),
 					parentId = "parent",
 					childId = "child",
 					childProps = { id: childId, label: "hello" };
-				
-				function setupParent(){
-					// called by all tests to create/sanitize the parent widget
-					var parent = new WidgetInWidget({ id: parentId }).placeAt(document.body);
-					
-					doh.t(registry.byId(parentId), "parent widget should exist in registry");
-					doh.t(typeof parent.adopt == "function",
+
+			function setupParent() {
+				// called by all tests to create/sanitize the parent widget
+				var parent = new WidgetInWidget({ id: parentId }).placeAt(document.body);
+
+				doh.t(registry.byId(parentId), "parent widget should exist in registry");
+				doh.t(typeof parent.adopt == "function",
 						"parent widget should have adopt function");
-					doh.t(parent._supportingWidgets.length === 0,
+				doh.t(parent._supportingWidgets.length === 0,
 						"parent widget should have 0 supporting widgets initially");
-					
-					return parent;
-				}
-				
-				function addChild(parent){
-					// called by all tests to adopt a child into the given parent
-					var child = parent.adopt(Button, childProps).placeAt(parent.domNode);
-					
-					doh.t(registry.byId(childId), "child widget should exist in registry");
-					doh.t(parent._supportingWidgets.length === 1,
+
+				return parent;
+			}
+
+			function addChild(parent) {
+				// called by all tests to adopt a child into the given parent
+				var child = parent.adopt(Button, childProps).placeAt(parent.domNode);
+
+				doh.t(registry.byId(childId), "child widget should exist in registry");
+				doh.t(parent._supportingWidgets.length === 1,
 						"parent widget should have 1 supporting widget after adopt");
-					
-					return child;
-				}
-				
-				doh.register("_WidgetInWidgetMixin tests", [	
-					{
-						name: "_WidgetInWidgetMixin adopt/orphan (non-destroy)",
-						setUp: function(){
-							
-						},
-						runTest: function(){
-							var parent = setupParent(), child = addChild(parent);
-							
-							parent.orphan(child);
-							doh.t(registry.byId(childId),
+
+				return child;
+			}
+
+			doh.register("_WidgetInWidgetMixin tests", [
+				{
+					name: "_WidgetInWidgetMixin adopt/orphan (non-destroy)",
+					setUp: function () {
+
+					},
+					runTest: function () {
+						var parent = setupParent(), child = addChild(parent);
+
+						parent.orphan(child);
+						doh.t(registry.byId(childId),
 								"child widget should still exist in registry after orphan w/o destroy flag");
-							doh.t(parent._supportingWidgets.length === 0,
+						doh.t(parent._supportingWidgets.length === 0,
 								"parent widget should have 0 supporting widgets after orphan");
-							
-							child.destroyRecursive();
-							doh.f(registry.byId(childId),
+
+						child.destroyRecursive();
+						doh.f(registry.byId(childId),
 								"child widget should not exist in registry after destruction");
-							
-							parent.destroyRecursive();
-							doh.f(registry.byId(parentId),
+
+						parent.destroyRecursive();
+						doh.f(registry.byId(parentId),
 								"parent widget should not exist in registry after destruction");
-						},
-						tearDown: function(){
-						}
 					},
-					{
-						name: "_WidgetInWidgetMixin adopt/orphan (destroy)",
-						setUp: function(){
-							
-						},
-						runTest: function(){
-							var parent = setupParent(), child = addChild(parent);
-							
-							parent.orphan(child, true);
-							doh.f(registry.byId(childId),
-								"child widget should not exist in registry after orphan w/ destroy flag");
-							doh.t(parent._supportingWidgets.length === 0,
-								"parent widget should have 0 supporting widgets after orphan");
-							
-							parent.destroyRecursive();
-							doh.f(registry.byId(parentId),
-								"parent widget should not exist in registry after destruction");
-						},
-						tearDown: function(){
-						}
-					},
-					{
-						name: "_WidgetInWidgetMixin adopt/destroy",
-						setUp: function(){
-							
-						},
-						runTest: function(){
-							var parent = setupParent(), child = addChild(parent);
-							
-							parent.destroyRecursive();
-							doh.f(registry.byId(parentId),
-								"parent widget should not exist in registry after destruction");
-							doh.f(registry.byId(childId),
-								"child widget should not exist in registry after parent destruction");
-						},
-						tearDown: function(){
-						}
+					tearDown: function () {
 					}
-				]);
-				doh.run();
-			});
-		</script>
-	</head>
-	<body class="claro">
-	</body>
+				},
+				{
+					name: "_WidgetInWidgetMixin adopt/orphan (destroy)",
+					setUp: function () {
+
+					},
+					runTest: function () {
+						var parent = setupParent(), child = addChild(parent);
+
+						parent.orphan(child, true);
+						doh.f(registry.byId(childId),
+								"child widget should not exist in registry after orphan w/ destroy flag");
+						doh.t(parent._supportingWidgets.length === 0,
+								"parent widget should have 0 supporting widgets after orphan");
+
+						parent.destroyRecursive();
+						doh.f(registry.byId(parentId),
+								"parent widget should not exist in registry after destruction");
+					},
+					tearDown: function () {
+					}
+				},
+				{
+					name: "_WidgetInWidgetMixin adopt/destroy",
+					setUp: function () {
+
+					},
+					runTest: function () {
+						var parent = setupParent(), child = addChild(parent);
+
+						parent.destroyRecursive();
+						doh.f(registry.byId(parentId),
+								"parent widget should not exist in registry after destruction");
+						doh.f(registry.byId(childId),
+								"child widget should not exist in registry after parent destruction");
+					},
+					tearDown: function () {
+					}
+				}
+			]);
+			doh.run();
+		});
+	</script>
+</head>
+<body class="claro">
+</body>
 </html>

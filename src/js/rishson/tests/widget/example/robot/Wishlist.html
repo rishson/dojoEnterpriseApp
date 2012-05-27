@@ -1,252 +1,254 @@
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>Wishlist Robot Test</title>
-    
-    <link rel="stylesheet" href="../../../../../util/doh/robot/robot.css">
-    <link rel="stylesheet" href="../../../../../util/doh/robot/robot.css">
-    
-    <script>
-        var dojoConfig = {
-            isDebug: true,
-            aliases: [
-                ["domReady", "dojo/domReady"]
-            ]
-        };
-    </script>
-    <script src="../../../../../dojo/dojo.js"></script>
-    <script>
-        require([
-            "doh",
-            "dojo/_base/Deferred",
-            "dojo/query",
-            "dojo/aspect",
-            "dojo/keys",
-            "dojo/window",
-            "dijit/robotx",
-            "domReady!"
-        ], function(doh, Deferred, query, aspect, keys){
-            
-            doh.robot.initRobot('../Wishlist.html?robot');
-            
-            var testWidget, addButton;
-            doh.register("Wishlist Tests", [    
-                {
-                    name: "Create tests",
-                    timeout: 10000,
-                    setUp: function(t){
-                        // look up the widget using the global dijit object,
-                        // which is altered by dijit/robotx
-                        testWidget = dijit.byId("testWidget");
-                    },
-                    runTest: function(t){
-                        t.t(testWidget && testWidget._started,
-                            "widget should be initialized");
-                    }
-                },
-                {
-                    name: "Adding a valid item to cart works properly",
-                    timeout: 10000,
-                    setUp: function(t) {},
-                    runTest: function(t) {
-                        var def = new doh.Deferred();
-                        
-                        setTimeout(function() {
-                            // Get the add button
-                            addButton = query(".add")[0];
-                            
-                            // Create success handler
-                            var handle = aspect.after(testWidget.store, "add",
-                                def.getTestCallback(function(res) {
-                                    handle.remove();
-                                    t.t(res);
-                                }));
-                            
-                            // Go click on the name field
-                            doh.robot.mouseMoveAt(testWidget.nameTextBox.focusNode, 10, 10);
-                            doh.robot.mouseClick({ left: true });
+<meta charset="utf-8">
+<title>Wishlist Robot Test</title>
 
-                            // Type a name, go to next field, provide a price
-                            doh.robot.typeKeys("Pumpkin Pie", 100, 200);
-                            doh.robot.keyPress(keys.TAB, 10);
-                            doh.robot.typeKeys("20.00", 100, 200);
+<link rel="stylesheet" href="../../../../../util/doh/robot/robot.css">
+<link rel="stylesheet" href="../../../../../util/doh/robot/robot.css">
 
-                            // Click the add button
-                            doh.robot.mouseMoveAt(addButton, 10, 10);
-                            doh.robot.mouseClick({ left: true });
-                            
-                        }, 1000);
-                        
-                        return def;
-                    },
-                    tearDown: function(t){}
-                },
-                {
-                    name: "Attempting to Add invalid data hits _onInvalidAdd",
-                    timeout: 10000,
-                    runTest: function(t) {
-                        var def = new doh.Deferred();
-                        
-                        // Create invalid handler
-                        var conn = testWidget.connect(testWidget, "_onInvalidAdd",
-                            def.getTestCallback(function() {
-                                testWidget.disconnect(conn);
-                                t.t(true);
-                            }));
-                        
-                        // Click the add button
-                        doh.robot.mouseMoveAt(addButton, 10, 10);
-                        doh.robot.mouseClick({ left: true });
-                        
-                        return def;
-                    }
-                },
-                {
-                    name: "Attempting to Add invalid data hits _onInvalidAdd: valid name, invalid price",
-                    timeout: 10000,
-                    runTest: function(t) {
-                        var def = new doh.Deferred();
-                        
-                        // Create invalid handler
-                        var conn = testWidget.connect(testWidget, "_onInvalidAdd",
-                            def.getTestCallback(function() {
-                                testWidget.disconnect(conn);
-                                t.t(true);
-                            }));
-                        
-                        // Click into the field
-                        doh.robot.mouseMoveAt(testWidget.nameTextBox.focusNode, 10, 10);
-                        doh.robot.mouseClick({ left: true });
-                        
-                        // Type a name, go to next field, provide a price
-                        doh.robot.typeKeys("Pecan Pie", 100, 200);
-                        doh.robot.keyPress(keys.TAB, 10);
-                        doh.robot.typeKeys("pp", 100, 200);
-                        
-                        doh.robot.mouseMoveAt(addButton, 10, 10);
-                        doh.robot.mouseClick({ left: true });
-                        
-                        return def;
-                    }
-                },
-                {
-                    name: "Fixing the errors and pressing the enter key on the 'Add' link adds the item",
-                    timeout: 10000,
-                    runTest:function(t) {
-                        var def = new doh.Deferred();
-                        
-                        // Create invalid handler
-                        var handle = aspect.after(testWidget.store, "add",
-                            def.getTestCallback(function(res) {
-                                handle.remove();
-                                t.t(res);
-                            }));
-                        
-                        // Go to next field, provide a price
-                        doh.robot.keyPress(keys.TAB, 10, { shift: true });
-                        doh.robot.typeKeys("100", 100, 200);
-                        doh.robot.keyPress(keys.TAB, 10);
-                        doh.robot.keyPress(keys.ENTER, 10);
-                        
-                        return def;
-                    }
-                },
-                {
-                    name: "The store contains two items at this point",
-                    timeout: 10000,
-                    runTest: function(t) {
-                        var def = new doh.Deferred(),
-                            total = testWidget.store.query({}).total;
-                        
-                        Deferred.when(total, def.getTestCallback(function(total) {
-                            t.t(total === 2,
-                                "Store should have 2 items after 2 additions");
-                        }));
-                        
-                        return def;
-                    }
-                },
-                {
-                    name: "Sorting by price places Pumpkin Pie first",
-                    timeout: 10000,
-                    runTest: function(t) {
-                        var def = new doh.Deferred();
-                        
-                        // Get the first item's id from its row
-                        var firstId = query("tr", testWidget.tbodyNode)[0].id
-                            .substr(testWidget.id.length + 5);
-                        
-                        // Hook on internal query dispatcher to detect results
-                        // (using aspect.after to get at results)
-                        var handle = aspect.after(testWidget, "_doQuery",
-                            function(result){
-                                handle.remove();
-                                Deferred.when(result, def.getTestCallback(
-                                    function(results){
-                                        t.t(firstId != results[0].id);
-                                    }
-                                ));
-                            });
-                        
-                        // Re-sort by price
-                        console.log("sorting by price");
-                        doh.robot.mouseMoveAt(testWidget.sortPriceRadio, 10, 10);
-                        doh.robot.mouseClick({ left: true });
-                        
-                        return def;
-                    }
-                },
-                {
-                    name: "Sorting by price descending places Pumpkin Pie last",
-                    timeout: 10000,
-                    runTest: function(t) {
-                        var def = new doh.Deferred();
-                        
-                        // Get the first record's id
-                        var firstId = query("tr", testWidget.tbodyNode)[0].id;
-                        
-                        // Hook on internal observation handler to detect results
-                        var conn = testWidget.connect(testWidget, "_observeHandler",
-                            def.getTestCallback(function() {
-                                testWidget.disconnect(conn);
-                                t.t(firstId != query("tr", testWidget.tbodyNode)[0].id);
-                            }));
-                        
-                        // Re-sort descending
-                        doh.robot.mouseMoveAt(testWidget.descendingCheck, 2000, 10, 2, 2);
-                        doh.robot.mouseClick({ left: true });
-                        
-                        return def;
-                    }
-                },
-                {
-                    name: "Clicking remove button removes the item from the page and the store",
-                    timeout: 10000,
-                    runTest: function(t) {
-                        var def = new doh.Deferred();
-                        
-                        // Hook on remove to test result
-                        var handle = aspect.after(testWidget.store, "remove", function(res) {
-                            var total = testWidget.store.query({}).total;
-                            handle.remove();
-                            Deferred.when(total, def.getTestCallback(function(total) {
-                                t.t(total === 1,
-                                    "Store should have 1 item after removal");
-                            }));
-                        });
-                        
-                        // Move to and click the Remove button on the first item
-                        doh.robot.mouseMoveAt(query(".remove", testWidget.tbodyNode)[0], 2000, 10, 2, 2);
-                        doh.robot.mouseClick({ left: true });
-                        
-                        return def;
-                    }
-                }
-            ]);
-            
-            doh.run();
-        });
-    </script>
+<script>
+	var dojoConfig = {
+		isDebug: true,
+		aliases: [
+			["domReady", "dojo/domReady"]
+		]
+	};
+</script>
+<script src="../../../../../dojo/dojo.js"></script>
+<script>
+require([
+	"doh",
+	"dojo/_base/Deferred",
+	"dojo/query",
+	"dojo/aspect",
+	"dojo/keys",
+	"dojo/window",
+	"dijit/robotx",
+	"domReady!"
+], function (doh, Deferred, query, aspect, keys) {
+
+	doh.robot.initRobot('../Wishlist.html?robot');
+
+	var testWidget, addButton;
+	doh.register("Wishlist Tests", [
+		{
+			name: "Create tests",
+			timeout: 10000,
+			setUp: function (t) {
+				// look up the widget using the global dijit object,
+				// which is altered by dijit/robotx
+				testWidget = dijit.byId("testWidget");
+			},
+			runTest: function (t) {
+				t.t(testWidget && testWidget._started,
+						"widget should be initialized");
+			}
+		},
+		{
+			name: "Adding a valid item to cart works properly",
+			timeout: 10000,
+			setUp: function (t) {
+			},
+			runTest: function (t) {
+				var def = new doh.Deferred();
+
+				setTimeout(function () {
+					// Get the add button
+					addButton = query(".add")[0];
+
+					// Create success handler
+					var handle = aspect.after(testWidget.store, "add",
+							def.getTestCallback(function (res) {
+								handle.remove();
+								t.t(res);
+							}));
+
+					// Go click on the name field
+					doh.robot.mouseMoveAt(testWidget.nameTextBox.focusNode, 10, 10);
+					doh.robot.mouseClick({ left: true });
+
+					// Type a name, go to next field, provide a price
+					doh.robot.typeKeys("Pumpkin Pie", 100, 200);
+					doh.robot.keyPress(keys.TAB, 10);
+					doh.robot.typeKeys("20.00", 100, 200);
+
+					// Click the add button
+					doh.robot.mouseMoveAt(addButton, 10, 10);
+					doh.robot.mouseClick({ left: true });
+
+				}, 1000);
+
+				return def;
+			},
+			tearDown: function (t) {
+			}
+		},
+		{
+			name: "Attempting to Add invalid data hits _onInvalidAdd",
+			timeout: 10000,
+			runTest: function (t) {
+				var def = new doh.Deferred();
+
+				// Create invalid handler
+				var conn = testWidget.connect(testWidget, "_onInvalidAdd",
+						def.getTestCallback(function () {
+							testWidget.disconnect(conn);
+							t.t(true);
+						}));
+
+				// Click the add button
+				doh.robot.mouseMoveAt(addButton, 10, 10);
+				doh.robot.mouseClick({ left: true });
+
+				return def;
+			}
+		},
+		{
+			name: "Attempting to Add invalid data hits _onInvalidAdd: valid name, invalid price",
+			timeout: 10000,
+			runTest: function (t) {
+				var def = new doh.Deferred();
+
+				// Create invalid handler
+				var conn = testWidget.connect(testWidget, "_onInvalidAdd",
+						def.getTestCallback(function () {
+							testWidget.disconnect(conn);
+							t.t(true);
+						}));
+
+				// Click into the field
+				doh.robot.mouseMoveAt(testWidget.nameTextBox.focusNode, 10, 10);
+				doh.robot.mouseClick({ left: true });
+
+				// Type a name, go to next field, provide a price
+				doh.robot.typeKeys("Pecan Pie", 100, 200);
+				doh.robot.keyPress(keys.TAB, 10);
+				doh.robot.typeKeys("pp", 100, 200);
+
+				doh.robot.mouseMoveAt(addButton, 10, 10);
+				doh.robot.mouseClick({ left: true });
+
+				return def;
+			}
+		},
+		{
+			name: "Fixing the errors and pressing the enter key on the 'Add' link adds the item",
+			timeout: 10000,
+			runTest: function (t) {
+				var def = new doh.Deferred();
+
+				// Create invalid handler
+				var handle = aspect.after(testWidget.store, "add",
+						def.getTestCallback(function (res) {
+							handle.remove();
+							t.t(res);
+						}));
+
+				// Go to next field, provide a price
+				doh.robot.keyPress(keys.TAB, 10, { shift: true });
+				doh.robot.typeKeys("100", 100, 200);
+				doh.robot.keyPress(keys.TAB, 10);
+				doh.robot.keyPress(keys.ENTER, 10);
+
+				return def;
+			}
+		},
+		{
+			name: "The store contains two items at this point",
+			timeout: 10000,
+			runTest: function (t) {
+				var def = new doh.Deferred(),
+						total = testWidget.store.query({}).total;
+
+				Deferred.when(total, def.getTestCallback(function (total) {
+					t.t(total === 2,
+							"Store should have 2 items after 2 additions");
+				}));
+
+				return def;
+			}
+		},
+		{
+			name: "Sorting by price places Pumpkin Pie first",
+			timeout: 10000,
+			runTest: function (t) {
+				var def = new doh.Deferred();
+
+				// Get the first item's id from its row
+				var firstId = query("tr", testWidget.tbodyNode)[0].id
+						.substr(testWidget.id.length + 5);
+
+				// Hook on internal query dispatcher to detect results
+				// (using aspect.after to get at results)
+				var handle = aspect.after(testWidget, "_doQuery",
+						function (result) {
+							handle.remove();
+							Deferred.when(result, def.getTestCallback(
+									function (results) {
+										t.t(firstId != results[0].id);
+									}
+							));
+						});
+
+				// Re-sort by price
+				console.log("sorting by price");
+				doh.robot.mouseMoveAt(testWidget.sortPriceRadio, 10, 10);
+				doh.robot.mouseClick({ left: true });
+
+				return def;
+			}
+		},
+		{
+			name: "Sorting by price descending places Pumpkin Pie last",
+			timeout: 10000,
+			runTest: function (t) {
+				var def = new doh.Deferred();
+
+				// Get the first record's id
+				var firstId = query("tr", testWidget.tbodyNode)[0].id;
+
+				// Hook on internal observation handler to detect results
+				var conn = testWidget.connect(testWidget, "_observeHandler",
+						def.getTestCallback(function () {
+							testWidget.disconnect(conn);
+							t.t(firstId != query("tr", testWidget.tbodyNode)[0].id);
+						}));
+
+				// Re-sort descending
+				doh.robot.mouseMoveAt(testWidget.descendingCheck, 2000, 10, 2, 2);
+				doh.robot.mouseClick({ left: true });
+
+				return def;
+			}
+		},
+		{
+			name: "Clicking remove button removes the item from the page and the store",
+			timeout: 10000,
+			runTest: function (t) {
+				var def = new doh.Deferred();
+
+				// Hook on remove to test result
+				var handle = aspect.after(testWidget.store, "remove", function (res) {
+					var total = testWidget.store.query({}).total;
+					handle.remove();
+					Deferred.when(total, def.getTestCallback(function (total) {
+						t.t(total === 1,
+								"Store should have 1 item after removal");
+					}));
+				});
+
+				// Move to and click the Remove button on the first item
+				doh.robot.mouseMoveAt(query(".remove", testWidget.tbodyNode)[0], 2000, 10, 2, 2);
+				doh.robot.mouseClick({ left: true });
+
+				return def;
+			}
+		}
+	]);
+
+	doh.run();
+});
+</script>
 </head>
 </html>

@@ -1,10 +1,11 @@
 define([
-	"dojo/_base/declare",	// declare
-	"rishson/Globals",	//TOPIC_NAMESPACE
-	"dojo/_base/lang",
+	"dojo/_base/declare", // declare
+	"rishson/Globals", //TOPIC_NAMESPACE
+	"dojo/_base/lang",	//mixin
 	"dojo/topic", // publish/subscribe
-	"dojo/_base/array" // forEach, indexOf
-], function (declare, Globals, lang, topic, arrayUtil) {
+	"dojo/_base/array", // forEach, indexOf
+	"dojo/_base/Deferred"
+], function (declare, Globals, lang, topic, arrayUtil, Deferred) {
 
 	/**
 	 * @class
@@ -12,23 +13,21 @@ define([
 	 * @description Base class for all objects
 	 */
 	return declare('rishson.Base', null, {
-
 		/**
 		 * @field
 		 * @name rishson.Base.isInitialised
 		 * @type {boolean}
 		 * @description Is the widget initialised? Default to false - duh.
 		 */
-		isInitialised : false,
+		isInitialised: false,
 
 		/**
 		 * @field
 		 * @name rishson.Base._parentTopicNamespace
 		 * @type {string}
-		 * @private
 		 * @description This namespace is prepended to every topic name used by a derived class
 		 */
-		parentTopicNamespace : '',
+		parentTopicNamespace: '',
 
 		/**
 		 * @field
@@ -36,7 +35,7 @@ define([
 		 * @type {string}
 		 * @description Object that contains the list of topics that any derived class can publish
 		 */
-		pubList : null,
+		pubList: null,
 
 		/**
 		 * @field
@@ -44,7 +43,7 @@ define([
 		 * @type {string}
 		 * @description Object that contains the list of topics that any derived class can listen out for
 		 */
-		subList : null,
+		subList: null,
 
 		/**
 		 * @field
@@ -53,30 +52,22 @@ define([
 		 * @type {string}
 		 * @description The unique id of a widget created with this base class.
 		 */
-		_id : null,
+		_id: null,
 
 		/**
 		 * @constructor
 		 */
-		constructor : function (args) {
-
+		constructor: function (args) {
 			this.pubList = {};
 			if (args) {
 				lang.mixin(this, args);
 
+				if (!this._supportingWidgets) {
+					this._supportingWidgets = [];	//anything that does not derive from _Widget will not have this
+				}
+
 				this.addTopic('INITIALISED', Globals.CHILD_INTIALISED_TOPIC_NAME);
 			}
-		},
-
-		/**
-		 * @function
-		 * @name rishson.Base.postscript
-		 * @description Implement the standard dijit lifecycle 'postscript' function. This function fires AFTER the
-		 * constructor. We override so that we can call initialise
-		 */
-		postscript: function () {
-			this._initialised();
-			this.inherited(arguments);	//DO NOT REMOVE - needed for postCreate to run.
 		},
 
 		/**
@@ -85,7 +76,7 @@ define([
 		 * @param namespace {string} a class namespace (. separated) that will be turned into a topic (/ separated)
 		 * @description Replace all '.' with '/'
 		 */
-		createTopicNamespace : function (namespace) {
+		createTopicNamespace: function (namespace) {
 			/*any derived widget can publish events on their own namespace so construct the widget namespace from
 			 the declared class, but replace the . to be a / so it is standard topic conventions*/
 			return '/' + namespace.replace(/\./g, '/');
@@ -97,9 +88,9 @@ define([
 		 * @param topicRef {string} the object property (usually CAPITALISED) of the topic in the pubList
 		 * @param topicName {string} the name of topic
 		 * @param makeGlobal {boolean=} makeGlobal if true use the global topic namespace
-		 * @description Syntaatic sugar to add items to a class's pubList.
+		 * @description Syntactic sugar to add items to a class's pubList.
 		 */
-		addTopic : function (topicRef, topicName, makeGlobal) {
+		addTopic: function (topicRef, topicName, makeGlobal) {
 			if (!makeGlobal) {
 				this.pubList[topicRef] = this.parentTopicNamespace + topicName;
 			} else {
@@ -112,13 +103,31 @@ define([
 		 * @name rishson.Base.capitaliseTopicName
 		 * @param {string} topic a name of a topic to capitalise.
 		 * @description capitalise the first letter of a topic.
+		 * e.g. /hello/i/am/a/topicName would become Hello/I/Am/A/TopicName
 		 */
-		capitaliseTopicName : function (topic) {
-			/* e.g. /hello/i/am/a/topicName would become Hello/I/Am/A/TopicName
-			 */
+		capitaliseTopicName: function (topic) {
 			return topic.replace(/\b[a-z]/g, function (w) {
 				return w.toUpperCase();
 			});
+		},
+
+		/**
+		 * @function
+		 * @name rishson.Base.asyncRequire
+		 * @description Instantiate a widget asynchronously within the application flow.
+		 * If the requiring widget is a controller (inherits from rishson.control._Controller) then it will also
+		 * autowire the widget.
+		 * @param {Object} widget
+		 * @return {Object} deferred
+		 */
+		asyncRequire: function (widget) {
+			var deferred = new Deferred();
+
+			require([widget], lang.hitch(this, function (WidgetConstructor) {
+				var widgetInstance = this.adopt(WidgetConstructor, {});
+				deferred.resolve(widgetInstance);
+			}));
+			return deferred;
 		},
 
 		/**
@@ -145,12 +154,9 @@ define([
 		 * instance somewhere in the dom for it to be useful.
 		 * @returns {Object} the created Widget instance
 		 */
-		adopt : function (Cls, props, node) {
+		adopt: function (Cls, props, node) {
 			props = props || {};
 			var x = new Cls(props, node);
-			if (!this._supportingWidgets) {
-				this._supportingWidgets = [];	//awkward but this is a mixin class
-			}
 			this._supportingWidgets.push(x);
 
 			return x; // my.class
@@ -172,7 +178,7 @@ define([
 		 * @param {boolean} destroy an optional boolean used to force immediate destruction of the child.
 		 * Pass any truthy value here and the child will be orphaned and killed.
 		 */
-		orphan : function (widget, destroy) {
+		orphan: function (widget, destroy) {
 			var i = arrayUtil.indexOf(this._supportingWidgets, widget);
 			if (i >= 0) {
 				this._supportingWidgets.splice(i, 1);
@@ -194,7 +200,7 @@ define([
 		 * @private
 		 * @description When the derived is ready then it can call this function to publish their state
 		 */
-		_initialised : function () {
+		_initialise: function () {
 			this.isInitialised = true;
 			topic.publish(this.pubList.INITIALISED, this._id, this);
 		}

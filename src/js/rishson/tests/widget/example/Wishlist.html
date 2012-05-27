@@ -1,151 +1,152 @@
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>Wishlist Tests</title>
-    
-    <link rel="stylesheet" href="../../../../dojo/resources/dojo.css">
-    <link rel="stylesheet" href="../../../../dijit/themes/claro/claro.css">
-    <link rel="stylesheet/less" href="../../../widget/example/resources/Wishlist.less">
-    <style>
-        #testWidget {
-            width: 600px;
-        }
-    </style>
+	<meta charset="utf-8">
+	<title>Wishlist Tests</title>
+
+	<link rel="stylesheet" href="../../../../dojo/resources/dojo.css">
+	<link rel="stylesheet" href="../../../../dijit/themes/claro/claro.css">
+	<link rel="stylesheet/less" href="../../../widget/example/resources/Wishlist.less">
+	<style>
+		#testWidget {
+			width: 600px;
+		}
+	</style>
 </head>
 <body class="claro">
-    <div id="testWidget"></div>
-    <script>var less = { env: "development" };</script>
-    <script src="../../../../less/dist/less-1.1.6.min.js"></script>
-    
-    <script>
-        var dojoConfig = {
-            async: true,
-            isDebug: true,
-            aliases: [
-                ["domReady", "dojo/domReady"]
-            ]
-        };
-    </script>
-    <script src="../../../../dojo/dojo.js"></script>
-    <script>
-        require(["rishson/widget/example/Wishlist", "rishson/tests/TestStore",
-            "doh", "dojo/_base/array", "dojo/_base/Deferred", "dijit/registry", "domReady!"],
-        function(Wishlist, TestStore, doh, arrayUtil, Deferred, registry){
-        
-            var fromRobot = location.search == "?robot";
-            
-            if(!fromRobot){
-                // register non-robot automated tests to run
-                doh.register("Wishlist Tests", [
-                    {
-                        name: "Instantiation",
-                        runTest: function(t){
-                            t.t(testWidget && testWidget._started,
-                                "Widget should be instantiated and started.");
-                            t.t(testWidget.nameTextBox && testWidget.priceTextBox,
-                                "Child widgets should exist");
-                        }
-                    },
-                    {
-                        name: "Destruction",
-                        runTest: function(t){
-                            var ids = [testWidget.id, testWidget.nameTextBox.id,
-                                testWidget.priceTextBox.id];
-                            
-                            testWidget.destroyRecursive();
-                            
-                            t.t(arrayUtil.filter(ids, function(id){
-                                    return registry.byId(id);
-                                }).length === 0,
-                                "Widget and children should no longer exist");
-                        },
-                        tearDown: function(){
-                            // create new widget to replace the destroyed one
-                            testWidget = new Wishlist(testWidgetArgs);
-                            testWidget.placeAt(document.body);
-                            testWidget.startup();
-                        }
-                    },
-                    {
-                        name: "Validation",
-                        runTest: function(t){
-                            var nameTB, priceTB, result,
-                                dfd = new doh.Deferred();
-                            
-                            // ensure new widget started up correctly
-                            t.t(testWidget && testWidget._started,
-                                "Widget should be instantiated and started.");
-                            
-                            nameTB = testWidget.nameTextBox;
-                            priceTB = testWidget.priceTextBox;
-                            
-                            // test required state of validation fields
-                            t.t(!nameTB.isValid() && !priceTB.isValid(),
-                                "Name/Price fields should be invalid when empty");
-                            
-                            // set invalid value for price and re-test
-                            priceTB.set("value", "not a price");
-                            t.f(priceTB.isValid(),
-                                "Price field should be invalid when an invalid value for currency is entered");
-                            
-                            // set valid value for name but not price, then
-                            // attempt to call add click handler; should bail
-                            nameTB.set("value", "foo");
-                            t.t(testWidget._onAddClick() === false,
-                                "Add click handler should bail if price is invalid");
-                            
-                            // test again, swapping validity states
-                            nameTB.set("value", "");
-                            priceTB.set("value", "1.00");
-                            t.t(priceTB.isValid(),
-                                "Price field should accept value of '1.00'");
-                            t.t(testWidget._onAddClick() === false,
-                                "Add click handler should bail if name is invalid");
-                            
-                            // now make both fields valid and try again:
-                            nameTB.set("value", "foo");
-                            result = testWidget._onAddClick();
-                            t.t(result,
-                                "Add click handler should proceed if both fields are valid");
-                            Deferred.when(result, function(){
-                                // also confirm that store has one more item
-                                t.t(store.data.length === 1,
-                                    "Store should have 1 item after add");
-                                dfd.callback(true);
-                            });
-                            
-                            return dfd;
-                        },
-                        tearDown: function(){
-                            // reset fields
-                            testWidget.nameTextBox.reset();
-                            testWidget.priceTextBox.reset();
-                            // Reset store and refresh widget.
-                            // (This cheats, using direct TestStore and Wishlist APIs)
-                            store.setData([]);
-                            testWidget._doQuery();
-                        }
-                    }
-                ]);
-            }
-            
-            var store = new TestStore({
-                observable: true,
-                async: true
-            });
-            
-            var testWidgetArgs = {
-                id: "testWidget",
-                store: store
-            };
-            var testWidget = new Wishlist(testWidgetArgs, "testWidget");
-            testWidget.startup();
-            
-            if(!fromRobot){
-                doh.run();
-            }
-        });
-    </script>
+<div id="testWidget"></div>
+<script>var less = { env: "development" };</script>
+<script src="../../../../less/dist/less-1.1.6.min.js"></script>
+
+<script>
+	var dojoConfig = {
+		async: true,
+		isDebug: true,
+		aliases: [
+			["domReady", "dojo/domReady"]
+		]
+	};
+</script>
+<script src="../../../../dojo/dojo.js"></script>
+<script>
+	require(["rishson/widget/example/Wishlist", "rishson/tests/TestStore",
+		"doh", "dojo/_base/array", "dojo/_base/Deferred", "dijit/registry", "domReady!"],
+			function (Wishlist, TestStore, doh, arrayUtil, Deferred, registry) {
+
+				var fromRobot = location.search == "?robot";
+
+				if (!fromRobot) {
+					// register non-robot automated tests to run
+					doh.register("Wishlist Tests", [
+						{
+							name: "Instantiation",
+							runTest: function (t) {
+								t.t(testWidget && testWidget._started,
+										"Widget should be instantiated and started.");
+								t.t(testWidget.nameTextBox && testWidget.priceTextBox,
+										"Child widgets should exist");
+							}
+						},
+						{
+							name: "Destruction",
+							runTest: function (t) {
+								var ids = [testWidget.id, testWidget.nameTextBox.id,
+									testWidget.priceTextBox.id];
+
+								testWidget.destroyRecursive();
+
+								t.t(arrayUtil.filter(ids,
+										function (id) {
+											return registry.byId(id);
+										}).length === 0,
+										"Widget and children should no longer exist");
+							},
+							tearDown: function () {
+								// create new widget to replace the destroyed one
+								testWidget = new Wishlist(testWidgetArgs);
+								testWidget.placeAt(document.body);
+								testWidget.startup();
+							}
+						},
+						{
+							name: "Validation",
+							runTest: function (t) {
+								var nameTB, priceTB, result,
+										dfd = new doh.Deferred();
+
+								// ensure new widget started up correctly
+								t.t(testWidget && testWidget._started,
+										"Widget should be instantiated and started.");
+
+								nameTB = testWidget.nameTextBox;
+								priceTB = testWidget.priceTextBox;
+
+								// test required state of validation fields
+								t.t(!nameTB.isValid() && !priceTB.isValid(),
+										"Name/Price fields should be invalid when empty");
+
+								// set invalid value for price and re-test
+								priceTB.set("value", "not a price");
+								t.f(priceTB.isValid(),
+										"Price field should be invalid when an invalid value for currency is entered");
+
+								// set valid value for name but not price, then
+								// attempt to call add click handler; should bail
+								nameTB.set("value", "foo");
+								t.t(testWidget._onAddClick() === false,
+										"Add click handler should bail if price is invalid");
+
+								// test again, swapping validity states
+								nameTB.set("value", "");
+								priceTB.set("value", "1.00");
+								t.t(priceTB.isValid(),
+										"Price field should accept value of '1.00'");
+								t.t(testWidget._onAddClick() === false,
+										"Add click handler should bail if name is invalid");
+
+								// now make both fields valid and try again:
+								nameTB.set("value", "foo");
+								result = testWidget._onAddClick();
+								t.t(result,
+										"Add click handler should proceed if both fields are valid");
+								Deferred.when(result, function () {
+									// also confirm that store has one more item
+									t.t(store.data.length === 1,
+											"Store should have 1 item after add");
+									dfd.callback(true);
+								});
+
+								return dfd;
+							},
+							tearDown: function () {
+								// reset fields
+								testWidget.nameTextBox.reset();
+								testWidget.priceTextBox.reset();
+								// Reset store and refresh widget.
+								// (This cheats, using direct TestStore and Wishlist APIs)
+								store.setData([]);
+								testWidget._doQuery();
+							}
+						}
+					]);
+				}
+
+				var store = new TestStore({
+					observable: true,
+					async: true
+				});
+
+				var testWidgetArgs = {
+					id: "testWidget",
+					store: store
+				};
+				var testWidget = new Wishlist(testWidgetArgs, "testWidget");
+				testWidget.startup();
+
+				if (!fromRobot) {
+					doh.run();
+				}
+			});
+</script>
 </body>
 </html>
