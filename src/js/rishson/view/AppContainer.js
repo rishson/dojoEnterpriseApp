@@ -66,13 +66,12 @@ define([
 
 			if (validator.validate(unwrappedParams)) {
                 declare.safeMixin(this, unwrappedParams);
-            }
-            else {
+            } else {
                 validator.logErrorToConsole(params, 'Invalid params passed to the AppContainer.');
                 throw ('Invalid params passed to the AppContainer.');
             }
         },
-    
+	
         /**
          * @function
          * @name rishson.view.AppContainer

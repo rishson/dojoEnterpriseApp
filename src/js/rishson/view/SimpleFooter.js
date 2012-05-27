@@ -43,8 +43,7 @@ define([
 
             if (validator.validate(params)) {
                 declare.safeMixin(this, params);
-            }
-            else {
+            } else {
                 validator.logErrorToConsole(params, 'Invalid params passed to the SimpleFooter.');
                 throw ('Invalid params passed to the SimpleFooter.');
             }
