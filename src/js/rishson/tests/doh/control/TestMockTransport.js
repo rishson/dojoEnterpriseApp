@@ -10,10 +10,37 @@ define([
 
 	doh.register("MockTransport tests", [
 		{
+			name: "Constructor tests",
+			setUp: function () {
+				var scaffold = new Scaffold();
+				dispatcher = scaffold.createDispatcher('invalid/path/to/test/files');
+			},
+			runTest: function () {
+				try {
+					//example of a valid WebService call to call a method specifically designed to test a Controller
+					var someServiceCall = new ServiceRequest({service: 'testService',
+						method: 'ControllerTestMethod',
+						params: [
+							{testData: 'someValue', status: 200}
+						],
+						callback: myCallback,
+						callbackScope: this});
+
+					dispatcher.send(someServiceCall);
+				} catch (e) {
+					constructorFailed = true;
+				}
+				doh.assertTrue(constructorFailed);
+			},
+			tearDown: function () {
+			}
+
+		},
+		{
 			name: "Send tests",
 			setUp: function () {
 				var scaffold = new Scaffold();
-				controller = scaffold.createDispatcher();
+				dispatcher = scaffold.createDispatcher();
 			},
 			runTest: function () {
 				try {
@@ -33,18 +60,16 @@ define([
 						callback: myCallback,
 						callbackScope: this});
 
-					controller.send(someServiceCall);
-				}
-				catch (e) {
+					dispatcher.send(someServiceCall);
+				} catch (e) {
 					doh.assertTrue('false', 'Unexpected error occurred sending ServiceRequest'); //we should not be here
 				}
 
 				var invalidServiceCall = {};
 				var invalidConstruction = false;
 				try {
-					controller.send(invalidServiceCall);
-				}
-				catch (e) {
+					dispatcher.send(invalidServiceCall);
+				} catch (e) {
 					invalidConstruction = true;
 				}
 				doh.assertTrue(invalidConstruction, 'Unexpected constructor acceptance of invalid params');
@@ -68,18 +93,14 @@ define([
 						doh.assertFalse(response.isUnauthorised);
 						doh.assertFalse(response.isConflicted);
 					});
-					controller.send(someServiceCall);
-				}
-				catch (e) {
+					dispatcher.send(someServiceCall);
+				} catch (e) {
 					doh.assertTrue(false, 'Unexpected error testing REST in mocks'); //we should not be here
 				}
-
 			},
 			tearDown: function () {
 			}
-
 		}
-
 	]);
 
 	//example of a REST call

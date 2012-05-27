@@ -70,13 +70,16 @@ define([
 		 * @param {boolean} wasRestRequest was the server request a REST request
 		 * @param {Object} ioArgs the HTTP response header
 		 */
-		constructor: function (response, ioArgs) {
+		constructor: function (response, wasRestRequest, ioArgs) {
 			//@todo remove {}&& prefix if added - should we be allowing comment-filtered anymore or is it an antipattern?
 			this._processHttpStatusCodes(response, ioArgs);
+
 			//service responses should not have a blank payload
-			if (!response.payload) {
-				console.error('Invalid server response. No payload.');
-				throw ('Invalid server response. No payload.');
+			if (!wasRestRequest) {
+				if (!this.payload) {
+					console.error('Invalid server response. No payload.');
+					throw ('Invalid server response. No payload.');
+				}
 			}
 			lang.mixin(this, response);
 		},
@@ -103,6 +106,8 @@ define([
 			case 409:
 				this.isConflicted = true;
 				break;
+			default:
+				throw ('Unknown status code passed to Response constructor: ' + ioArgs.xhr.status);
 			}
 
 			//if the response just has data in its body, then make it a payload. If a payload is specified in the

@@ -7,8 +7,12 @@ define([
 
 	return declare('tests.Scaffold', null, {
 
-		createDispatcher: function () {
-			var mockTransport = new MockTransport(),
+		createDispatcher: function (testNamespace) {
+			var params = {};
+			if(testNamespace) {
+				params.namespace  = testNamespace;
+			}
+			var mockTransport = new MockTransport(params),
 				validLoginResponse = {serviceRegistry: [],
 					grantedAuthorities: [],
 					returnRequest: true};

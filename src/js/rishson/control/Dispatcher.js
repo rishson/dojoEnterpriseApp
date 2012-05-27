@@ -80,7 +80,6 @@ define([
 				unwrappedParams,
 				index;
 
-
 			//collect up the params and validate
 			if (validator.validate(params)) {
 				//unwrap the object contents for validation and to do a mixin
@@ -108,9 +107,8 @@ define([
 				}, this);
 
 				//decorate the transport with the response and error handling functions in this class (need hitching)
-				var hitchedHandleResponse = lang.hitch(this, this.handleResponse);
-				var hitchedHandleError = lang.hitch(this, this.handleError);
-				this.transport.addResponseFunctions(hitchedHandleResponse, hitchedHandleError);
+				this.transport.addResponseFunctions(lang.hitch(this, this.handleResponse),
+					lang.hitch(this, this.handleError));
 
 				//listen out for other classes wanting to send requests to the server
 				topic.subscribe(Globals.SEND_REQUEST, lang.hitch(this, "send"));
@@ -155,7 +153,7 @@ define([
 				//dojo/topic's publish doesn't take an array, so send arguments in series
 				topic.publish.apply(topic, topicData);
 			} else {
-				//call the request's provide callback with the response - but hitch it's scope first if needs be
+				//call the request's provided callback with the response - but hitch it's scope first if needs be
 				if (request.callbackScope) {
 					scopedCallback = lang.hitch(request.callbackScope, request.callback);
 				} else {

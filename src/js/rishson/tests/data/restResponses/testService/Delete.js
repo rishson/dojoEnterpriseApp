@@ -1,6 +1,6 @@
 define([
 	"dojo/_base/declare",
-	"rishson/control/RestResponse"
+	"rishson/tests/data/restResponses/RestResponse"
 ], function (declare, RestResponse) {
 	return declare(RestResponse, {
 		processRequest: function (params) {

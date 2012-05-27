@@ -86,20 +86,11 @@ define([
 				methodParams = self.createBasePostParams(request);
 				mockResponse = testMethodClass[testFuncName](methodParams);	//call the test method
 
-				if (request.type === 'rest') {
-					wrappedResponse = new Response(mockResponse.payload, mockResponse.ioArgs);
-
-					if (arrayUtil.indexOf(wrappedResponse.mappedStatusCodes, mockResponse.ioArgs.xhr.status) === -1) {
-						self.handleErrorFunc(request, wrappedResponse);
-					} else {
-						self.handleResponseFunc(request, wrappedResponse);
-					}
+				wrappedResponse = new Response(mockResponse.payload, request.type === 'rest', mockResponse.ioArgs);
+				if (arrayUtil.indexOf(wrappedResponse.mappedStatusCodes, mockResponse.ioArgs.xhr.status) === -1) {
+					self.handleErrorFunc(request, wrappedResponse);
 				} else {
-					try {
-						self.handleResponseFunc(request, mockResponse);
-					} catch (err) {
-						self.handleErrorFunc(request, mockResponse);
-					}
+					self.handleResponseFunc(request, wrappedResponse);
 				}
 			});
 		}

@@ -150,7 +150,7 @@ define([
 				try {
 					//example of a valid WebService call to call a method specifically designed to test a dispatcher
 					var someServiceCall = new ServiceRequest({service: 'testService',
-						method: 'dispatcherTestMethod',
+						method: 'controllerTestMethod',
 						params: [
 							{testData: 'someValue', status: 200}
 						],
@@ -168,7 +168,7 @@ define([
 				try {
 					//example of a valid WebService call to call a method specifically designed to test a dispatcher
 					someServiceCall = new ServiceRequest({service: 'testService',
-						method: 'dispatcherTestMethod',
+						method: 'controllerTestMethod',
 						params: [
 							{testData: 'someValue', status: 200}
 						],
@@ -196,7 +196,7 @@ define([
 				try {
 					//example of a valid WebService call to call a method specifically designed to test a dispatcher
 					someServiceCall = new ServiceRequest({service: 'testService',
-						method: 'dispatcherTestMethod',
+						method: 'controllerTestMethod',
 						params: [
 							{testData: 'someValue', status: 400}
 						],
@@ -224,7 +224,7 @@ define([
 				try {
 					//example of a valid WebService call to call a method specifically designed to test a dispatcher
 					someServiceCall = new ServiceRequest({service: 'testService',
-						method: 'dispatcherTestMethod',
+						method: 'controllerTestMethod',
 						params: [
 							{testData: 'someValue', status: 403}
 						],
@@ -252,7 +252,7 @@ define([
 				try {
 					//example of a valid WebService call to call a method specifically designed to test a dispatcher
 					someServiceCall = new ServiceRequest({service: 'testService',
-						method: 'dispatcherTestMethod',
+						method: 'controllerTestMethod',
 						params: [
 							{testData: 'someValue', status: 409}
 						],
@@ -280,7 +280,7 @@ define([
 				try {
 					//example of a valid WebService call to call a method specifically designed to test a dispatcher
 					someServiceCall = new ServiceRequest({service: 'testService',
-						method: 'dispatcherTestMethod',
+						method: 'controllerTestMethod',
 						params: [
 							{testData: 'someValue', status: 123}
 						],

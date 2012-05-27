@@ -1,12 +1,12 @@
 define([
 	"dojo/_base/declare",
-	"rishson/control/RestResponse"
+	"rishson/tests/data/restResponses/RestResponse"
 ], function (declare, RestResponse) {
 	return declare(RestResponse, {
 		processRequest: function (params) {
 			var status = params.status;
 			if (status === 200) {
-				//very simple echo reposonse
+				//very simple echo response
 				return new RestResponse({payload: params});
 			} else if (status === 400) {
 				return new RestResponse({payload: params}, {xhr: {status: 400}});
