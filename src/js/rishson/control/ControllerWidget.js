@@ -1,8 +1,8 @@
 define([
 	"dojo/_base/declare", // declare
 	"rishson/Base", //createTopicNamespace, _capitaliseTopicName
-	"rishson/widget/_Widget", //
-	"rishson/control/_Controller", //
+	"rishson/widget/_Widget", //mixin
+	"rishson/control/_Controller", //mixin
 	"dojo/_base/lang" //isArray
 ], function (declare, Base, _Widget, _Controller, lang) {
 	/**

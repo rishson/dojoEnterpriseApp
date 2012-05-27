@@ -9,7 +9,6 @@ define([
 	 * @description This class should be extended by all derived server request classes.
 	 */
 	return declare('rishson.control.Request', null, {
-
 		/**
 		 * @field
 		 * @name rishson.control.Request.params

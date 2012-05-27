@@ -2,14 +2,12 @@ define([
 	"dojo/_base/declare", // declare
 	"dojo/_base/lang" // mixin
 ], function (declare, lang) {
-
 	/**
 	 * @class
 	 * @name rishson.control.Response
 	 * @description This class is used to wrap any server response.
 	 */
 	return declare('rishson.control.Response', null, {
-
 		/**
 		 * @field
 		 * @name rishson.control.Request.isOk
@@ -57,7 +55,6 @@ define([
 		 */
 		payload: null,
 
-
 		/**
 		 * @field
 		 * @name rishson.control.Response.mappedStatusCodes
@@ -74,29 +71,25 @@ define([
 		 * @param {Object} ioArgs the HTTP response header
 		 */
 		constructor: function (response, wasRestRequest, ioArgs) {
-
 			//@todo remove {}&& prefix if added - should we be allowing comment-filtered anymore or is it an antipattern?
-			if (wasRestRequest) {
-				this._createFromRestResponse(response, ioArgs);
-			} else {
-				//service responses should not have a blank payload
-				if (!response.payload) {
-					console.error('Invalid server response. No payload.');
-					throw ('Invalid server response. No payload.');
-				}
-				lang.mixin(this, response);
+			this._processHttpStatusCodes(response, ioArgs);
+			//service responses should not have a blank payload
+			if (!response.payload) {
+				console.error('Invalid server response. No payload.');
+				throw ('Invalid server response. No payload.');
 			}
+			lang.mixin(this, response);
 		},
 
 		/**
 		 * @function
-		 * @name rishson.control.Response._createFromRestResponse
+		 * @name rishson.control.Response._processHttpStatusCodes
 		 * @param {Object} response
 		 * @param {Object }ioArgs
 		 * @private
+		 * @description convert HTTP status codes into handy response properties
 		 */
-		_createFromRestResponse: function (response, ioArgs) {
-
+		_processHttpStatusCodes: function (response, ioArgs) {
 			switch (ioArgs.xhr.status) {
 			case 200:
 				this.isOk = true;
@@ -112,12 +105,11 @@ define([
 				break;
 			}
 
-			//if the rest response just has data in its body, then make it a payload. If a payload is specified in the
+			//if the response just has data in its body, then make it a payload. If a payload is specified in the
 			//response already then just add to this class.
 			if (response) {
 				this.payload = response.payload || response;
 			}
 		}
-
 	});
 });
