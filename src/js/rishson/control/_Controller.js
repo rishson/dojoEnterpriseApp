@@ -4,7 +4,7 @@ define([
 	"rishson/Globals", //TOPIC_NAMESPACE
 	"dojo/_base/array", // forEach
 	"dojo/_base/lang", // hitch
-	"dojo/topic" // publish/subscribe
+	"dojo/topic" // publish, subscribe
 ], function (declare, Base, Globals, arrayUtil, lang, topic) {
 	/**
 	 * @class

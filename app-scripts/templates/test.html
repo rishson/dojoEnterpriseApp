@@ -18,7 +18,7 @@
 	<div class="fixedRegion">
 		<div id="testWidget"></div>
 	</div>
-	
+
 	<script>var less = { env: "development" };</script>
 	<script src="$pathToJs$/less/dist/less-1.1.6.min.js"></script>
 	<script>
@@ -33,9 +33,9 @@
 	<script src="$pathToJs$/dojo/dojo.js"></script>
 	<script>
 		require(["$widgetName$", "doh", "domReady!", "dom-construct"], function ($className$, doh, domConstruct) {
-	
+
 			var fromRobot = location.search == "?robot";
-	
+
 			if (!fromRobot) {
 				doh.register("$className$ Tests", [
 					{
@@ -57,7 +57,7 @@
 							testWidget.destroy();
 							t.t(!testWidget,
 									"Widget should be null.");
-	
+
 							//create a new testWidget div to use as the placeholder that is 'consumed' during widget creation
 							var newTestWidgetDomNode = domConstruct.create('div');
 							domConstruct.place(newTestWidgetDomNode, null, "testWidget");
@@ -72,10 +72,10 @@
 					}
 				]);
 			}
-	
+
 			var testWidget = new $className$({}, "testWidget");
 			testWidget.startup();
-	
+
 			if (!fromRobot) {
 				doh.run();
 			}

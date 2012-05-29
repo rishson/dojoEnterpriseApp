@@ -1,11 +1,11 @@
 define([
 	"dojo/_base/declare", // declare
-	"dojo/topic",
+	"dojo/topic",	//subscribe
 	"rishson/Base", //createTopicNamespace, _capitaliseTopicName
 	"rishson/widget/_Widget", //mixin
 	"rishson/control/_Controller", //mixin
 	"dojo/_base/lang", //isArray
-	"dojo/store/Observable"
+	"dojo/store/Observable"	//constructor
 ], function (declare, topic, Base, _Widget, _Controller, lang, Observable) {
 	/**
 	 * @class
