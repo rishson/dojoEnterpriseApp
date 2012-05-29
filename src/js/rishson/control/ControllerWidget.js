@@ -104,7 +104,7 @@ define([
 				listeners = model.listeners;
 
 			for (i = 0; i < listeners.length; i += 1) {
-				listeners[i].call(observeableModel);
+				listeners[i].call(observeableModel, observeableModel);
 				listeners.splice(i, 1);
 			}
 		},
