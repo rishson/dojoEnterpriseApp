@@ -3,11 +3,10 @@ define([
 	"dojo/_base/lang", // mixin, hitch
 	"dojo/_base/xhr", // get, put, post, delete
 	"dojo/json", // stringify
-	"rishson/control/Response",
-	"rishson/control/Transport",
-	"rishson/util/ObjectValidator"
+	"rishson/control/Response",	//constructor
+	"rishson/control/Transport",	//mixin
+	"rishson/util/ObjectValidator"	//validate
 ], function (declare, lang, xhr, json, Response, Transport, ObjectValidator) {
-
 	/**
 	 * @class
 	 * @name rishson.control.XhrTransport

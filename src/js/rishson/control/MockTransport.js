@@ -1,8 +1,8 @@
 define([
 	"dojo/io/script", // get
-	"rishson/control/Response",
-	"rishson/control/Transport",
-	"rishson/util/ObjectValidator",
+	"rishson/control/Response",	//constructor
+	"rishson/control/Transport",	//mixin
+	"rishson/util/ObjectValidator",	//validate
 	"dojo/_base/declare", // declare
 	"dojo/_base/lang", // mixin
 	"dojo/_base/array", // indexOf

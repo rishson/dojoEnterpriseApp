@@ -1,8 +1,8 @@
 define([
-	"dojo/_base/declare", // declare
-	"dojo/_base/lang", // mixin
-	"rishson/control/Request",
-	"rishson/util/ObjectValidator"
+	"dojo/_base/declare",	// declare
+	"dojo/_base/lang",	// mixin
+	"rishson/control/Request",	//mixin
+	"rishson/util/ObjectValidator"	//validate
 ], function (declare, lang, Request, ObjectValidator) {
 
 	return declare('rishson.control.ServiceRequest', Request, {

@@ -1,9 +1,9 @@
 define([
-	"dojo/_base/declare", // declare
-	"dijit/_Widget", //mixin
-	"rishson/Base", //mixin
-	"dojo/_base/lang", // hitch
-	"dojo/topic", // publish/subscribe
+	"dojo/_base/declare",	// declare
+	"dijit/_Widget",	//mixin
+	"rishson/Base",	//mixin
+	"dojo/_base/lang",	// hitch
+	"dojo/topic",	// publish/subscribe
 	"rishson/Globals"
 ], function (declare, _Widget, Base, lang, topic, Globals) {
 	/**

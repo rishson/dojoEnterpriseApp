@@ -1,11 +1,11 @@
 define([
 	"rishson/Globals",
-	"rishson/util/ObjectValidator",
+	"rishson/util/ObjectValidator",	//validate
 	"dojo/_base/lang", // mixin, hitch
 	"dojo/_base/array", // indexOf, forEach
 	"dojo/_base/declare", // declare
 	"dojo/topic", // publish/subscribe
-	"dojox/rpc/Service"
+	"dojox/rpc/Service"	//constructor
 ], function (Globals, ObjectValidator, lang, arrayUtil, declare, topic, Service) {
 
 	/**

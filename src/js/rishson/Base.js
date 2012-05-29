@@ -1,10 +1,10 @@
 define([
-	"dojo/_base/declare", // declare
-	"rishson/Globals", //TOPIC_NAMESPACE
+	"dojo/_base/declare",	// declare
+	"rishson/Globals",	//TOPIC_NAMESPACE
 	"dojo/_base/lang",	//mixin
-	"dojo/topic", // publish/subscribe
-	"dojo/_base/array", // forEach, indexOf
-	"dojo/_base/Deferred"
+	"dojo/topic",	// publish/subscribe
+	"dojo/_base/array",	// forEach, indexOf
+	"dojo/_base/Deferred"	//constructor
 ], function (declare, Globals, lang, topic, arrayUtil, Deferred) {
 
 	/**

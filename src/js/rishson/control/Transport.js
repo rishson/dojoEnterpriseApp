@@ -2,9 +2,8 @@ define([
 	"dojo/_base/declare", // declare
 	"dojo/_base/lang", // mixin
 	"dojo/_base/array", // forEach
-	"dojo/cookie"
+	"dojo/cookie"	//constructor
 ], function (declare, lang, arrayUtil, cookie) {
-
 	/**
 	 * @class
 	 * @name rishson.control.Transport
@@ -92,5 +91,4 @@ define([
 			return postContent;
 		}
 	});
-
 });

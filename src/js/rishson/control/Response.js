@@ -36,6 +36,7 @@ define([
 		 * If the server does not wish to make this    information available to the client, the status code 404 (Not Found)
 		 * can be used instead."
 		 * However, convention (O'Reiley RESTful Web Services) tends to map invalid to 400 (BAD REQUEST) rather than 403.
+		 * We could debate this ALL day long, but we should probably go write some code instead.
 		 */
 		isInvalid: false,
 
@@ -87,10 +88,10 @@ define([
 		/**
 		 * @function
 		 * @name rishson.control.Response._processHttpStatusCodes
-		 * @param {Object} response
-		 * @param {Object }ioArgs
+		 * @param {rishson.control.Response} response the response to process
+		 * @param {Object} ioArgs the ioArgs to check
 		 * @private
-		 * @description convert HTTP status codes into handy response properties
+		 * @description convert HTTP status codes into handy response properties and remove payload wrapper if present
 		 */
 		_processHttpStatusCodes: function (response, ioArgs) {
 			switch (ioArgs.xhr.status) {
