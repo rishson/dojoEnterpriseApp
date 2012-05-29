@@ -71,14 +71,13 @@ define([
 		/**
 		 * @function
 		 * @name rishson.control.ControllerWidget.addModel
-		 * @param {Object|dojo.store} model a widget which is a store to add to this controller
-		 * @description create placeholder for a model and register handler for listener callbacks
+		 * @param {string} name the name of the model to add
+		 * @param {dojo.store} model a model (derived from dojo.store) to add to this controller
+		 * @param {string} topicName the name of a topic to subscribe to
+		 * @description create placeholder for a model and register handler for listener callbacks.
 		 */
 		addModel : function (name, model, topicName) {
-			var observableModel,
-				i,
-				myModel;
-			myModel = this.models[name] = model;	//lookup shortcut
+			var myModel = this.models[name] = model;	//lookup shortcut
 			myModel.listeners = [];
 			myModel.loaded = false;
 
@@ -95,14 +94,15 @@ define([
 		/**
 		 * @function
 		 * @name rishson.control.ControllerWidget.broadcastModel
-		 * @param {Object|dojo.store} model a widget which is a store to add to this controller
+		 * @param {dojo.store} model a widget which is a store to add to this controller
 		 * @description	calls any registered callback function when a model gets populated with data
 		 */
 		broadcastModel: function (model) {
 			var i,
-				observeableModel = new Observable(model),
+				observeableModel = new Observable(model),	//wrap the store in Observable
 				listeners = model.listeners;
 
+			//call all listeners once with the populated observable model
 			for (i = 0; i < listeners.length; i += 1) {
 				listeners[i].call(observeableModel, observeableModel);
 				listeners.splice(i, 1);
@@ -112,7 +112,9 @@ define([
 		/**
 		 * @function
 		 * @name rishson.control.ControllerWidget.addController
-		 * @param {Object|dojo.store} model A child controller widget to add to this controller
+		 * @param {rishson.control._Controller|rishson.control.ControllerWidget} controller A child controller widget
+		 * to add to this controller
+		 * @param {string} name the name of the controller
 		 */
 		addController: function (controller, name) {
 			this.controllers[name] = controller;
