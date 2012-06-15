@@ -5,8 +5,9 @@ define([
 	"dojo/json", // stringify
 	"rishson/control/Response",	//constructor
 	"rishson/control/Transport",	//mixin
-	"rishson/util/ObjectValidator"	//validate
-], function (declare, lang, xhr, json, Response, Transport, ObjectValidator) {
+	"rishson/util/ObjectValidator",	//validate
+	"dojo/io/script" //for jsonp
+], function (declare, lang, xhr, json, Response, Transport, ObjectValidator, script) {
 	/**
 	 * @class
 	 * @name rishson.control.XhrTransport
@@ -60,7 +61,8 @@ define([
 		send: function (request) {
 			var postParams = json.stringify(this.createBasePostParams(request)),
 				xhrFunction, //default to post as this is used for service requests as well as rest
-				xhrParams;
+				xhrParams,
+				jsonpCallback; // Callback to run if jsonp.
 
 			//do autoincrement sendID if required
 			//profiling can be enabled here
@@ -71,41 +73,69 @@ define([
 				content: postParams,
 				handleAs: "json",
 				headers: {'Content-Type': "application/json"},
-				timeout: this.requestTimeout,
-				load: lang.hitch(this, function (response, ioArgs) {
-					var wrappedResponse = new Response(response,
-						request.type === 'rest',
-						ioArgs);
-					this.handleResponseFunc(request, wrappedResponse);
-				}),
-				error: function (response, ioArgs) {
-					var wrappedResponse = new Response(response,
-						request.type === 'rest',
-						ioArgs);
-					//do we think that this 'error' is a valid response, e.g. a 400 REST response?
-					if (wrappedResponse.mappedStatusCodes.indexOf(ioArgs.xhr.status) > -1) {
-						this.handleResponseFunc(request, wrappedResponse);
-					} else {
-						/* Unhandled error - something went wrong in the XHR request/response that we dont cope with.
-						 * This can happen for a timeout or an unhandled status code.
-						 * It's OK to send the error to the console as this does not pose a security risk.
-						 * The failure is freely available using http traffic monitoring so we are not 'leaking' information
-						 */
-						console.error(response);
-						this.handleErrorFunc(request, response);
-						//you could do further processing such as put the transport in a retry or quiescent state
-					}
-				}
+				timeout: this.requestTimeout
 			};
 
 			if (request.type === 'rest') {
 				xhrFunction = xhr[request.verb]; // get, put, post, or delete
+				xhrParams = {
+					load: lang.hitch(this, function (response, ioArgs) {
+						var wrappedResponse = new Response(response,
+							request.type === 'rest',
+							ioArgs);
+						this.handleResponseFunc(request, wrappedResponse);
+					}),
+					error: function (response, ioArgs) {
+						var wrappedResponse = new Response(response,
+							request.type === 'rest',
+							ioArgs);
+						//do we think that this 'error' is a valid response, e.g. a 400 REST response?
+						if (wrappedResponse.mappedStatusCodes.indexOf(ioArgs.xhr.status) > -1) {
+							this.handleResponseFunc(request, wrappedResponse);
+						} else {
+							/* Unhandled error - something went wrong in the XHR request/response that we dont cope with.
+							 * This can happen for a timeout or an unhandled status code.
+							 * It's OK to send the error to the console as this does not pose a security risk.
+							 * The failure is freely available using http traffic monitoring so we are not 'leaking' information
+							 */
+							console.error(response);
+							this.handleErrorFunc(request, response);
+							//you could do further processing such as put the transport in a retry or quiescent state
+						}
+					}
+				};
+
 				if (request.verb === 'put') {
 					xhrParams.putData = postParams;
 					delete (xhrParams.content);
 				} else if (request.verb === 'post') {
 					xhrParams.postData = postParams;
 					delete (xhrParams.content);
+				}
+			} else if (request.type === 'jsonp') {
+				//to get round cross domain restrictions we use jsonp
+				//note: jsonp does not support the regular verbs used in REST
+				//@todo - we may need to write a clear up callback function after calling Window[jsonpCallback]
+				//	to tidy up the global scope
+
+				//assign io,script.get = jsonp method
+				xhrFunction = function(xhrParams) {
+					script.get(xhrParams);
+				};
+
+				//create a unique callback name in the Window (global space)
+				//we need to make this in the global scope since jsonp needs to call a method visible in this scope
+				jsonpCallback = 'callback' + new Date().getTime();
+
+				//create the actual function
+				window[jsonpCallback] = lang.hitch(this, function(response) {
+					this.handleResponseFunc(request, response);
+				});
+
+				if (xhrParams.url.indexOf('?') !== -1) {
+					xhrParams.url = xhrParams.url + '&callback=window.' + jsonpCallback;
+				} else {
+					xhrParams.url = xhrParams.url + '?callback=window.' + jsonpCallback;
 				}
 			}
 			xhrFunction(xhrParams); //returns a deferred
