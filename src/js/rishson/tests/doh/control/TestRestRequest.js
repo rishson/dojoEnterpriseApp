@@ -27,7 +27,7 @@ define([
 						}, //needs to be a function
 						callbackScope: this, //needs to be an object
 						service: 'hello', //needs to be a string
-						verb: 'get'    //needs to be a string
+						verb: RestRequest.prototype.VERBS.get    //needs to be a string
 					};
 					request = new RestRequest(validCtorParams);
 				}

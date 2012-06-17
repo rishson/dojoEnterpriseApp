@@ -128,7 +128,7 @@ define([
 				jsonpCallback = 'callback' + new Date().getTime();
 
 				//create the actual function
-				window[jsonpCallback] = lang.hitch(this, function(response) {
+				window[jsonpCallback] = lang.hitch(this, function (response) {
 					this.handleResponseFunc(request, response);
 				});
 
