@@ -18,7 +18,7 @@ The main features are:
 - depends on node.js (for running less.js), npm and Java (for the dojo build)
 
 #### Extensible scripts
-- scripts to pull in framwwork dependencies
+- scripts to pull in framework dependencies
 - scripts to create an 'application' (single page web app)
 - scripts to create templated and non-templated widgets (including test pages, less files..)
 - scripts to test widgets in a variety of browsers (chrome, FireFox, Safari and Chromium)
