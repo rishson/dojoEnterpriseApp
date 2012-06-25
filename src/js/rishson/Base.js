@@ -118,13 +118,15 @@ define([
 		 * If the requiring widget is a controller (inherits from rishson.control._Controller) then it will also
 		 * autowire the widget.
 		 * @param {Object} widget
+		 * @param {Object=} props
+		 * @param {Object=} node
 		 * @return {Object} deferred
 		 */
-		asyncRequire: function (widget) {
+		asyncRequire: function (widget, props, node) {
 			var deferred = new Deferred();
 
 			require([widget], lang.hitch(this, function (WidgetConstructor) {
-				var widgetInstance = this.adopt(WidgetConstructor, {});
+				var widgetInstance = this.adopt(WidgetConstructor, props, node);
 				deferred.resolve(widgetInstance);
 			}));
 			return deferred;
