@@ -15,14 +15,6 @@ define([
 	return declare('rishson.Base', null, {
 		/**
 		 * @field
-		 * @name rishson.Base.isInitialised
-		 * @type {boolean}
-		 * @description Is the widget initialised? Default to false - duh.
-		 */
-		isInitialised: false,
-
-		/**
-		 * @field
 		 * @name rishson.Base._parentTopicNamespace
 		 * @type {string}
 		 * @description This namespace is prepended to every topic name used by a derived class
