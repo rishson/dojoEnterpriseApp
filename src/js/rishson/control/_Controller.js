@@ -36,22 +36,6 @@ define([
 		_topicNamespace: '',
 
 		/**
-		 * @field
-		 * @name rishson._Controller.views
-		 * @type {Object}
-		 * @description A key store of the child views (widgets and controllers) of this controller.
-		 */
-		views: null,
-
-		/**
-		 * @field
-		 * @name rishson._Controller.loadingGroups
-		 * @type {{toLoad: Array, loaded: Array}}
-		 * @description A key store of the child views (widgets and controllers) of this controller.
-		 */
-		loadingGroups: null,
-
-		/**
 		 * @constructor
 		 */
 		constructor: function () {
@@ -60,10 +44,6 @@ define([
 			this._id = this.declaredClass;
 
 			this.subList = this.subList || {};
-
-			// Add event listener for child widget initialisation events.
-			// Must be done before child adoption/creation otherwise this class cannot listen to child's published events.
-			this._wireSinglePub(this._topicNamespace + Globals.CHILD_INTIALISED_TOPIC_NAME, true);
 
 			this.views = {};
 			this.loadingGroups = {
@@ -118,13 +98,8 @@ define([
 		 * @param {string} topicName the string of the topic name
 		 * @description autowire a single published topic from the child widget to an event handler on the controller widget.
 		 */
-		_wireSinglePub: function (topicName, initialWire) {
+		_wireSinglePub: function (topicName) {
 			var handlerFuncName, handlerFunc;
-
-			// If event to wire is child initialised skip wiring as this was already wired in constructor.
-			if (!initialWire && topicName.indexOf(Globals.CHILD_INTIALISED_TOPIC_NAME) !== -1) {
-				return;
-			}
 
 			handlerFuncName = this._createHandlerFuncName(topicName);
 
@@ -146,46 +121,6 @@ define([
 		 */
 		injectWidget: function (widget) {
 			this._autowirePubs(widget);
-		},
-
-		/**
-		 * @name rishson.control._Controller.loadGroup
-		 * @description Take a loadGroup, loop over each widget and create and add that widget to the controller.
-		 * @param {Object} scope the scope of the current controller. Assignment needs to occur before initialisation
-		 * @param {Array} group
-		 */
-		loadGroup: function (scope, group) {
-			var i, l;
-			for (i = 0, l = group.toLoad.length; i < l; i += 1) {
-				this.addAndInitialise(scope, group.toLoad[i], group, i);
-			}
-		},
-
-		/**
-		 *
-		 * @function
-		 * @name rishson.control._Controller.addAndInitialise
-		 * @description adopted widgets from controllers should fire their initialised event after they have been assigned at
-		 * to the controller assignee
-		 * @param {Object} scope the scope of the current controller. Assignment needs to occur before initialisation
-		 * @param {{name: string, widget: string, loadingGroup: Array, props: Object, node: string|Object}} args The
-		 * initialisation properties for the widget to be included on the page.
-		 * @param {Array} group
-		 * @param {number} i
-		 */
-		addAndInitialise: function (scope, args, group, i) {
-			var obj;
-
-			if (scope && args.name && args.widget) {
-				obj = scope.views[args.name] = this.adopt(args.widget, args.props, args.node);
-				if (group && typeof i !== 'undefined') {
-					group.toLoad[i] = obj;
-				}
-
-				if (!obj.isInitialised) {
-					obj._initialise();
-				}
-			}
 		},
 
 		/**
@@ -212,35 +147,6 @@ define([
 
 			this._autowirePubs(child);
 			return child;
-		},
-
-		/**
-		 * @function
-		 * @name rishson.control._Controller.checkLoadingGroups
-		 * @description Compare the id of the widget which is just initialised with the loading groups array, and move
-		 * from toLoad to loaded if found. Attach the widgets to the layout if all of them have been loaded.
-		 * TODO: smarter 'loadingGroups' logic needs to be created so that there can be more than one loadingGroup array
-		 * and faster indexing.
-		 * @param {string} id
-		 */
-		checkLoadingGroups: function (id) {
-			var i,
-				l,
-				match = false;
-
-			//if all widgets that I care about have been initialised then I should attach them and publish my initialise to my parent
-			for (i = 0, l = this.loadingGroups.toLoad.length; i < l; i += 1) {
-				if (this.loadingGroups.toLoad[i] && this.loadingGroups.toLoad[i]._id === id) {
-					this.loadingGroups.loaded[i] = this.loadingGroups.toLoad[i];
-					delete this.loadingGroups.toLoad[i];
-					match = true;
-					break;
-				}
-			}
-
-			if (match && this.loadingGroups.loaded.length === this.loadingGroups.toLoad.length) {
-				this.attachWidgetsToLayout(this.loadingGroups.loaded);
-			}
 		},
 
 		/**
