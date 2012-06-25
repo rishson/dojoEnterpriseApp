@@ -36,22 +36,6 @@ define([
 		_topicNamespace: '',
 
 		/**
-		 * @field
-		 * @name rishson._Controller.views
-		 * @type {Object}
-		 * @description A key store of the child views (widgets and controllers) of this controller.
-		 */
-		views: null,
-
-		/**
-		 * @field
-		 * @name rishson._Controller.loadingGroups
-		 * @type {{toLoad: Array, loaded: Array}}
-		 * @description A key store of the child views (widgets and controllers) of this controller.
-		 */
-		loadingGroups: null,
-
-		/**
 		 * @constructor
 		 */
 		constructor: function () {
