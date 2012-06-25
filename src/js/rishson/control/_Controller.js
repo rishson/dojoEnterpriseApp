@@ -61,10 +61,6 @@ define([
 
 			this.subList = this.subList || {};
 
-			// Add event listener for child widget initialisation events.
-			// Must be done before child adoption/creation otherwise this class cannot listen to child's published events.
-			this._wireSinglePub(this._topicNamespace + Globals.CHILD_INTIALISED_TOPIC_NAME, true);
-
 			this.views = {};
 			this.loadingGroups = {
 				toLoad: [],
@@ -118,13 +114,8 @@ define([
 		 * @param {string} topicName the string of the topic name
 		 * @description autowire a single published topic from the child widget to an event handler on the controller widget.
 		 */
-		_wireSinglePub: function (topicName, initialWire) {
+		_wireSinglePub: function (topicName) {
 			var handlerFuncName, handlerFunc;
-
-			// If event to wire is child initialised skip wiring as this was already wired in constructor.
-			if (!initialWire && topicName.indexOf(Globals.CHILD_INTIALISED_TOPIC_NAME) !== -1) {
-				return;
-			}
 
 			handlerFuncName = this._createHandlerFuncName(topicName);
 
@@ -180,10 +171,6 @@ define([
 				obj = scope.views[args.name] = this.adopt(args.widget, args.props, args.node);
 				if (group && typeof i !== 'undefined') {
 					group.toLoad[i] = obj;
-				}
-
-				if (!obj.isInitialised) {
-					obj._initialise();
 				}
 			}
 		},

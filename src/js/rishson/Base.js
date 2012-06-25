@@ -65,8 +65,6 @@ define([
 				if (!this._supportingWidgets) {
 					this._supportingWidgets = [];	//anything that does not derive from _Widget will not have this
 				}
-
-				this.addTopic('INITIALISED', Globals.CHILD_INTIALISED_TOPIC_NAME);
 			}
 		},
 
@@ -195,16 +193,6 @@ define([
 					//ignore errors thrown by IE when doing teardown of Grids whose domNode's get removed early
 				}
 			}
-		},
-
-		/**
-		 * @function
-		 * @private
-		 * @description When the derived is ready then it can call this function to publish their state
-		 */
-		_initialise: function () {
-			this.isInitialised = true;
-			topic.publish(this.pubList.INITIALISED, this._id, this);
 		}
 	});
 });
