@@ -15,14 +15,6 @@ define([
 	return declare('rishson.Base', null, {
 		/**
 		 * @field
-		 * @name rishson.Base.isInitialised
-		 * @type {boolean}
-		 * @description Is the widget initialised? Default to false - duh.
-		 */
-		isInitialised: false,
-
-		/**
-		 * @field
 		 * @name rishson.Base._parentTopicNamespace
 		 * @type {string}
 		 * @description This namespace is prepended to every topic name used by a derived class
@@ -65,8 +57,6 @@ define([
 				if (!this._supportingWidgets) {
 					this._supportingWidgets = [];	//anything that does not derive from _Widget will not have this
 				}
-
-				this.addTopic('INITIALISED', Globals.CHILD_INTIALISED_TOPIC_NAME);
 			}
 		},
 
@@ -118,13 +108,15 @@ define([
 		 * If the requiring widget is a controller (inherits from rishson.control._Controller) then it will also
 		 * autowire the widget.
 		 * @param {Object} widget
+		 * @param {Object=} props
+		 * @param {Object=} node
 		 * @return {Object} deferred
 		 */
-		asyncRequire: function (widget) {
+		asyncRequire: function (widget, props, node) {
 			var deferred = new Deferred();
 
 			require([widget], lang.hitch(this, function (WidgetConstructor) {
-				var widgetInstance = this.adopt(WidgetConstructor, {});
+				var widgetInstance = this.adopt(WidgetConstructor, props, node);
 				deferred.resolve(widgetInstance);
 			}));
 			return deferred;
@@ -193,16 +185,6 @@ define([
 					//ignore errors thrown by IE when doing teardown of Grids whose domNode's get removed early
 				}
 			}
-		},
-
-		/**
-		 * @function
-		 * @private
-		 * @description When the derived is ready then it can call this function to publish their state
-		 */
-		_initialise: function () {
-			this.isInitialised = true;
-			topic.publish(this.pubList.INITIALISED, this._id, this);
 		}
 	});
 });
