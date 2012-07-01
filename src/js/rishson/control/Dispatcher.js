@@ -72,8 +72,7 @@ define([
 					{paramName: 'validLoginResponse', paramType: 'criteria', criteria: [
 						{paramName: 'serviceRegistry', paramType: 'array'},
 						{paramName: 'grantedAuthorities', paramType: 'array'}
-						]
-					}
+					]}
 				],
 				validator = new ObjectValidator(criteria),
 				params = {'transport': transport, 'validLoginResponse': validLoginResponse},
