@@ -18,7 +18,7 @@ define([
 		 * @description contains all the validation criteria to examine
 		 * Criteria are in the form:
 		 *  {name : type}
-		 *  where type can be [string|array|function|object]
+		 *  where type can be [string|array|function|object|boolean|criteria]
 		 */
 		validationCriteria: null,
 
@@ -27,6 +27,9 @@ define([
 		 * @param {Array} validationCriteria contains all the validation criteria to examine
 		 */
 		constructor: function (validationCriteria) {
+			if (!validationCriteria || !lang.isArray(validationCriteria) || validationCriteria.length < 1) {
+				throw ('Invalid criteria passed to constructor');
+			}
 			this.validationCriteria = validationCriteria;
 		},
 
@@ -110,12 +113,30 @@ define([
 		 */
 		_validateParam: function (param, criteria) {
 			var paramValue = param[criteria.paramName],
-				paramType = criteria.paramType;
+				paramType = criteria.paramType,
+				allItemsValid = true;
 
 			if (paramType === 'string') {
-				return lang.isString(paramValue);
+				if (criteria.strict) {
+					return lang.isString(paramValue) && paramValue.length > 0;
+				} else {
+					return lang.isString(paramValue);
+				}
 			} else if (paramType === 'array') {
-				return lang.isArray(paramValue);
+				if (criteria.criteria) {	//if a criteria is specified then validate all the items in the array
+					arrayUtil.forEach(paramValue, function (arrayItem) {
+						if (!this._validate(criteria.criteria, arrayItem)) {
+							allItemsValid = false;
+						}
+					}, this);
+					return allItemsValid;
+				} else {
+					if (criteria.strict) {
+						return lang.isArray(paramValue) && paramValue.length > 0;
+					} else {
+						return lang.isArray(paramValue);
+					}
+				}
 			} else if (paramType === 'function') {
 				return lang.isFunction(paramValue);
 			} else if (paramType === 'object') {
