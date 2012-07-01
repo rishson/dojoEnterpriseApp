@@ -59,6 +59,8 @@ define([
 				//collect up the params and validate
 			if (validator.validate(response)) {
 				lang.mixin(this, response);
+			} else {
+				throw ('Invalid construction of LoginResponse');
 			}
 		}
 	});
