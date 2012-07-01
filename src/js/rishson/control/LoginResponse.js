@@ -39,6 +39,7 @@ define([
 
 		/**
 		 * @constructor
+		 * @extend rishson.control.Response
 		 */
 		constructor: function (response, wasRest, ioArgs) {
 			var criteria = [

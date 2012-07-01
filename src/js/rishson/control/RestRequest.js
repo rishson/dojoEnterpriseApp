@@ -40,11 +40,9 @@ define([
 		 *  method {string} the name of a service method to call
 		 */
 		constructor: function (params) {
-			var criteria = [],
+			var criteria = [{paramName: 'service', paramType: 'string'},
+				{paramName: 'verb', paramType: 'string'}],
 				validator = new ObjectValidator(criteria);
-
-			criteria.push({paramName: 'service', paramType: 'string'});
-			criteria.push({paramName: 'verb', paramType: 'string'});
 
 			if (validator.validate(params)) {
 				lang.mixin(this, params);

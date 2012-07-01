@@ -1,8 +1,9 @@
 define([
 	"dojo/_base/declare", // declare
 	"dojo/_base/lang", // isString, etc.
-	"dojo/_base/array" // forEach
-], function (declare, lang, arrayUtil) {
+	"dojo/_base/array", // forEach
+	"require"	//require
+], function (declare, lang, arrayUtil, require) {
 
 	/**
 	 * @class
@@ -140,7 +141,18 @@ define([
 			} else if (paramType === 'function') {
 				return lang.isFunction(paramValue);
 			} else if (paramType === 'object') {
-				return lang.isObject(paramValue);
+				if (criteria.moduleName) {
+					try{
+						var objectToValidate = require(criteria.moduleName);
+						//call the object's constructor - only works with single object param ctors at present
+						var throwaway = new objectToValidate(paramValue);
+						return true;
+					} catch (e) {
+						return false;
+					}
+				} else {
+					return lang.isObject(paramValue);
+				}
 			} else if (paramType === 'boolean') {
 				return paramValue && (paramValue instanceof Boolean || typeof paramValue === "boolean");
 			} else if (paramType === 'criteria') {

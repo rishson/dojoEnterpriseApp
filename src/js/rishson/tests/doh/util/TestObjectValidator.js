@@ -211,6 +211,36 @@ define([
 			},
 			tearDown: function () {
 			}
+		},
+		{
+			name: "Validation test: object with incorrect module",
+			setUp: function () {
+				criteria = [{paramName: 'exampleObject', paramType: 'object', moduleName: 'rishson/control/Request'}];
+				validationRes = false;
+			},
+			runTest: function () {
+				//valid construction - 
+				var validator = new Validator(criteria);
+				validationRes = validator.validate({exampleObject: {callback: null, callbackScope: this}});
+				doh.assertFalse(validationRes);
+			},
+			tearDown: function () {
+			}
+		},
+		{
+			name: "Validation test: object with correct module",
+			setUp: function () {
+				criteria = [{paramName: 'exampleObject', paramType: 'object', moduleName: 'rishson/control/Request'}];
+				validationRes = false;
+			},
+			runTest: function () {
+				//valid construction - 
+				var validator = new Validator(criteria);
+				validationRes = validator.validate({exampleObject: {callback: function () {}, callbackScope: this}});
+				doh.assertTrue(validationRes);
+			},
+			tearDown: function () {
+			}
 		}
 	]);
 });
