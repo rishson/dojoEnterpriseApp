@@ -45,6 +45,15 @@ define([
 		handleErrorFunc: null,
 
 		/**
+		 * @field
+		 * @name rishson.Transport.apps
+		 * @type {Object}
+		 * @description The apps and baseUrls for determining send request urls per application.
+		 * Set by the Transport layer
+		 */
+		apps: {},
+
+		/**
 		 * @function
 		 * @name rishson.Transport.addResponseFunctions
 		 * @description adds response functions to the Transport.
@@ -89,6 +98,16 @@ define([
 				lang.mixin(postContent, param);
 			});
 			return postContent;
+		},
+
+		/**
+		 * @function
+		 * @name rishson.Transport.bindApplicationUrls
+		 * @description Bind the apps and baseUrls for determining send request urls per application
+		 * @param {Object} obj
+		 */
+		bindApplicationUrls: function (obj) {
+			this.apps = obj;
 		}
 	});
 });
