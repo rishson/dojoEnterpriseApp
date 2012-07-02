@@ -1,7 +1,8 @@
 define([
 	"doh",
-	"rishson/util/ObjectValidator"
-], function (doh, Validator) {
+	"rishson/util/ObjectValidator",
+	"rishson/control/Request"
+], function (doh, Validator, Request) {
 
 	doh.register("Validator tests", [
 		{
@@ -230,13 +231,14 @@ define([
 		{
 			name: "Validation test: object with correct module",
 			setUp: function () {
-				criteria = [{paramName: 'exampleObject', paramType: 'object', moduleName: 'rishson/control/Request'}];
+				criteria = [{paramName: 'exampleObject', paramType: 'object', moduleName: 'rishson.control.Request'}];
 				validationRes = false;
 			},
 			runTest: function () {
 				//valid construction - 
 				var validator = new Validator(criteria);
-				validationRes = validator.validate({exampleObject: {callback: function () {}, callbackScope: this}});
+				var requestObj = new Request({callback: function () {}, callbackScope: this});
+				validationRes = validator.validate({exampleObject: requestObj});
 				doh.assertTrue(validationRes);
 			},
 			tearDown: function () {

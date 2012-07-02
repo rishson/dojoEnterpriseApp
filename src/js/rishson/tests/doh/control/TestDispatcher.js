@@ -5,11 +5,12 @@ define([
 	"dojo/cookie",
 	"rishson/tests/Scaffold",
 	"rishson/control/Dispatcher",
+	"rishson/control/LoginResponse",
 	"rishson/control/MockTransport",
 	"rishson/control/Request",
 	"rishson/control/ServiceRequest",
 	"rishson/control/RestRequest"
-], function (doh, lang, topic, cookie, Scaffold, Dispatcher, MockTransport, Request, ServiceRequest, RestRequest) {
+], function (doh, lang, topic, cookie, Scaffold, Dispatcher, LoginResponse, MockTransport, Request, ServiceRequest, RestRequest) {
 
 	doh.register("Dispatcher tests", [
 		{
@@ -24,11 +25,15 @@ define([
 					service: 'hello', //needs to be a string
 					method: 'world'    //needs to be a string
 				};
-				validLoginResponse = {
-					returnRequest: true,
-					serviceRegistry: [],
-					grantedAuthorities: []
-				};
+				validLoginResponse = new LoginResponse({grantedAuthorities: ['perm1', 'perm2'],
+					apps: [{
+						'id': 'someId',
+						'caption': 'someCaption',
+						'description': 'someDescription',
+						'iconClass': 'someIconClass',
+						'baseUrl': 'someBaseUrl',
+						'grantedAuthorities': ['perm1']
+					}], username: 'andy'}, true, {xhr: {status: 200}});
 			},
 			runTest: function () {
 				var constructorFailed = false;
@@ -66,49 +71,6 @@ define([
 					constructorFailed = true;
 				}
 				doh.assertTrue(constructorFailed);
-				constructorFailed = false;
-
-				try {
-					//invalid construction - validLoginResponse.grantedAuthorities is null
-					dispatcher = Dispatcher(mockTransport, {returnRequest: false,
-						serviceRegistry: [],
-						grantedAuthorities: null});
-				} catch (e) {
-					constructorFailed = true;
-				}
-				doh.assertTrue(constructorFailed);
-				constructorFailed = false;
-
-				try {
-					//invalid construction - validLoginResponse.serviceRegistry is null
-					dispatcher = new Dispatcher(mockTransport, {returnRequest: false,
-						serviceRegistry: null,
-						grantedAuthorities: []});
-				} catch (e) {
-					constructorFailed = true;
-				}
-				doh.assertTrue(constructorFailed);
-				constructorFailed = false;
-
-				try {
-					//invalid construction - misnamed param in the loginResponse 'returnFred'
-					dispatcher = new Dispatcher(mockTransport, {returnFred: false,
-						serviceRegistry: null,
-						grantedAuthorities: []});
-				} catch (e) {
-					constructorFailed = true;
-				}
-				doh.assertTrue(constructorFailed);
-				constructorFailed = false;
-
-				try {
-					//valid construction - validLoginResponse.logoutRequest is null and is optional
-					dispatcher = new Dispatcher(mockTransport, {serviceRegistry: [],
-						grantedAuthorities: []});
-				} catch (e) {
-					constructorFailed = true;
-				}
-				doh.assertFalse(constructorFailed);
 				constructorFailed = false;
 
 				//valid construction

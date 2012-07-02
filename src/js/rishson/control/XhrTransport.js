@@ -58,18 +58,26 @@ define([
 		 * @param {rishson.control.Request} request to send to the server
 		 * @description Issues the provided <code>rishson.control.Request</code> in an asynchronous manner
 		 */
-		send: function (request) {
+		send: function (request, appId) {
 			var postParams = json.stringify(this.createBasePostParams(request)),
 				xhrFunction = xhr.post, //default to post as this is used for service requests as well as rest
 				xhrParams,
-				jsonpCallback; // Callback to run if jsonp.
+				jsonpCallback,	// Callback to run if jsonp.
+				url;
 
 			//do autoincrement sendID if required
 			//profiling can be enabled here
 
+			//if an app is specified in the send, then get the application specific url
+			if (appId) {
+				url = this.apps[appId].baseUrl + request.toUrl();
+			} else {
+				url = this.baseUrl + request.toUrl();
+			}
+
 			//Can't use 'then' in Dojo 1.6 if you need the ioArgs. See #12126 on dojo trac
 			xhrParams = {
-				url: this.baseUrl + request.toUrl(),
+				url: url,
 				content: postParams,
 				handleAs: "json",
 				headers: {'Content-Type': "application/json"},

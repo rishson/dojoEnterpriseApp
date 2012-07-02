@@ -60,19 +60,12 @@ define([
 		/**
 		 * @constructor
 		 * @param {rishson.control.Transport} transport an implementation of rishson.control.Transport
-		 * @param {Object} validLoginResponse object of bootstrap properties
+		 * @param {rishson.control.LoginResponse} validLoginResponse object of bootstrap properties
 		 */
 		constructor: function (transport, validLoginResponse) {
-			/*validLoginResponse should be in the form:
-			 {serviceRegistry : [SMD Objects],
-			 grantedAuthorities : [Authority Objects]}
-			 */
 			var criteria = [
 					{paramName: 'transport', paramType: 'object'},
-					{paramName: 'validLoginResponse', paramType: 'criteria', criteria: [
-						{paramName: 'serviceRegistry', paramType: 'array'},
-						{paramName: 'grantedAuthorities', paramType: 'array'}
-					]}
+					{paramName: 'validLoginResponse', paramType: 'object', moduleName: 'rishson.control.LoginResponse'}
 				],
 				validator = new ObjectValidator(criteria),
 				params = {'transport': transport, 'validLoginResponse': validLoginResponse},
@@ -99,7 +92,7 @@ define([
 						authority = authority.toLowerCase();
 					} else {
 						//remove invalid permissions that are not strings
-						console.error("Invalid authority passed to Controller: " + authority);
+						console.error("Invalid authority passed to Dispatcher: " + authority);
 						index = arrayUtil.indexOf(authority);
 						this.grantedAuthorities.splice(index, 1);
 					}
@@ -112,7 +105,7 @@ define([
 				//listen out for other classes wanting to send requests to the server
 				topic.subscribe(Globals.SEND_REQUEST, lang.hitch(this, "send"));
 			} else {
-				validator.logErrorToConsole(params, 'Invalid params passed to the Controller.');
+				validator.logErrorToConsole(params, 'Invalid params passed to the Dispatcher.');
 				throw ('Invalid params passed to the Controller.');
 			}
 		},
@@ -121,13 +114,14 @@ define([
 		 * @function
 		 * @name rishson.control.Dispatcher.send
 		 * @param {rishson.control.Request} request to send to the server
+		 * @param {string} appId the id of an application making the request - optional
 		 * @description Issues the provided <code>rishson.control.Request</code> in an asynchronous manner
 		 * This function delegates the actual sending of the Request to the injected Transport implementation.
 		 * rishson.control.Dispatcher.handleRequest will be called for valid responses.
 		 * rishson.control.Dispatcher.handleError will be called if an error occurred during the send.
 		 */
-		send: function (request) {
-			this.transport.send(request);
+		send: function (request, appId) {
+			this.transport.send(request, appId);
 			//auditing, analytics etc can be enabled here
 		},
 
@@ -140,7 +134,14 @@ define([
 		 */
 		handleResponse: function (request, response) {
 			var scopedCallback,
-				topicData;
+				topicData,
+				apps;
+
+			// If the response object has apps, grantedAuthorities and username then it is the loginResponse Object
+			if (response.apps && response.grantedAuthorities && response.username) {
+				apps = this._setupApplicationUrls(response.apps);
+				this.transport.bindApplicationUrls(apps);
+			}
 
 			//if the request has a topic specified then publish the response to the topic
 			if (request.topic) {
@@ -227,7 +228,32 @@ define([
 				}
 			}, this);
 			//this.serviceRegistry = serviceArr;	//swap in the service registry
-		}
+		},
 
+		/**
+		 * @function
+		 * @name rishson.control.Dispatcher._setupApplicationUrls
+		 * @description Subscribe to request/send events for child applications from loginResponse.
+		 * @param {object} apps a list of application objects
+		 * @return {object} the list of apps with all but the name and baseUrl removed
+		 * @private
+		 */
+		_setupApplicationUrls: function (apps) {
+			var i = 0,
+				l = apps.length,
+				topicPrefix = '/request/send',
+				appId,
+				url,
+				appObj = {};
+
+			for  (i; i < l; i += 1) {
+				appId = apps[i].id;
+				//create a tag value entry on the appObj where the key is the application id and the value the baseUrl
+				appObj[appId] = apps[i].baseUrl;
+				url = '/' + appId + topicPrefix;
+				topic.subscribe(url, lang.hitch(this, "send", appId));
+			}
+			return appObj;
+		}
 	});
 });
