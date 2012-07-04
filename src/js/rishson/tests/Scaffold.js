@@ -1,9 +1,10 @@
 define([
 	"dojo/_base/declare",
-	"../control/Dispatcher",
+	"rishson/control/Dispatcher",
+	"rishson/control/LoginResponse",
 	"rishson/control/MockTransport",
 	"rishson/control/ServiceRequest"
-], function (declare, Dispatcher, MockTransport, ServiceRequest) {
+], function (declare, Dispatcher, LoginResponse, MockTransport, ServiceRequest) {
 
 	return declare('tests.Scaffold', null, {
 
@@ -13,9 +14,15 @@ define([
 				params.namespace  = testNamespace;
 			}
 			var mockTransport = new MockTransport(params),
-				validLoginResponse = {serviceRegistry: [],
-					grantedAuthorities: [],
-					returnRequest: true};
+				validLoginResponse = new LoginResponse({grantedAuthorities: ['perm1', 'perm2'],
+					apps: [{
+						'id': 'someId',
+						'caption': 'someCaption',
+						'description': 'someDescription',
+						'iconClass': 'someIconClass',
+						'baseUrl': 'someBaseUrl',
+						'grantedAuthorities': ['perm1']
+					}], username: 'andy', returnRequest: true}, true, {xhr: {status: 200}});
 
 			return new Dispatcher(mockTransport, validLoginResponse);
 		},

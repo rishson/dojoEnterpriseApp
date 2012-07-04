@@ -142,14 +142,7 @@ define([
 				return lang.isFunction(paramValue);
 			} else if (paramType === 'object') {
 				if (criteria.moduleName) {
-					try{
-						var objectToValidate = require(criteria.moduleName);
-						//call the object's constructor - only works with single object param ctors at present
-						var throwaway = new objectToValidate(paramValue);
-						return true;
-					} catch (e) {
-						return false;
-					}
+					return criteria.moduleName === paramValue.declaredClass;
 				} else {
 					return lang.isObject(paramValue);
 				}
