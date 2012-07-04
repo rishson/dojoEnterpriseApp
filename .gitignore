@@ -9,3 +9,4 @@ src/js/when/
 src/js/wire/
 dist
 *~
+*.iml
