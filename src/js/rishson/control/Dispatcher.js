@@ -64,8 +64,9 @@ define([
 		 */
 		constructor: function (transport, validLoginResponse) {
 			var criteria = [
-					{paramName: 'transport', paramType: 'object'},
-					{paramName: 'validLoginResponse', paramType: 'object', moduleName: 'rishson.control.LoginResponse'}
+					{paramName: 'transport', paramType: 'object'}//,
+					// TODO: validLoginResponse should be moved from here due to dispatcher firing validLoginResponse is set.
+					//{paramName: 'validLoginResponse', paramType: 'object', moduleName: 'rishson.control.LoginResponse'}
 				],
 				validator = new ObjectValidator(criteria),
 				params = {'transport': transport, 'validLoginResponse': validLoginResponse},
@@ -138,8 +139,9 @@ define([
 				apps;
 
 			// If the response object has apps, grantedAuthorities and username then it is the loginResponse Object
-			if (response.apps && response.grantedAuthorities && response.username) {
-				apps = this._setupApplicationUrls(response.apps);
+			// TODO: not sure if this should look for payload in this way. It is pretty horrific.
+			if (response.payload && response.payload.apps && response.payload.grantedAuthorities && response.payload.username) {
+				apps = this._setupApplicationUrls(response.payload.apps);
 				this.transport.bindApplicationUrls(apps);
 			}
 
@@ -251,7 +253,9 @@ define([
 				//create a tag value entry on the appObj where the key is the application id and the value the baseUrl
 				appObj[appId] = apps[i].baseUrl;
 				url = '/' + appId + topicPrefix;
-				topic.subscribe(url, lang.hitch(this, "send", appId));
+				topic.subscribe(url, lang.hitch(this, function _send (appId, request) {
+					this.send(request, appId);
+				}, appId));
 			}
 			return appObj;
 		}
