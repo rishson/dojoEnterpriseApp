@@ -70,7 +70,7 @@ define([
 
 			//if an app is specified in the send, then get the application specific url
 			if (appId) {
-				url = this.apps[appId].baseUrl + request.toUrl();
+				url = this.apps[appId] + request.toUrl();
 			} else {
 				url = this.baseUrl + request.toUrl();
 			}
