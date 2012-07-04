@@ -69,7 +69,7 @@ define([
 
 			//Can't use 'then' in Dojo 1.6 if you need the ioArgs. See #12126 on dojo trac
 			xhrParams = {
-				url: this.apps[request.appName].baseUrl + request.toUrl(),
+				url: this.baseUrl + request.toUrl(),
 				content: postParams,
 				handleAs: "json",
 				headers: {'Content-Type': "application/json"},

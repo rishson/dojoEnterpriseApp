@@ -58,14 +58,6 @@ define([
 		_topicNamespace: Globals.TOPIC_NAMESPACE,
 
 		/**
-		 * @field
-		 * @name rishson.control.Dispatcher.apps
-		 * @type {Object}
-		 * @description The apps and baseUrls for determining send request urls per application
-		 */
-		apps: {},
-
-		/**
 		 * @constructor
 		 * @param {rishson.control.Transport} transport an implementation of rishson.control.Transport
 		 * @param {Object} validLoginResponse object of bootstrap properties
@@ -149,12 +141,6 @@ define([
 		handleResponse: function (request, response) {
 			var scopedCallback,
 				topicData;
-
-			// If the response object has apps, grantedAuthorities and username then it is the loginResponse Object
-			if (response.apps && response.grantedAuthorities && response.username) {
-				this._setupApplicationUrls(response.apps);
-				this.transport.bindApplicationUrls(this.apps);
-			}
 
 			//if the request has a topic specified then publish the response to the topic
 			if (request.topic) {
@@ -241,26 +227,7 @@ define([
 				}
 			}, this);
 			//this.serviceRegistry = serviceArr;	//swap in the service registry
-		},
-
-		/**
-		 * @function
-		 * @name rishson.control.Dispatcher._setupApplicationUrls
-		 * @description Subscribe to request/send events for child applications from loginResponse.
-		 * @param apps
-		 * @private
-		 */
-		_setupApplicationUrls: function (apps) {
-			var i = 0,
-				l = apps.length,
-				appId,
-				url;
-			for  (i; i < l; i += 1) {
-				appId = apps[i].id;
-				this.apps[appId] = apps[i].baseUrl;
-				url = '/' + appId + '/request/send';
-				topic.subscribe(url, lang.hitch(this, "send"));
-			}
 		}
+
 	});
 });
