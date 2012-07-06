@@ -10,7 +10,7 @@ define([
 	 * @description This class is used to wrap an authentication request. A failure to authenticate will be indicated
 	 * with the 'isAuthorised' flag on the parent class.
 	 */
-	return declare('rishson.control.LoginResponse', Response, {
+	return declare('rishson.control.LoginResponse', null, {
 
 		/**
 		 * @field
@@ -38,10 +38,18 @@ define([
 		username: '',
 
 		/**
+		 * @field
+		 * @name rishson.control.Request.isUnauthorised
+		 * @type {boolean}
+		 * @description is the response indicating that the request was not authorised. This equates to HTTP status code 403.
+		 */
+		isUnauthorised: false,
+
+		/**
 		 * @constructor
 		 * @extend rishson.control.Response
 		 */
-		constructor: function (response, wasRest, ioArgs) {
+		constructor: function (response) {
 			var criteria = [
 					{paramName: 'username', paramType: 'string', strict: true},
 					{paramName: 'grantedAuthorities', paramType: 'array', strict: true},
@@ -51,14 +59,16 @@ define([
 						{paramName: 'description', paramType: 'string'},
 						{paramName: 'iconClass', paramType: 'string'},
 						{paramName: 'baseUrl', paramType: 'string'},
-						{paramName: 'grantedAuthorities', paramType: 'array'}
+						{paramName: 'grantedAuthorities', paramType: 'array'},
+						{paramName: 'module', paramType: 'string', strict: true}
 					]}
 				],
 				validator = new Validator(criteria);
 
 				//collect up the params and validate
-			if (validator.validate(response)) {
-				lang.mixin(this, response);
+			if (validator.validate(response.payload)) {
+				lang.mixin(this, response.payload);
+				this.isUnauthorised = response.isUnauthorised;
 			} else {
 				throw ('Invalid construction of LoginResponse');
 			}
