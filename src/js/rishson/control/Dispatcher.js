@@ -25,14 +25,6 @@ define([
 
 		/**
 		 * @field
-		 * @name rishson.control.Dispatcher.serviceRegistry
-		 * @type {Array}
-		 * @description an array of dojox.RpcService(s). This is populated from a list of SMD definitions
-		 */
-		serviceRegistry: null,
-
-		/**
-		 * @field
 		 * @name rishson.control.Dispatcher.grantedAuthorities
 		 * @type {Array}
 		 * @description an array of permission to grant to the currently logged on user. Permissions will be coerced to
@@ -127,8 +119,8 @@ define([
 
 			if (!this._haveProcessedLoginResponse) {
 				if (this._isSuccessfulLoginResponse(response)) {
-					this._processSuccessfulLoginResponse(response);
-					apps = this._setupApplicationUrls(response.payload.apps);
+					response = this._processSuccessfulLoginResponse(response);
+					apps = this._setupApplicationUrls(response.apps);
 					this.transport.bindApplicationUrls(apps);
 					this._haveProcessedLoginResponse = true;	//we only need to do this once
 				}
@@ -208,24 +200,32 @@ define([
 		 * @private
 		 */
 		_processSuccessfulLoginResponse : function (response) {
-			var loginResponse = new LoginResponse(response),
-				mixinObj = {grantedAuthorities: loginResponse.payload.grantedAuthorities,
-					returnRequest: loginResponse.payload.returnRequest},
-				index;
+			try {
+				var loginResponse = new LoginResponse(response),
+					mixinObj = {
+						grantedAuthorities: loginResponse.grantedAuthorities,
+						returnRequest: loginResponse.returnRequest
+					},
+					index;
 
-			lang.mixin(this, mixinObj);
+				lang.mixin(this, mixinObj);
 
-			//convert authorities to lower case so we can do case-insensitive search for authorities
-			arrayUtil.forEach(this.grantedAuthorities, function (authority) {
-				if (lang.isString(authority)) {
-					authority = authority.toLowerCase();
-				} else {
-					//remove invalid permissions that are not strings
-					console.error("Invalid authority passed to Dispatcher: " + authority);
-					index = arrayUtil.indexOf(authority);
-					this.grantedAuthorities.splice(index, 1);
-				}
-			}, this);
+				//convert authorities to lower case so we can do case-insensitive search for authorities
+				arrayUtil.forEach(this.grantedAuthorities, function (authority) {
+					if (lang.isString(authority)) {
+						authority = authority.toLowerCase();
+					} else {
+						//remove invalid permissions that are not strings
+						console.error("Invalid authority passed to Dispatcher: " + authority);
+						index = arrayUtil.indexOf(authority);
+						this.grantedAuthorities.splice(index, 1);
+					}
+				}, this);
+				return loginResponse;
+			} catch (e) {
+				console.error('Invalid creation of LoginResponse', e);
+				return response;	//just return the original response if creation of LoginResponse failed
+			}
 		},
 
 		/**

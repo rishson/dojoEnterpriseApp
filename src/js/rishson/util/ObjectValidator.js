@@ -1,10 +1,8 @@
 define([
 	"dojo/_base/declare", // declare
 	"dojo/_base/lang", // isString, etc.
-	"dojo/_base/array", // forEach
-	"require"	//require
-], function (declare, lang, arrayUtil, require) {
-
+	"dojo/_base/array" // forEach
+], function (declare, lang, arrayUtil) {
 	/**
 	 * @class
 	 * @name rishson.util.ObjectValidator
@@ -22,6 +20,14 @@ define([
 		 *  where type can be [string|array|function|object|boolean|criteria]
 		 */
 		validationCriteria: null,
+
+		/**
+		 * @field
+		 * @name rishson.util.ObjectValidator.lastParam
+		 * @type {string}
+		 * @description contains the last param evaluated
+		 */
+		lastParam: '',
 
 		/**
 		 * @constructor
@@ -117,42 +123,48 @@ define([
 				paramType = criteria.paramType,
 				allItemsValid = true;
 
-			if (paramType === 'string') {
-				if (criteria.strict) {
-					return lang.isString(paramValue) && paramValue.length > 0;
-				} else {
-					return lang.isString(paramValue);
-				}
-			} else if (paramType === 'array') {
-				if (criteria.criteria) {	//if a criteria is specified then validate all the items in the array
-					arrayUtil.forEach(paramValue, function (arrayItem) {
-						if (!this._validate(criteria.criteria, arrayItem)) {
-							allItemsValid = false;
-						}
-					}, this);
-					return allItemsValid;
-				} else {
+			try {
+				this.lastParam = 'Param: ' + criteria.paramName + ' has value: ' + paramValue;
+				if (paramType === 'string') {
 					if (criteria.strict) {
-						return lang.isArray(paramValue) && paramValue.length > 0;
+						return lang.isString(paramValue) && paramValue.length > 0;
 					} else {
-						return lang.isArray(paramValue);
+						return lang.isString(paramValue);
 					}
-				}
-			} else if (paramType === 'function') {
-				return lang.isFunction(paramValue);
-			} else if (paramType === 'object') {
-				if (criteria.moduleName) {
-					return criteria.moduleName === paramValue.declaredClass;
+				} else if (paramType === 'array') {
+					if (criteria.criteria) {	//if a criteria is specified then validate all the items in the array
+						arrayUtil.forEach(paramValue, function (arrayItem) {
+							if (!this._validate(criteria.criteria, arrayItem)) {
+								allItemsValid = false;
+							}
+						}, this);
+						return allItemsValid;
+					} else {
+						if (criteria.strict) {
+							return lang.isArray(paramValue) && paramValue.length > 0;
+						} else {
+							return lang.isArray(paramValue);
+						}
+					}
+				} else if (paramType === 'function') {
+					return lang.isFunction(paramValue);
+				} else if (paramType === 'object') {
+					if (criteria.moduleName) {
+						return criteria.moduleName === paramValue.declaredClass;
+					} else {
+						return lang.isObject(paramValue);
+					}
+				} else if (paramType === 'boolean') {
+					return paramValue && (paramValue instanceof Boolean || typeof paramValue === "boolean");
+				} else if (paramType === 'criteria') {
+					return this._validate(criteria.criteria, paramValue);
 				} else {
-					return lang.isObject(paramValue);
+					return false;
 				}
-			} else if (paramType === 'boolean') {
-				return paramValue && (paramValue instanceof Boolean || typeof paramValue === "boolean");
-			} else if (paramType === 'criteria') {
-				return this._validate(criteria.criteria, paramValue);
-			} else {
-				return false;
+			} catch (e) {
+				console.error('Invalid param check: ' + this.lastParam);
 			}
+			
 		}
 	});
 });

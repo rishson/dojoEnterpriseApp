@@ -1,30 +1,44 @@
 define([
 	"dojo/_base/declare",
 	"rishson/control/Dispatcher",
-	"rishson/control/LoginResponse",
+	"rishson/control/Response",
 	"rishson/control/MockTransport",
 	"rishson/control/ServiceRequest"
-], function (declare, Dispatcher, LoginResponse, MockTransport, ServiceRequest) {
+], function (declare, Dispatcher, Response, MockTransport, ServiceRequest) {
 
 	return declare('tests.Scaffold', null, {
 
 		createDispatcher: function (testNamespace) {
-			var params = {};
-			if(testNamespace) {
+			var params = {},
+				validRequest = {
+					callback: function () {}, //needs to be a function
+					callbackScope: this, //needs to be an object
+					service: 'hello', //needs to be a string
+					method: 'world'    //needs to be a string
+				},
+				validResponse = new Response({grantedAuthorities: ['perm1', 'perm2'],
+					username: 'someUsername',
+					returnRequest: true,
+					apps: [{
+						id: 'someId',
+						caption: 'someCaption',
+						description: 'someDescription',
+						iconClass: 'someIconClass',
+						baseUrl: 'someBaseUrl',
+						grantedAuthorities: ['perm1'],
+						module: 'someModule'
+					}]
+					}, true, {xhr: {status: 200}}),
+				mockTransport,
+				dispatcher;
+
+			if (testNamespace) {
 				params.namespace  = testNamespace;
 			}
-			var mockTransport = new MockTransport(params),
-				validLoginResponse = new LoginResponse({grantedAuthorities: ['perm1', 'perm2'],
-					apps: [{
-						'id': 'someId',
-						'caption': 'someCaption',
-						'description': 'someDescription',
-						'iconClass': 'someIconClass',
-						'baseUrl': 'someBaseUrl',
-						'grantedAuthorities': ['perm1']
-					}], username: 'andy', returnRequest: true}, true, {xhr: {status: 200}});
-
-			return new Dispatcher(mockTransport, validLoginResponse);
+			mockTransport = new MockTransport(params);
+			dispatcher = new Dispatcher(mockTransport);
+			dispatcher.handleResponse(validRequest, validResponse);	//bypass sending an actual request
+			return dispatcher;
 		},
 
 		createLogoutRequest: function () {

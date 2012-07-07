@@ -8,9 +8,10 @@ define([
 	"rishson/control/LoginResponse",
 	"rishson/control/MockTransport",
 	"rishson/control/Request",
+	"rishson/control/Response",
 	"rishson/control/ServiceRequest",
 	"rishson/control/RestRequest"
-], function (doh, lang, topic, cookie, Scaffold, Dispatcher, LoginResponse, MockTransport, Request, ServiceRequest, RestRequest) {
+], function (doh, lang, topic, cookie, Scaffold, Dispatcher, LoginResponse, MockTransport, Request, Response, ServiceRequest, RestRequest) {
 
 	doh.register("Dispatcher tests", [
 		{
@@ -25,15 +26,20 @@ define([
 					service: 'hello', //needs to be a string
 					method: 'world'    //needs to be a string
 				};
-				validLoginResponse = new LoginResponse({grantedAuthorities: ['perm1', 'perm2'],
+				testResponse = new Response({grantedAuthorities: ['perm1', 'perm2'],
+					username: 'someUsername',
+					returnRequest: true,
 					apps: [{
-						'id': 'someId',
-						'caption': 'someCaption',
-						'description': 'someDescription',
-						'iconClass': 'someIconClass',
-						'baseUrl': 'someBaseUrl',
-						'grantedAuthorities': ['perm1']
-					}], username: 'andy'}, true, {xhr: {status: 200}});
+						id: 'someId',
+						caption: 'someCaption',
+						description: 'someDescription',
+						iconClass: 'someIconClass',
+						baseUrl: 'someBaseUrl',
+						grantedAuthorities: ['perm1'],
+						module: 'someModule'
+					}]
+				}, true, {xhr: {status: 200}});
+				validLoginResponse = new LoginResponse(testResponse);
 			},
 			runTest: function () {
 				var constructorFailed = false;
@@ -48,25 +54,7 @@ define([
 
 				try {
 					//invalid construction - transport is null
-					dispatcher = new Dispatcher(null, validLoginResponse);
-				} catch (e) {
-					constructorFailed = true;
-				}
-				doh.assertTrue(constructorFailed);
-				constructorFailed = false;
-
-				try {
-					//invalid construction - validLoginResponse is null
-					dispatcher = new Dispatcher(mockTransport, null);
-				} catch (e) {
-					constructorFailed = true;
-				}
-				doh.assertTrue(constructorFailed);
-				constructorFailed = false;
-
-				try {
-					//invalid construction - validLoginResponse is not populated
-					dispatcher = new Dispatcher(mockTransport, {});
+					dispatcher = new Dispatcher(null);
 				} catch (e) {
 					constructorFailed = true;
 				}
@@ -75,7 +63,7 @@ define([
 
 				//valid construction
 				try{
-					dispatcher = new Dispatcher(mockTransport, validLoginResponse);
+					dispatcher = new Dispatcher(mockTransport);
 				} catch (e) {
 					constructorFailed = true;
 				}

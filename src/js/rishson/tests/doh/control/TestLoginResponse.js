@@ -1,7 +1,8 @@
 define([
 	"doh",
-	"rishson/control/LoginResponse"
-], function (doh, LoginResponse) {
+	"rishson/control/LoginResponse",
+	"rishson/control/Response"
+], function (doh, LoginResponse, Response) {
 
 	doh.register("LoginResponse tests", [
 		{
@@ -45,11 +46,24 @@ define([
 			name: "Constructor test3",
 			setUp: function () {
 				constructorFailed = false;
+				testResponse = new Response({grantedAuthorities: ['perm1', 'perm2'],
+					username: null,
+					returnRequest: true,
+					apps: [{
+						id: 'someId',
+						caption: 'someCaption',
+						description: 'someDescription',
+						iconClass: 'someIconClass',
+						baseUrl: 'someBaseUrl',
+						grantedAuthorities: ['perm1'],
+						module: 'someModule'
+					}]
+				}, true, {xhr: {status: 200}});
 			},
 			runTest: function () {
 				try {
 					//invallid construction - username is null
-					response = new LoginResponse({grantedAuthorities: [], apps: [], username: null});
+					response = new LoginResponse(testResponse);
 				}
 				catch (e) {
 					constructorFailed = true;
@@ -63,11 +77,24 @@ define([
 			name: "Constructor test4",
 			setUp: function () {
 				constructorFailed = false;
+				testResponse = new Response({grantedAuthorities: null,
+					username: null,
+					returnRequest: true,
+					apps: [{
+						id: 'someId',
+						caption: 'someCaption',
+						description: 'someDescription',
+						iconClass: 'someIconClass',
+						baseUrl: 'someBaseUrl',
+						grantedAuthorities: ['perm1'],
+						module: 'someModule'
+					}]
+				}, true, {xhr: {status: 200}});
 			},
 			runTest: function () {
 				try {
 					//invalid construction - grantedAuthorities is null
-					response = new LoginResponse({grantedAuthorities: null, apps: [], username: null});
+					response = new LoginResponse(testResponse);
 				}
 				catch (e) {
 					constructorFailed = true;
@@ -81,11 +108,16 @@ define([
 			name: "Constructor test5",
 			setUp: function () {
 				constructorFailed = false;
+				testResponse = new Response({grantedAuthorities: ['perm1', 'perm2'],
+					username: null,
+					returnRequest: true,
+					apps: null
+				}, true, {xhr: {status: 200}});
 			},
 			runTest: function () {
 				try {
 					//invalid construction - apps is null
-					response = new LoginResponse({grantedAuthorities: [], apps: null, username: null});
+					response = new LoginResponse(testResponse);
 				}
 				catch (e) {
 					constructorFailed = true;
@@ -99,12 +131,24 @@ define([
 			name: "Constructor test6",
 			setUp: function () {
 				constructorFailed = false;
+				testResponse = new Response({grantedAuthorities: [],
+					username: null,
+					returnRequest: true,
+					apps: [{
+						id: 'someId',
+						caption: 'someCaption',
+						description: 'someDescription',
+						iconClass: 'someIconClass',
+						baseUrl: 'someBaseUrl',
+						grantedAuthorities: ['perm1'],
+						module: 'someModule'
+					}]
+				}, true, {xhr: {status: 200}});
 			},
 			runTest: function () {
 				try {
 					//invalid construction - grantedAuthorities is empty
-					response = new LoginResponse({grantedAuthorities: [], apps: [], username: 'andy'}, true,
-						{xhr: {status: 200}});
+					response = new LoginResponse(testResponse);
 				}
 				catch (e) {
 					constructorFailed = true;
@@ -118,19 +162,24 @@ define([
 			name: "Constructor test7",
 			setUp: function () {
 				constructorFailed = false;
+				testResponse = new Response({grantedAuthorities: ['perm1', 'perm2'],
+					username: 'someUsername',
+					returnRequest: true,
+					apps: [{
+						id: 'someId',
+						caption: 'someCaption',
+						description: 'someDescription',
+						iconClass: 'someIconClass',
+						baseUrl: 'someBaseUrl',
+						grantedAuthorities: ['perm1'],
+						module: 'someModule'
+					}]
+				}, true, {xhr: {status: 200}});
 			},
 			runTest: function () {
 				try {
-					//invalid construction - no params passed to constructor
-					response = new LoginResponse({grantedAuthorities: ['perm1', 'perm2'],
-					apps: [{
-						'id': 'someId',
-						'caption': 'someCaption',
-						'description': 'someDescription',
-						'iconClass': 'someIconClass',
-						'baseUrl': 'someBaseUrl',
-						'grantedAuthorities': ['perm1']
-					}], username: 'andy'}, true, {xhr: {status: 200}});
+					//valid construction
+					response = new LoginResponse(testResponse);
 				}
 				catch (e) {
 					constructorFailed = true;
