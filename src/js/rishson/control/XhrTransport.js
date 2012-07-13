@@ -98,7 +98,7 @@ define([
 						ioArgs);
 					//do we think that this 'error' is a valid response, e.g. a 400 REST response?
 					if (wrappedResponse.mappedStatusCodes.indexOf(ioArgs.xhr.status) > -1) {
-						this.handleErrorFunc(request, wrappedResponse);
+						this.handleResponseFunc(request, wrappedResponse);
 					} else {
 						/* Unhandled error - something went wrong in the XHR request/response that we dont cope with.
 						 * This can happen for a timeout or an unhandled status code.
