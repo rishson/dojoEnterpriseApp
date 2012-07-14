@@ -59,7 +59,8 @@ define([
 						{paramName: 'iconClass', paramType: 'string'},
 						{paramName: 'baseUrl', paramType: 'string'},
 						{paramName: 'grantedAuthorities', paramType: 'array'},
-						{paramName: 'module', paramType: 'string', strict: true}
+						{paramName: 'module', paramType: 'string', strict: true},
+						{paramName: 'websocket', paramType: 'boolean'}
 					]}
 				],
 				validator = new Validator(criteria);

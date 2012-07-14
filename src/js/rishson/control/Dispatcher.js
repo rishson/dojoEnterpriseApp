@@ -2,12 +2,12 @@ define([
 	"rishson/Globals",
 	"rishson/control/LoginResponse",
 	"rishson/util/ObjectValidator",	//validate
+	"rishson/control/PushHandler",
 	"dojo/_base/lang",	// mixin, hitch
 	"dojo/_base/array",	// indexOf, forEach
 	"dojo/_base/declare",	// declare
 	"dojo/topic"	// publish/subscribe
-], function (Globals, LoginResponse, ObjectValidator, lang, arrayUtil, declare, topic) {
-
+], function (Globals, LoginResponse, ObjectValidator, PushHandler, lang, arrayUtil, declare, topic) {
 	/**
 	 * @class
 	 * @name rishson.control.Dispatcher
@@ -64,12 +64,11 @@ define([
 		 */
 		constructor: function (transport) {
 			var criteria = [
-					{paramName: 'transport', paramType: 'object'}//,
+					{paramName: 'transport', paramType: 'object'}
 				],
 				validator = new ObjectValidator(criteria),
 				params = {'transport': transport},
-				unwrappedParams,
-				index;
+				unwrappedParams;
 
 			//collect up the params and validate
 			if (validator.validate(params)) {
@@ -200,8 +199,10 @@ define([
 		 * @private
 		 */
 		_processSuccessfulLoginResponse : function (response) {
+			var loginResponse,
+				anyAppHasWebsocketEnabled = false;
 			try {
-				var loginResponse = new LoginResponse(response),
+				loginResponse = new LoginResponse(response),
 					mixinObj = {
 						grantedAuthorities: loginResponse.grantedAuthorities,
 						returnRequest: loginResponse.returnRequest
@@ -209,6 +210,17 @@ define([
 					index;
 
 				lang.mixin(this, mixinObj);
+
+				//check if any app needs to use websocket and if so initialise cometd
+				loginResponse.apps.some(function(app){
+					if (app.websocket){
+						anyAppHasWebsocketEnabled = true;
+					}
+				}, this);
+
+				if (anyAppHasWebsocketEnabled) {
+					this.pushHandler = new PushHandler(this.transport.baseUrl);
+				}
 
 				//convert authorities to lower case so we can do case-insensitive search for authorities
 				arrayUtil.forEach(this.grantedAuthorities, function (authority) {
@@ -239,16 +251,18 @@ define([
 		_setupApplicationUrls: function (apps) {
 			var i = 0,
 				l = apps.length,
-				topicPrefix = '/request/send',
+				sendTopicSuffix = '/request/send',
+				app,
 				appId,
 				url,
 				appObj = {};
 
 			for  (i; i < l; i += 1) {
-				appId = apps[i].id;
+				app = apps[i];
+				appId = app.id;
 				//create a tag value entry on the appObj where the key is the application id and the value the baseUrl
-				appObj[appId] = apps[i].baseUrl;
-				url = '/' + appId + topicPrefix;
+				appObj[appId] = app.baseUrl;
+				url = '/' + appId + sendTopicSuffix;
 				topic.subscribe(url, lang.hitch(this, function _send (appId, request) {
 					this.send(request, appId);
 				}, appId));
