@@ -50,7 +50,7 @@ define([
 		 * @param {rishson.control.Request} request to send to the server
 		 * @description Issues the provided <code>rishson.control.Request</code> in an asynchronous manner
 		 */
-		send: function (request) {
+		send: function (request, appId) {
 			var testFuncName = 'processRequest', //name of the function to call on the TestMethod module
 				self = this, //maintain self-reference for inside require callback
 			/*get the full namespace of the module to provide the response
@@ -66,6 +66,11 @@ define([
 				methodParams,
 				mockResponse,
 				wrappedResponse;
+
+			//if an app is specified in the send, then get the application specific url
+			if (appId) {
+				namespace = this.apps[appId];
+			}
 
 			if (request.declaredClass === 'rishson.control.ServiceRequest') {
 				namespace += 'serviceResponses/' + request.toUrl();
