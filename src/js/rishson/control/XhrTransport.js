@@ -92,7 +92,7 @@ define([
 						ioArgs);
 					this.handleResponseFunc(request, wrappedResponse);
 				});
-				xhrParams.error = lang.hitch(this, function (response, ioArgs) {
+				xhrParams.error = function (response, ioArgs) {
 					var wrappedResponse = new Response(response,
 						request.type === 'rest',
 						ioArgs);
@@ -109,7 +109,7 @@ define([
 						this.handleErrorFunc(request, response);
 						//you could do further processing such as put the transport in a retry or quiescent state
 					}
-				});
+				};
 				if (request.type === 'rest') {
 					xhrFunction = xhr[request.verb]; // get, put, post, or delete
 					if (request.verb === 'put') {

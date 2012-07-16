@@ -245,7 +245,7 @@ define([
 				appObj = {};
 
 			for  (i; i < l; i += 1) {
-				appId = apps[i].id;
+				appId = apps[i].id.toLowerCase();
 				//create a tag value entry on the appObj where the key is the application id and the value the baseUrl
 				appObj[appId] = apps[i].baseUrl;
 				url = '/' + appId + topicPrefix;
