@@ -139,7 +139,7 @@ define([
 				if (request.callbackScope) {
 					scopedCallback = lang.hitch(request.callbackScope, request.callback);
 				} else {
-					scopedCallback = request.callback;  //if no scope is specified then assume the callback must already be scoped
+					scopedCallback = request.callback;  //no scope specified so assume the callback is already scoped
 				}
 
 				//return the original request along with the response if required
@@ -212,14 +212,14 @@ define([
 				lang.mixin(this, mixinObj);
 
 				//check if any app needs to use websocket and if so initialise cometd
-				loginResponse.apps.some(function(app){
+				arrayUtil.some(loginResponse.apps, function (app) {
 					if (app.websocket){
 						anyAppHasWebsocketEnabled = true;
 					}
 				}, this);
 
 				if (anyAppHasWebsocketEnabled) {
-					this.pushHandler = new PushHandler(this.transport.baseUrl);
+					this._pushHandler = new PushHandler(this.transport.baseUrl);
 				}
 
 				//convert authorities to lower case so we can do case-insensitive search for authorities

@@ -27,8 +27,6 @@ define([
 		 */
 		url: '',
 
-		pushHander : null,
-
 		/**
 		 * @constructor
 		 * @param {string} url the url to connect to
@@ -98,11 +96,11 @@ define([
 		_handshake: function (handshake) {
 			if (handshake.successful === true) {
 				cometd.batch(function() {
-					cometd.subscribe('/hello', function(message) {
-						dojo.byId('body').innerHTML += '<div>Server Says: ' + message.data.greeting + '</div>';
+					cometd.subscribe('/handshake', function (message) {
+						console.debug("Server Says: " + message.data.greeting);
 					});
 					// Publish on a service channel since the message is for the server only
-					cometd.publish('/service/hello', { name: 'World' });
+					cometd.publish('/handshake', {hello: 'World'});
 				});
 			}
 		},
@@ -111,10 +109,11 @@ define([
 		 * @function
 		 * @name rishson.control.PushHandler._connectionEstablished
 		 * @description invoked when first contacting the server and when the server has lost the state of this client
+		 * MUST BE IDEMPOTENT.
 		 * @private
 		 */
 		_connectionEstablished : function () {
-
+			console.debug("Connection established");
 		},
 
 		/**
@@ -124,7 +123,7 @@ define([
 		 * @private
 		 */
 		_connectionBroken : function () {
-
+			console.debug("Connection broken");
 		},
 
 		/**
@@ -134,7 +133,7 @@ define([
 		 * @private
 		 */
 		_connectionClosed : function () {
-
+			console.debug("Connection closed");
 		},
 
 		/**

@@ -53,13 +53,13 @@ define([
 		send: function (request, appId) {
 			var testFuncName = 'processRequest', //name of the function to call on the TestMethod module
 				self = this, //maintain self-reference for inside require callback
-			/*get the full namespace of the module to provide the response
-			 The namespace is in the form test.data.[typeOfResponse].[request.url]
-			 e.g. for a service request:
-			 test.data.serviceResponses.someService.SomeMethod
-			 for a rest service:
-			 test.data.restResponses.someService.SomeEndpoint
-			 */
+				/*get the full namespace of the module to provide the response
+				 The namespace is in the form test.data.[typeOfResponse].[request.url]
+				 e.g. for a service request:
+				 test.data.serviceResponses.someService.SomeMethod
+				 for a rest service:
+				 test.data.restResponses.someService.SomeEndpoint
+				 */
 				namespace = this.namespace,
 				indexOfClassName,
 				testMethodClass,
