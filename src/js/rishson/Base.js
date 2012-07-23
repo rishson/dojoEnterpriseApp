@@ -15,14 +15,6 @@ define([
 	return declare('rishson.Base', null, {
 		/**
 		 * @field
-		 * @name rishson.Base.isInitialised
-		 * @type {boolean}
-		 * @description Is the widget initialised? Default to false - duh.
-		 */
-		isInitialised: false,
-
-		/**
-		 * @field
 		 * @name rishson.Base._parentTopicNamespace
 		 * @type {string}
 		 * @description This namespace is prepended to every topic name used by a derived class
@@ -194,16 +186,6 @@ define([
 					//ignore errors thrown by IE when doing teardown of Grids whose domNode's get removed early
 				}
 			}
-		},
-
-		/**
-		 * @function
-		 * @private
-		 * @description When the derived is ready then it can call this function to publish their state
-		 */
-		_initialise: function () {
-			this.isInitialised = true;
-			topic.publish(this.pubList.INITIALISED, this._id, this);
 		}
 	});
 });
