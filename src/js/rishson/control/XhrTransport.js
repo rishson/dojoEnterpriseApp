@@ -3,10 +3,10 @@ define([
 	"dojo/_base/lang", // mixin, hitch
 	"dojo/_base/xhr", // get, put, post, delete
 	"dojo/json", // stringify
-	"rishson/control/Response",	//constructor
-	"rishson/control/Transport",	//mixin
-	"rishson/util/ObjectValidator",	//validate
-	"dojo/io/script"	//jsonp
+	"rishson/control/Response", //constructor
+	"rishson/control/Transport", //mixin
+	"rishson/util/ObjectValidator", //validate
+	"dojo/io/script"    //jsonp
 ], function (declare, lang, xhr, json, Response, Transport, ObjectValidator, script) {
 	/**
 	 * @class
@@ -30,7 +30,6 @@ define([
 		 * @description the number of milliseconds that a <code>rishson.control.Request</code> can take before the call is aborted.
 		 */
 		requestTimeout: 5000, //defaults to 5 seconds
-
 
 		/**
 		 * @constructor
@@ -59,10 +58,9 @@ define([
 		 * @description Issues the provided <code>rishson.control.Request</code> in an asynchronous manner
 		 */
 		send: function (request, appId) {
-			var postParams = json.stringify(this.createBasePostParams(request)),
-				xhrFunction = xhr.post, //default to post as this is used for service requests as well as rest
+			var xhrFunction = xhr.post, //default to post as this is used for service requests as well as rest
 				xhrParams,
-				jsonpCallback,	// Callback to run if jsonp.
+				jsonpCallback, // Callback to run if jsonp.
 				url;
 
 			//do autoincrement sendID if required
@@ -78,9 +76,8 @@ define([
 			//Can't use 'then' in Dojo 1.6 if you need the ioArgs. See #12126 on dojo trac
 			xhrParams = {
 				url: url,
-				content: postParams,
 				handleAs: "json",
-				headers: {'Content-Type': "application/json"},
+				headers: {'Content-Type': "application/json"}, //default to json for SOAP
 				timeout: this.requestTimeout
 			};
 
@@ -112,13 +109,22 @@ define([
 				});
 				if (request.type === 'rest') {
 					xhrFunction = xhr[request.verb]; // get, put, post, or delete
-					if (request.verb === 'put') {
-						xhrParams.putData = postParams;
-						delete (xhrParams.content);
-					} else if (request.verb === 'post') {
-						xhrParams.postData = postParams;
-						delete (xhrParams.content);
+					switch (request.verb) {
+					case 'put':
+						xhrParams.putData = json.stringify(this.createBasePostParams(request));
+						break;
+					case 'post':
+						xhrParams.putData = json.stringify(this.createBasePostParams(request));
+						break;
+					case 'get':
+						xhrParams.headers["Content-Type"] = "text/html";
+						break;
+					case 'delete':
+						xhrParams.headers["Content-Type"] = "text/html";
+						break;
 					}
+				} else {
+					xhrParams.content = json.stringify(this.createBasePostParams(request));  //for SOAP
 				}
 			} else {//JSONP call
 				//to get round cross domain restrictions we use jsonp
