@@ -199,10 +199,9 @@ define([
 		 * @private
 		 */
 		_processSuccessfulLoginResponse : function (response) {
-			var loginResponse,
-				anyAppHasWebsocketEnabled = false;
 			try {
-				loginResponse = new LoginResponse(response),
+				var anyAppHasWebsocketEnabled = false,
+					loginResponse = new LoginResponse(response),
 					mixinObj = {
 						grantedAuthorities: loginResponse.grantedAuthorities,
 						returnRequest: loginResponse.returnRequest
