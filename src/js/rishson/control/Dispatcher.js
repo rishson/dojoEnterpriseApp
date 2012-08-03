@@ -199,15 +199,17 @@ define([
 		 * @private
 		 */
 		_processSuccessfulLoginResponse : function (response) {
-			try {
-				var anyAppHasWebsocketEnabled = false,
-					loginResponse = new LoginResponse(response),
-					mixinObj = {
-						grantedAuthorities: loginResponse.grantedAuthorities,
-						returnRequest: loginResponse.returnRequest
-					},
-					index;
+			var anyAppHasWebsocketEnabled = false,
+				loginResponse,
+				mixinObj = {},
+				index;
 
+			try {
+				loginResponse = new LoginResponse(response);
+				mixinObj = {
+					grantedAuthorities: loginResponse.grantedAuthorities,
+					returnRequest: loginResponse.returnRequest
+				};
 				lang.mixin(this, mixinObj);
 
 				//check if any app needs to use websocket and if so initialise cometd
