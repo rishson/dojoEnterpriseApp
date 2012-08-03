@@ -87,7 +87,7 @@ define([
 			}
 		},
 		{
-			name: "Validation test boolean",
+			name: "Validation test boolean: true",
 			setUp: function () {
 				criteria = [{paramName: 'exampleBoolean', paramType: 'boolean'}];
 				validationRes = false;
@@ -97,6 +97,66 @@ define([
 				var validator = new Validator(criteria);
 				validationRes = validator.validate({exampleBoolean: true});
 				doh.assertTrue(validationRes);
+			},
+			tearDown: function () {
+			}
+		},
+		{
+			name: "Validation test boolean: false",
+			setUp: function () {
+				criteria = [{paramName: 'exampleBoolean', paramType: 'boolean'}];
+				validationRes = false;
+			},
+			runTest: function () {
+				//valid construction -
+				var validator = new Validator(criteria);
+				validationRes = validator.validate({exampleBoolean: false});
+				doh.assertTrue(validationRes);
+			},
+			tearDown: function () {
+			}
+		},
+		{
+			name: "Validation test boolean: undefined",
+			setUp: function () {
+				criteria = [{paramName: 'exampleBoolean', paramType: 'boolean'}];
+				validationRes = false;
+			},
+			runTest: function () {
+				//valid construction -
+				var validator = new Validator(criteria);
+				validationRes = validator.validate({});
+				doh.assertFalse(validationRes);
+			},
+			tearDown: function () {
+			}
+		},
+		{
+			name: "Validation test boolean: null",
+			setUp: function () {
+				criteria = [{paramName: 'exampleBoolean', paramType: 'boolean'}];
+				validationRes = false;
+			},
+			runTest: function () {
+				//valid construction -
+				var validator = new Validator(criteria);
+				validationRes = validator.validate({exampleBoolean: null});
+				doh.assertFalse(validationRes);
+			},
+			tearDown: function () {
+			}
+		},
+		{
+			name: "Validation test boolean: '' (empty string)",
+			setUp: function () {
+				criteria = [{paramName: 'exampleBoolean', paramType: 'boolean'}];
+				validationRes = false;
+			},
+			runTest: function () {
+				//valid construction -
+				var validator = new Validator(criteria);
+				validationRes = validator.validate({exampleBoolean: ""});
+				doh.assertFalse(validationRes);
 			},
 			tearDown: function () {
 			}
