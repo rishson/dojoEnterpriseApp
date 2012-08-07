@@ -105,7 +105,7 @@ define([
 			//the implementing class needs to have _handle[topicName] functions by convention
 			handlerFunc = this[handlerFuncName];
 			if (handlerFuncName && handlerFunc) {
-				topic.subscribe(topicName, lang.hitch(this, handlerFunc));
+				this.subscribe(topicName, lang.hitch(this, handlerFunc));
 			} else {
 				console.error('Autowire failure for topic: ' + topicName + '. No handler: ' + handlerFuncName);
 			}
