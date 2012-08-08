@@ -82,7 +82,7 @@ define([
 			myModel.loaded = false;
 
 			//listen for any listeners that want to register when the model is populated
-			topic.subscribe(topicName + '/register', function (addListener) {
+			this.subscribe(topicName + '/register', function (addListener) {
 				if (!myModel.loaded) {
 					myModel.listeners.push(addListener);	//add listeners because model not yet populated
 				} else {
