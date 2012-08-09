@@ -27,6 +27,18 @@ define([
 
 		/**
 		 * @field
+		 * @name rishson.control.ControllerWidget.types
+		 * @type {Object}
+		 * @description a collection of the different widget types, used to decorate the objects
+		 */
+		types: {
+			MODEL: "model",
+			CONTROLLER: "controller",
+			VIEW: "view"
+		},
+
+		/**
+		 * @field
 		 * @name rishson.control.ControllerWidget.views
 		 * @type {Object}
 		 * @description a collection of all the injected views
@@ -45,6 +57,8 @@ define([
 		 * @constructor
 		 */
 		constructor: function () {
+			this.type = this.types.CONTROLLER;
+
 			this.models = {};
 			this.views = {};
 			this.controllers = {};
@@ -65,6 +79,8 @@ define([
 		 * @param {Object|rishson.widget._Widget} view a widget
 		 */
 		addView : function (view, name) {
+			view.type = this.types.VIEW;
+
 			this.views[name] = view;
 		},
 
@@ -77,18 +93,20 @@ define([
 		 * @description create placeholder for a model and register handler for listener callbacks.
 		 */
 		addModel : function (name, model, topicName) {
+			model.type = this.types.MODEL;
+
 			var myModel = this.models[name] = model;	//lookup shortcut
 			myModel.listeners = [];
 			myModel.loaded = false;
 
 			//listen for any listeners that want to register when the model is populated
-			this.subscribe(topicName + '/register', function (addListener) {
+			this.subscribe(topicName + '/register', lang.hitch(this, function (addListener) {
 				if (!myModel.loaded) {
 					myModel.listeners.push(addListener);	//add listeners because model not yet populated
 				} else {
 					addListener.call(myModel, myModel);	//just call the listener as the model has data
 				}
-			});
+			}));
 		},
 
 		/**
@@ -99,12 +117,12 @@ define([
 		 */
 		broadcastModel: function (model) {
 			var i,
-				observeableModel = new Observable(model),	//wrap the store in Observable
+				observableModel = new Observable(model),	//wrap the store in Observable
 				listeners = model.listeners;
 
 			//call all listeners once with the populated observable model
 			for (i = 0; i < listeners.length; i += 1) {
-				listeners[i].call(observeableModel, observeableModel);
+				listeners[i].call(observableModel, observableModel);
 				listeners.splice(i, 1);
 			}
 		},

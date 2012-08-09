@@ -44,6 +44,10 @@ define([
 			this._id = this.declaredClass;
 
 			this.subList = this.subList || {};
+
+			// An array of topic name / subscription handle pairs
+			// Needed for when the controller wants to unsubscribe from topics
+			this.subListHandles = this.subListHandles || {};
 		},
 
 		/**
@@ -104,8 +108,10 @@ define([
 
 			//the implementing class needs to have _handle[topicName] functions by convention
 			handlerFunc = this[handlerFuncName];
+
 			if (handlerFuncName && handlerFunc) {
-				this.subscribe(topicName, lang.hitch(this, handlerFunc));
+				// Subscribe to topic and keep a reference to the handle for unsubscribing
+				this.subListHandles[topicName] = this.subscribe(topicName, lang.hitch(this, handlerFunc));
 			} else {
 				console.error('Autowire failure for topic: ' + topicName + '. No handler: ' + handlerFuncName);
 			}
