@@ -2,10 +2,11 @@ define([
 	"dojo/_base/declare",	// declare
 	"rishson/Globals",	//TOPIC_NAMESPACE
 	"dojo/_base/lang",	//mixin
+	"rishson/base/lang",
 	"dojo/topic",	// publish/subscribe
 	"dojo/_base/array",	// forEach, indexOf
 	"dojo/_base/Deferred"	//constructor
-], function (declare, Globals, lang, topic, arrayUtil, Deferred) {
+], function (declare, Globals, lang, rishsonLang, topic, arrayUtil, Deferred) {
 
 	/**
 	 * @class
@@ -125,7 +126,7 @@ define([
 
 		/**
 		 * @function
-		 * @name rishson.widget._WidgetInWidget.adopt
+		 * @name rishson.Base.adopt
 		 * @description Instantiate some new item from a passed Class, with props with an optional srcNode (node)
 		 * reference. Also tracks this widget as if it were a child to be destroyed when this parent widget
 		 * is removed.
@@ -157,7 +158,7 @@ define([
 
 		/**
 		 * @function
-		 * @name rishson.widget._WidgetInWidget.orphan
+		 * @name rishson.Base.orphan
 		 * @description Remove a single item from this instance when we destroy it. It is the parent widget's job
 		 * to properly destroy an orphaned child.<p>
 		 * example:<p>
@@ -172,6 +173,9 @@ define([
 		 * Pass any truthy value here and the child will be orphaned and killed.
 		 */
 		orphan: function (widget, destroy) {
+			if (widget._beingDestroyed) { return; }
+
+			// Remove the supporting widget
 			var i = arrayUtil.indexOf(this._supportingWidgets, widget);
 			if (i >= 0) {
 				this._supportingWidgets.splice(i, 1);
@@ -180,12 +184,37 @@ define([
 			if (destroy) {
 				try {
 					if (widget && widget.destroyRecursive) {
-						widget.destroyRecursive();
+						// If this is a controller we need to un-auto-wire any subscriptions
+						// to this widget
+						if (this._unAutoWirePubs && lang.isFunction(this._unAutoWirePubs)) {
+							this._unAutoWirePubs(widget);
+						}
+
+						// We call rishson.Base.destroyDescendants first to ensure that orphan is called
+						// on all children, this ensures a proper recursive tear-down is performed
+						widget.destroyDescendants();
+						widget.destroy();
 					}
 				} catch (e) {
 					//ignore errors thrown by IE when doing teardown of Grids whose domNode's get removed early
 				}
 			}
+		},
+
+		/**
+		 * @function
+		 * @name rishson.Base.destroyDescendants
+		 * @description Calls orphan on any children of the widget
+		 **/
+		destroyDescendants: function () {
+			this._beingDestroyed = true;
+
+			// Determine children to orphan
+			var children = rishsonLang.unionArrays(this._supportingWidgets, this.getChildren());
+
+			arrayUtil.forEach(children, lang.hitch(this, function (widget) {
+				this.orphan(widget, true);
+			}));
 		}
 	});
 });
