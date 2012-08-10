@@ -87,7 +87,6 @@ define([
 
 					// If a handle was found then remove the subscription
 					if (handle) {
-						console.log("Unsubscribed from: " + pubHandleName);
 						this.unsubscribe(handle);
 						delete this.subListHandles[pubHandleName];
 					}
