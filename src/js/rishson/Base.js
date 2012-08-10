@@ -2,11 +2,11 @@ define([
 	"dojo/_base/declare",	// declare
 	"rishson/Globals",	//TOPIC_NAMESPACE
 	"dojo/_base/lang",	//mixin
+	"rishson/base/lang",
 	"dojo/topic",	// publish/subscribe
 	"dojo/_base/array",	// forEach, indexOf
-	"dojo/_base/Deferred",	//constructor
-	"dojox/lang/functional"
-], function (declare, Globals, lang, topic, arrayUtil, Deferred, objHelper) {
+	"dojo/_base/Deferred"	//constructor
+], function (declare, Globals, lang, rishsonLang, topic, arrayUtil, Deferred) {
 
 	/**
 	 * @class
@@ -158,31 +158,6 @@ define([
 
 		/**
 		 * @function
-		 * @name rishson.Base._unAutoWireControllerPubs
-		 * @description Un-subscribes this controller from subscriptions to the supplied widget
-		 * @param {Object} The widget containing a list of published items
-		 */
-		_unAutoWirePubs: function (widget) {
-			var pubList = widget.pubList || (widget.content || {}).pubList, // We want the actual widget if this widget is a ContentPane
-				topicNamespace = this._topicNamespace;
-
-			// Loop through the child widgets pubList
-			objHelper.forIn(pubList, lang.hitch(this, function (pubHandleName) {
-				// If the current controllers namespace appears within this widgets pubList item
-				if (pubHandleName.indexOf(topicNamespace) !== -1) {
-					var handle = this.subListHandles[pubHandleName];
-
-					// If a handle was found then remove the subscription
-					if (handle) {
-						this.unsubscribe(handle);
-						delete this.subListHandles[pubHandleName];
-					}
-				}
-			}));
-		},
-
-		/**
-		 * @function
 		 * @name rishson.Base.orphan
 		 * @description Remove a single item from this instance when we destroy it. It is the parent widget's job
 		 * to properly destroy an orphaned child.<p>
@@ -209,7 +184,9 @@ define([
 			if (destroy) {
 				try {
 					if (widget && widget.destroyRecursive) {
-						if (this.type === "controller") {
+						// If this is a controller we need to un-auto-wire any subscriptions
+						// to this widget
+						if (this._unAutoWirePubs && lang.isFunction(this._unAutoWirePubs)) {
 							this._unAutoWirePubs(widget);
 						}
 
@@ -233,40 +210,11 @@ define([
 			this._beingDestroyed = true;
 
 			// Determine children to orphan
-			var children = this._unionArrays(this._supportingWidgets, this.getChildren());
+			var children = rishsonLang.unionArrays(this._supportingWidgets, this.getChildren());
 
 			arrayUtil.forEach(children, lang.hitch(this, function (widget) {
 				this.orphan(widget, true);
 			}));
-		},
-
-		/**
-		 * @function
-		 * @name rishson.Base._unionArrays
-		 * @description Util function to create a union of two arrays
-		 * @param {Array} First array
-		 * @param {Array} Second array
-		 * @return {Array} Merged array
-		 **/
-		_unionArrays: function (x, y) {
-			var i,
-				k,
-				obj = {},
-				res = [];
-
-			for (i = x.length - 1; i >= 0; --i) {
-				obj[x[i]] = x[i];
-			}
-			for (i = y.length - 1; i >= 0; --i) {
-				obj[y[i]] = y[i];
-			}
-
-			for (k in obj) {
-				if (obj.hasOwnProperty(k)) {
-					res.push(obj[k]);
-				}
-			}
-			return res;
 		}
 	});
 });
