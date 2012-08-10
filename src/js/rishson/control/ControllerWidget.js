@@ -82,13 +82,13 @@ define([
 			myModel.loaded = false;
 
 			//listen for any listeners that want to register when the model is populated
-			this.subscribe(topicName + '/register', function (addListener) {
+			this.subscribe(topicName + '/register', lang.hitch(this, function (addListener) {
 				if (!myModel.loaded) {
 					myModel.listeners.push(addListener);	//add listeners because model not yet populated
 				} else {
 					addListener.call(myModel, myModel);	//just call the listener as the model has data
 				}
-			});
+			}));
 		},
 
 		/**
@@ -99,12 +99,12 @@ define([
 		 */
 		broadcastModel: function (model) {
 			var i,
-				observeableModel = new Observable(model),	//wrap the store in Observable
+				observableModel = new Observable(model),	//wrap the store in Observable
 				listeners = model.listeners;
 
 			//call all listeners once with the populated observable model
 			for (i = 0; i < listeners.length; i += 1) {
-				listeners[i].call(observeableModel, observeableModel);
+				listeners[i].call(observableModel, observableModel);
 				listeners.splice(i, 1);
 			}
 		},
