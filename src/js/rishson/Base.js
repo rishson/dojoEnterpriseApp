@@ -183,17 +183,19 @@ define([
 
 			if (destroy) {
 				try {
-					if (widget && widget.destroyRecursive) {
+					if (widget) {
 						// If this is a controller we need to un-auto-wire any subscriptions
 						// to this widget
 						if (this._unAutoWirePubs && lang.isFunction(this._unAutoWirePubs)) {
 							this._unAutoWirePubs(widget);
 						}
 
-						// We call rishson.Base.destroyDescendants first to ensure that orphan is called
-						// on all children, this ensures a proper recursive tear-down is performed
-						widget.destroyDescendants();
-						widget.destroy();
+						// Destroy the widget
+						if (widget.destroyRecursive) {
+							widget.destroyRecursive();
+						} else if (widget.destroy) {
+							widget.destroy();
+						}
 					}
 				} catch (e) {
 					//ignore errors thrown by IE when doing teardown of Grids whose domNode's get removed early
@@ -204,11 +206,10 @@ define([
 		/**
 		 * @function
 		 * @name rishson.Base.destroyDescendants
-		 * @description Calls orphan on any children of the widget
+		 * @description Override for dijit._WidgetBase.destroyDescendants to orphan all supporting
+		 * widgets and children for objects that inherit from rishon.Base
 		 **/
 		destroyDescendants: function () {
-			this._beingDestroyed = true;
-
 			// Determine children to orphan
 			var children = rishsonLang.unionArrays(this._supportingWidgets, this.getChildren());
 
