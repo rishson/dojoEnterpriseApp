@@ -53,9 +53,23 @@ define([], function () {
 			}
 		},
 
+		/**
+		 * @function
+		 * @name rishson.Base.lang.defer
+		 * @description Defers a function, scheduling it to run after the current call stack has cleared
+		 * @param {Function} func The function to be called
+		 * @param {Object} scope Optional scope for the function to be called within
+		 **/
+		defer = function (func, scope) {
+			return setTimeout(function () {
+				return func.apply(scope);
+			}, 0);
+		},
+
 		lang = {
 			unionArrays: unionArrays,
-			forEachObjProperty: forEachObjProperty
+			forEachObjProperty: forEachObjProperty,
+			defer: defer
 		};
 
 	return lang;
