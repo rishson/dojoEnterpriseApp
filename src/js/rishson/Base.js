@@ -183,7 +183,7 @@ define([
 
 			if (destroy) {
 				try {
-					if (widget && widget.destroyRecursive) {
+					if (widget) {
 						// If this is a controller we need to un-auto-wire any subscriptions
 						// to this widget
 						if (this._unAutoWirePubs && lang.isFunction(this._unAutoWirePubs)) {
