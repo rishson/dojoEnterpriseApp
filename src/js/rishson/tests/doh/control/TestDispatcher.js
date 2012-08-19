@@ -36,7 +36,8 @@ define([
 						iconClass: 'someIconClass',
 						baseUrl: 'someBaseUrl',
 						grantedAuthorities: ['perm1'],
-						module: 'someModule'
+						module: 'someModule',
+						websocket: false
 					}]
 				}, true, {xhr: {status: 200}});
 				validLoginResponse = new LoginResponse(testResponse);
