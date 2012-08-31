@@ -5,8 +5,9 @@ define([
 	"rishson/widget/_Widget", //mixin
 	"rishson/control/_Controller", //mixin
 	"dojo/_base/lang", //isArray
-	"dojo/store/Observable"	//constructor
-], function (declare, topic, Base, _Widget, _Controller, lang, Observable) {
+	"dojo/store/Observable",	//constructor
+	"rishson/base/router/HashParser"
+], function (declare, topic, Base, _Widget, _Controller, lang, Observable, HashParser) {
 	/**
 	 * @class
 	 * @name rishson.control.ControllerWidget
@@ -48,6 +49,7 @@ define([
 			this.models = {};
 			this.views = {};
 			this.controllers = {};
+			this.parser = new HashParser();
 		},
 
 		/**
@@ -59,13 +61,74 @@ define([
 			this.inherited(arguments);
 		},
 
+		// TODO: Not called, probably will need to call something like this to resolve a user route
+		_handleRoute: function () {
+			var hash = new HashParser(),
+				child;
+
+			if (hash.hasChild(this)) {
+				child = this.views[hash.getChildName(this)];
+
+				if (child) {
+					child.display();
+				}
+			} else {
+				child = this.views[this.defaultView];
+				if (child) {
+					child.display();
+				}
+			}
+		},
+
 		/**
 		 * @function
 		 * @name rishson.control.ControllerWidget.addView
 		 * @param {Object|rishson.widget._Widget} view a widget
 		 */
-		addView : function (view, name) {
+		addView : function (params) {
+			var view = params.widget,
+				name = params.name,
+				routeName = params.routeName || name,
+				options = params.options || {},
+				displayFn = params.display;
+
 			this.views[name] = view;
+			view._parent = this;
+			view._routeName = routeName;
+
+			// Set the default view for this controller if it was given
+			if (options.isDefault) {
+				if (this._defaultView) {
+					throw new Error("Tried to set default view as " + routeName + " but already set with " + this._defaultView);
+				}
+				this._defaultView = routeName;
+			}
+
+			// If we were passed a display function then create
+			// a display() method on the widget
+			if (lang.isFunction(displayFn)) {
+				// Ensure that the scope is this controller
+				view.display = lang.hitch(this, function () {
+					// Check if there is a child in the URL
+					// If there is and this view contains the child, then we display it
+					if (this.parser.hasChild(view)) {
+						var child = this.parser.getChildName(view);
+
+						if (child && view.views[child]) {
+							view.views[child].display();
+						}
+					} else {
+						// Otherwise we are at the end, so update the hash
+						topic.publish("hash/update", view);
+					}
+
+					return displayFn.call(this); // Call users display function
+				});
+			}
+		},
+
+		removeView: function (name) {
+			delete this.views[name];
 		},
 
 		/**
