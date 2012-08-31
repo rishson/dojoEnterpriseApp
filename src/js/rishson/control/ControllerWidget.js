@@ -74,20 +74,22 @@ define([
 				displayFn = params.display;
 
 			this.views[name] = view;
-			view._parent = this;
-			view._routeName = routeName;
 
-			// Set the default view for this controller if it was given
-			if (options.isDefault) {
-				if (this._defaultView) {
-					throw new Error("Tried to set default view as " + routeName + " but already set with " + this._defaultView);
-				}
-				this._defaultView = routeName;
-			}
-
-			// If we were passed a display function then create
-			// a display() method on the widget
+			// If we were passed a display function then we
+			// need to make this view 'routable'
 			if (lang.isFunction(displayFn)) {
+				view._parent = this;
+				view._routeName = routeName;
+
+				// Set the default view for this controller if it was given
+				if (options.isDefault) {
+					// Ensure no more than one default view is set
+					if (this._defaultView) {
+						throw new Error("Tried to set default view as " + routeName + " but already set with " + this._defaultView);
+					}
+					this._defaultView = routeName;
+				}
+
 				// Ensure that the scope is this controller
 				view.display = lang.hitch(this, function () {
 					// Check if there is a child in the URL

@@ -11,25 +11,25 @@ define([
 	 * @description Helper class to validate constructor params
 	 */
 	return declare('rishson.router.Router', null, {
-		_ignoreNextHashChange: false,
+		_lastSilentSetHash: "",
 
 		start: function (params) {
 			var parser = new HashParser();
 
 			// Listen for manual hash change
 			topic.subscribe("/dojo/hashchange", lang.hitch(this, function (hash) {
-				if (!this._ignoreNextHashChange) {
+				if (hash !== this._lastSilentSetHash) {
 					// Run the callback to navigate to the route
 					params.navigateToRoute();
 				}
-				this._ignoreNextHashChange = false;
 			}));
 
-			// Sets the hash for the current widget being displayed
+			// Silently updates the hash that links to the supplied widget
 			topic.subscribe("hash/update", lang.hitch(this, function (widget) {
-				console.log("Setting hash to: " + parser.resolveRoute(widget));
-				this._ignoreNextHashChange = true;
-				hash(parser.resolveRoute(widget));
+				var newHash = parser.resolveRoute(widget);
+				this._lastSilentSetHash = newHash;
+
+				hash(newHash);
 			}));
 		}
 	});
