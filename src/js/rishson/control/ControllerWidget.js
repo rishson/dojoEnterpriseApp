@@ -61,25 +61,6 @@ define([
 			this.inherited(arguments);
 		},
 
-		// TODO: Not called, probably will need to call something like this to resolve a user route
-		_handleRoute: function () {
-			var hash = new HashParser(),
-				child;
-
-			if (hash.hasChild(this)) {
-				child = this.views[hash.getChildName(this)];
-
-				if (child) {
-					child.display();
-				}
-			} else {
-				child = this.views[this.defaultView];
-				if (child) {
-					child.display();
-				}
-			}
-		},
-
 		/**
 		 * @function
 		 * @name rishson.control.ControllerWidget.addView
@@ -112,14 +93,30 @@ define([
 					// Check if there is a child in the URL
 					// If there is and this view contains the child, then we display it
 					if (this.parser.hasChild(view)) {
-						var child = this.parser.getChildName(view);
+						var childName = this.parser.getChildName(view);
 
-						if (child && view.views[child]) {
-							view.views[child].display();
+						// Find matching view
+						for (var i in view.views) {
+							if (view.views[i]._routeName === childName) {
+								view.views[i].display();
+								break;
+							}
 						}
 					} else {
-						// Otherwise we are at the end, so update the hash
-						topic.publish("hash/update", view);
+						// Else we are at the end of the routing chain
+						// Display a default view if one exists
+						if (view._defaultView) {
+							// Find matching view
+							for (var j in view.views) {
+								if (view.views[j]._routeName === view._defaultView) {
+									view.views[j].display();
+									break;
+								}
+							}
+						} else {
+							// Nothing else to do, update the hash
+							topic.publish("hash/update", view);
+						}
 					}
 
 					return displayFn.call(this); // Call users display function
