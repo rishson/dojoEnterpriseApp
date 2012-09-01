@@ -63,21 +63,27 @@ define([
 		/**
 		 * @function
 		 * @name rishson.control.ControllerWidget.addView
-		 * @param {Object} Parameters
+		 * @param {String} The name of the view
+		 * @param {Object} The view widget
+		 * @param {Object} An optional hash of route options, used to make the view routable
+		 * The object needs to have the following properties:
+		 *	{
+		 *		routeName: String,
+		 *		parent: Object,
+		 *		options: Object,
+		 *		display: Function
+		 *	}
 		 */
-		addView : function (params) {
-			this.views[params.name] = params.widget; // Add to hash
+		addView : function (name, view, routeOptions) {
+			this.views[params.name] = view;
 
-			// If we were passed a display function then we
-			// need to make this view 'routable'
-			if (params.display) {
-				routerUtil.makeRoutable({
-					widget: params.widget,
-					display: params.display,
-					routeName: params.routeName || params.name,
-					options: params.options,
-					parent: this
-				});
+			// If we were passed route options then this view
+			// needs to be made 'routable'
+			if (routeOptions) {
+				routeOptions.widget = view;
+				routeOptions.routeName || name;
+
+				routerUtil.makeRoutable(routeOptions);
 			}
 		},
 

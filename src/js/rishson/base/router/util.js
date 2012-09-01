@@ -14,8 +14,8 @@ define([
 		 * @function
 		 * @name rishson.router.Router.makeRoutable
 		 * @param {Object} A widget
-		 * @description Augments a widget to become 'routable'. This essentially creates a display
-		 * function on the widget which should be used to display the widget
+		 * @description Augments a widget to become 'routable'. This essentially creates a display()
+		 * function for the widget which calls display() on any child widgets that may be in the URL.
 		 */
 		makeRoutable: function (params) {
 			var widget = params.widget,
