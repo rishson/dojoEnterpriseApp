@@ -6,8 +6,8 @@ define([
 	"rishson/control/_Controller", //mixin
 	"dojo/_base/lang", //isArray
 	"dojo/store/Observable",	//constructor
-	"rishson/base/router/HashParser"
-], function (declare, topic, Base, _Widget, _Controller, lang, Observable, HashParser) {
+	"rishson/base/router/util"
+], function (declare, topic, Base, _Widget, _Controller, lang, Observable, routerUtil) {
 	/**
 	 * @class
 	 * @name rishson.control.ControllerWidget
@@ -49,7 +49,6 @@ define([
 			this.models = {};
 			this.views = {};
 			this.controllers = {};
-			this.parser = new HashParser();
 		},
 
 		/**
@@ -64,64 +63,20 @@ define([
 		/**
 		 * @function
 		 * @name rishson.control.ControllerWidget.addView
-		 * @param {Object|rishson.widget._Widget} view a widget
+		 * @param {Object} Parameters
 		 */
 		addView : function (params) {
-			var view = params.widget,
-				name = params.name,
-				routeName = params.routeName || name,
-				options = params.options || {},
-				displayFn = params.display;
-
-			this.views[name] = view;
+			this.views[params.name] = params.widget; // Add to hash
 
 			// If we were passed a display function then we
 			// need to make this view 'routable'
-			if (lang.isFunction(displayFn)) {
-				view._parent = this;
-				view._routeName = routeName;
-
-				// Set the default view for this controller if it was given
-				if (options.isDefault) {
-					// Ensure no more than one default view is set
-					if (this._defaultView) {
-						throw new Error("Tried to set default view as " + routeName + " but already set with " + this._defaultView);
-					}
-					this._defaultView = routeName;
-				}
-
-				// Ensure that the scope is this controller
-				view.display = lang.hitch(this, function () {
-					// Check if there is a child in the URL
-					// If there is and this view contains the child, then we display it
-					if (this.parser.hasChild(view)) {
-						var childName = this.parser.getChildName(view);
-
-						// Find matching view
-						for (var i in view.views) {
-							if (view.views[i]._routeName === childName) {
-								view.views[i].display();
-								break;
-							}
-						}
-					} else {
-						// Else we are at the end of the routing chain
-						// Display a default view if one exists
-						if (view._defaultView) {
-							// Find matching view
-							for (var j in view.views) {
-								if (view.views[j]._routeName === view._defaultView) {
-									view.views[j].display();
-									break;
-								}
-							}
-						} else {
-							// Nothing else to do, update the hash
-							topic.publish("hash/update", view);
-						}
-					}
-
-					return displayFn.call(this); // Call users display function
+			if (params.display) {
+				routerUtil.makeRoutable({
+					widget: params.widget,
+					display: params.display,
+					routeName: params.routeName || params.name,
+					options: params.options,
+					parent: this
 				});
 			}
 		},

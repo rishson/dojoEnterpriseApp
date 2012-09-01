@@ -1,35 +1,71 @@
 define([
 	"dojo/_base/declare",
 	"dojo/_base/lang",
-	"dojo/hash",
 	"dojo/topic",
-	"rishson/base/router/HashParser"
-], function (declare, lang, hash, topic, HashParser) {
+	"rishson/base/router/_hashParser"
+], function (declare, lang, topic, parser) {
 	/**
 	 * @class
-	 * @name rishson.router.Router
-	 * @description Helper class to validate constructor params
+	 * @name rishson.base.router.Router
+	 * @description Router
 	 */
-	return declare('rishson.router.Router', null, {
-		_lastSilentSetHash: "",
+	return declare('rishson.base.router.Router', null, {
+		/**
+		 * @field
+		 * @name rishson.base.router.Router._routeChangeEvent
+		 * @type {String}
+		 * @private
+		 * @description The event to subscribe to when the route changes
+		 */
+		_routeChangeEvent: "/dojo/hashchange",
 
-		start: function (params) {
-			var parser = new HashParser();
+		/**
+		 * @field
+		 * @name rishson.base.router.Router._lastRoute
+		 * @type {String}
+		 * @private
+		 * @description The most recent silently-set route.
+		 * Used to supress the event that this change fired
+		 */
+		_lastRoute: null,
 
-			// Listen for manual hash change
-			topic.subscribe("/dojo/hashchange", lang.hitch(this, function (hash) {
-				if (hash !== this._lastSilentSetHash) {
-					// Run the callback to navigate to the route
-					params.navigateToRoute();
+		/**
+		 * @field
+		 * @name rishson.base.router.Router._onRouteChange
+		 * @type {Function}
+		 * @private
+		 * @description A function that is executed when the route changes
+		 */
+		_onRouteChange: null,
+
+		/**
+		 * @constructor
+		 */
+		constructor: function (params) {
+			this._onRouteChange = params.onRouteChange;
+		},
+
+		/**
+		 * @function
+		 * @name rishson.base.router.Router.start
+		 * @param {Object} A widget
+		 * @description autowire the published topics from the child widget to event handlers on the controller widget.
+		 */
+		start: function () {
+			// On route change
+			// Called when the URL is manually changed in the browser
+			topic.subscribe(this._routeChangeEvent, lang.hitch(this, function (route) {
+				if (route !== this._lastRoute) {
+					this._onRouteChange();
 				}
 			}));
 
-			// Silently updates the hash that links to the supplied widget
-			topic.subscribe("hash/update", lang.hitch(this, function (widget) {
-				var newHash = parser.resolveRoute(widget);
-				this._lastSilentSetHash = newHash;
-
-				hash(newHash);
+			// On route update
+			// Called by the application wanting to silently update the route
+			topic.subscribe("route/update", lang.hitch(this, function (widget) {
+				var route = parser.resolveRoute(widget);
+				this._lastRoute = route;
+				parser.set(route);
 			}));
 		}
 	});
