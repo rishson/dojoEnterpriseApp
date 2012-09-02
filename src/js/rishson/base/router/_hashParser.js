@@ -38,12 +38,10 @@ define([
 		 * @description 
 		 */
 		getChildName: function (widget) {
-			if (this.hasChild(widget)) {
-				var hashArray = hash().split(this.delimiter),
-					widgetIndex = hashArray.indexOf(this._extractRouteName(widget));
+			var hashArray = hash().split(this.delimiter),
+				widgetIndex = hashArray.indexOf(this._extractRouteName(widget));
 
-				return hashArray[widgetIndex + 1];
-			}
+			return hashArray[widgetIndex + 1];
 		},
 
 		/**
@@ -56,7 +54,8 @@ define([
 		resolveRoute: function (widget) {
 			var hash = "";
 
-			// While we have a parent we work up the chain to create the hash
+			// While we have a parent that can supply a route 
+			// we work up the chain to construct the hash
 			while (widget && this._extractRouteName(widget)) {
 				hash = this._extractRouteName(widget) + this.delimiter + hash;
 				widget = widget._parent || null;

@@ -17,12 +17,12 @@ define([
 		 * @description Augments a widget to become 'routable'. This essentially creates a display()
 		 * function for the widget which calls display() on any child widgets that may be in the URL.
 		 */
-		makeRoutable: function (params) {
-			var widget = params.widget,
-				displayFn = params.display,
-				routeName = params.routeName,
-				parent = params.parent,
-				options = params.options || {};
+		makeRoutable: function (routeParams) {
+			var widget = routeParams.widget,
+				displayFn = routeParams.display,
+				routeName = routeParams.routeName,
+				parent = routeParams.parent,
+				options = routeParams.options || {};
 
 			// Augment widget with router related members
 			widget._parent = parent;
