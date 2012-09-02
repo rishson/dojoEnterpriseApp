@@ -5,14 +5,14 @@ define([], function () {
 	 * @description A collection of language functions that can be mixed into other modules
 	 */
 
-	/**
-	 * @function
-	 * @name rishson.Base.lang._unionArrays
-	 * @description Creates the union of two arrays
-	 * @param {Array} x First array
-	 * @param {Array} y Second array
-	 * @return {Array} Merged array
-	 **/
+		/**
+		 * @function
+		 * @name rishson.Base.lang._unionArrays
+		 * @description Creates the union of two arrays
+		 * @param {Array} x First array
+		 * @param {Array} y Second array
+		 * @return {Array} Merged array
+		 **/
 	var unionArrays = function (x, y) {
 			var i,
 				k,
