@@ -25,7 +25,7 @@ define([
 		 * @type {String}
 		 * @private
 		 * @description The most recent silently-set route.
-		 * Used to supress the event that this change fired
+		 * This is used to suppress the event that this change created
 		 */
 		_lastRoute: null,
 
@@ -34,7 +34,7 @@ define([
 		 * @name rishson.base.router.Router._onRouteChange
 		 * @type {Function}
 		 * @private
-		 * @description A function that is executed when the route changes
+		 * @description A function executed every time the route changes
 		 */
 		_onRouteChange: null,
 
@@ -48,7 +48,6 @@ define([
 		/**
 		 * @function
 		 * @name rishson.base.router.Router.start
-		 * @param {Object} A widget
 		 * @description autowire the published topics from the child widget to event handlers on the controller widget.
 		 */
 		start: function () {
@@ -56,14 +55,14 @@ define([
 			// Called when the URL is manually changed in the browser
 			topic.subscribe(this._routeChangeEvent, lang.hitch(this, function (route) {
 				if (route !== this._lastRoute) {
-					this._onRouteChange();
+					this._onRouteChange(parser.getChild(0));
 				}
 			}));
 
 			// On route update
 			// Called by the application wanting to silently update the route
-			topic.subscribe("route/update", lang.hitch(this, function (widget) {
-				var route = parser.resolveRoute(widget);
+			topic.subscribe("route/update", lang.hitch(this, function (params) {
+				var route = parser.resolveRoute(params.widget, params.parameters);
 				this._lastRoute = route;
 				parser.set(route);
 			}));

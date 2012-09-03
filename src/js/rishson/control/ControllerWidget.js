@@ -6,8 +6,8 @@ define([
 	"rishson/control/_Controller", //mixin
 	"dojo/_base/lang", //isArray
 	"dojo/store/Observable",	//constructor
-	"rishson/base/router/util"
-], function (declare, topic, Base, _Widget, _Controller, lang, Observable, routerUtil) {
+	"rishson/base/router/Route"
+], function (declare, topic, Base, _Widget, _Controller, lang, Observable, Route) {
 	/**
 	 * @class
 	 * @name rishson.control.ControllerWidget
@@ -42,6 +42,8 @@ define([
 		 */
 		controllers: null,
 
+		routes:  null,
+
 		/**
 		 * @constructor
 		 */
@@ -49,6 +51,7 @@ define([
 			this.models = {};
 			this.views = {};
 			this.controllers = {};
+			this.routes = {};
 		},
 
 		/**
@@ -74,17 +77,8 @@ define([
 		 *		display: Function
 		 *	}
 		 */
-		addView : function (name, view, routeOptions) {
-			this.views[params.name] = view;
-
-			// If we were passed route options then this view
-			// needs to be made 'routable'
-			if (routeOptions) {
-				routeOptions.widget = view;
-				routeOptions.routeName || name;
-
-				routerUtil.makeRoutable(routeOptions);
-			}
+		addView: function (name, view) {
+			this.views[name] = view;
 		},
 
 		removeView: function (name) {
@@ -99,7 +93,7 @@ define([
 		 * @param {string} topicName the name of a topic to subscribe to
 		 * @description create placeholder for a model and register handler for listener callbacks.
 		 */
-		addModel : function (name, model, topicName) {
+		addModel: function (name, model, topicName) {
 			var myModel = this.models[name] = model;	//lookup shortcut
 			myModel.listeners = [];
 			myModel.loaded = false;
@@ -112,6 +106,21 @@ define([
 					addListener.call(myModel, myModel);	//just call the listener as the model has data
 				}
 			}));
+		},
+
+		/**
+		 * @function
+		 * @name rishson.control.ControllerWidget.addRoute
+		 * @param {string} routeName The route name, used in the URL
+		 * @param {Object} params A hash of parameters to construct the route
+		 * @description Creates a new route for a given widget
+		 */
+		addRoute: function (routeName, params) {
+			// Patch up the params object
+			params.parent = params.parent || this;
+			params.routeName = routeName;
+
+			this.routes[params.routeName] = this.adopt(Route, params);
 		},
 
 		/**
