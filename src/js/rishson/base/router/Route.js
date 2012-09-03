@@ -85,20 +85,18 @@ define([
 
 			// Finally we call the users display function to actually display the widget
 			// Called in the parents scope to eliminate the need for scope hitching
-			// The parameters are validated first
-			if (this._validate(routeParameters)) {
+			if (this._options.suppressValidation || this._validate(routeParameters)) {
 				return this._displayFn.call(this._parent, routeParameters, this._widget);
 			}
 		},
 
 		_validate: function (routeParameters) {
-			if (this._parameterCriteria && routeParameters) {
-				return new Validator(this._parameterCriteria).validate(routeParameters);
-			} else if (!this._parameterCriteria) {
+			if (!this._parameterCriteria) {
 				return true;
-			} else {
-				return false;
+			} else if (this._parameterCriteria && routeParameters) {
+				return new Validator(this._parameterCriteria).validate(routeParameters);
 			}
+			return false;
 		},
 
 		getRouteName: function () {
