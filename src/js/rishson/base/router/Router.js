@@ -21,6 +21,15 @@ define([
 
 		/**
 		 * @field
+		 * @name rishson.base.router.Router._routeUpdateEvent
+		 * @type {String}
+		 * @private
+		 * @description The event to subscribe to when the route needs to be updated
+		 */
+		_routeUpdateEvent: "route/update",
+
+		/**
+		 * @field
 		 * @name rishson.base.router.Router._lastRoute
 		 * @type {String}
 		 * @private
@@ -42,7 +51,11 @@ define([
 		 * @constructor
 		 */
 		constructor: function (params) {
-			this._onRouteChange = params.onRouteChange;
+			if (lang.isFunction(params.onRouteChange)) {
+				this._onRouteChange = params.onRouteChange;
+			} else {
+				throw new Error("No function: onRouteChange");
+			}
 		},
 
 		/**
@@ -60,8 +73,8 @@ define([
 			}));
 
 			// On route update
-			// Called by the application wanting to silently update the route
-			topic.subscribe("route/update", lang.hitch(this, function (params) {
+			// Called by the application wanting to silently update the URL
+			topic.subscribe(this._routeUpdateEvent, lang.hitch(this, function (params) {
 				var route = parser.resolveRoute(params.widget, params.parameters);
 				this._lastRoute = route;
 				parser.set(route);

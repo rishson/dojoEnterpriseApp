@@ -9,7 +9,9 @@ define([
 	/**
 	 * @class
 	 * @name rishson.util._hashParser
-	 * @description Provides utility functions for reading and setting the hash
+	 * @description Provides utility functions for reading and setting the hash.
+	 * The general idea of the parser is that it provide an API that deals with
+	 * widgets and not raw strings
 	 */
 	return {
 		/**
@@ -44,10 +46,26 @@ define([
 		 */
 		_paramKeyValueSplitter: "=",
 
+		/**
+		 * @function
+		 * @name rishson.router._hashParser._stripParameters
+		 * @private
+		 * @description Strips any parameters from a single hash item
+		 */
 		_stripParameters: function (hashItem) {
 			return hashItem.split(this._paramSplitter)[0];
 		},
 
+		/**
+		 * @function
+		 * @name rishson.router._hashParser._castParamsFromCriteria
+		 * @private
+		 * @description Casts the given parameters to their types as defined in the
+		 * criteria array. Any parameters that aren't defined in the criteria are ignored.
+		 * @param {Object} keyedParams The parsed URL parameters ready for casting
+		 * @param {Array} criteria A collection of criteria objects describing each parameters data type
+		 * @return A hash of cast parameters
+		 */
 		_castParamsFromCriteria: function (keyedParams, criteria) {
 			var resolvedParams = {};
 
@@ -56,7 +74,12 @@ define([
 					// Find corresponding criteria object
 					if (criteriaItem.paramName === paramName) {
 						switch (criteriaItem.paramType) {
-						case "string":
+						case "array":
+							// If ioQuery saw one item then it didn't create an array
+							// We need to do this manually
+							if (lang.isString(param)) {
+								param = [param];
+							}
 							break;
 						case "number":
 							if (param && !isNaN(param)) {
@@ -83,7 +106,7 @@ define([
 		 * @function
 		 * @name rishson.router._hashParser.hasChild
 		 * @param {rishson.widget._Widget} widget A widget
-		 * @description autowire the published topics from the child widget to event handlers on the controller widget.
+		 * @description Returns a boolean denoting whether the widget contains a child in the hash.
 		 */
 		hasChild: function (widget) {
 			var hashArray = hash().split(this._itemDelimiter),
@@ -93,6 +116,12 @@ define([
 			return (widgetIndex !== -1) && (hashArray[widgetIndex + 1]);
 		},
 
+		/**
+		 * @function
+		 * @name rishson.router._hashParser.getChild
+		 * @param {Number} index A zero based index denoting the child to retrieve
+		 * @description Returns the name of a hashItem child at a given index.
+		 */
 		getChild: function (index) {
 			var hashArray = hash().split(this._itemDelimiter);
 			if (hashArray[index]) {
@@ -104,7 +133,7 @@ define([
 		 * @function
 		 * @name rishson.router._hashParser.getChildName
 		 * @param {rishson.widget._Widget} widget A widget
-		 * @description 
+		 * @description Gets the name of a hashItem child of a given widget.
 		 */
 		getChildName: function (widget) {
 			var hashArray = hash().split(this._itemDelimiter),
@@ -140,6 +169,15 @@ define([
 			return hash;
 		},
 
+		/**
+		 * @function
+		 * @name rishson.router._hashParser.getQueryParameters
+		 * @param {rishson.widget._Widget} widget A widget
+		 * @param {Array} criteria The criteria used to parse the hash items
+		 * @description Parses any query string parameters for a given widget and casts
+		 * them to their types as defined in the criteria array.
+		 * @return {Object} A hash of type-cast query parameters.
+		 */
 		getQueryParameters: function (widget, criteria) {
 			var hashParams,
 				keyedParams,

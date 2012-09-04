@@ -1,27 +1,64 @@
 define([
 	"dojo/_base/declare",
 	"dojo/_base/lang",
+	"dojo/_base/array",
 	"rishson/base/lang",
 	"rishson/util/ObjectValidator",
 	"dojo/topic",
 	"rishson/base/router/_hashParser"
-], function (declare, lang, rishsonLang, Validator, topic, parser) {
+], function (declare, lang, arrayUtil, rishsonLang, Validator, topic, parser) {
 	/**
 	 * @class
 	 * @name rishson.base.router.Route
 	 * @description A route object that wraps a widget
 	 */
-	return declare('rishson.base.router.Router', null, {
+	return declare('rishson.base.router.Route', null, {
+		/**
+		 * @field
+		 * @name rishson.router.Route._widget
+		 * @type {rishson.widget._Widget}
+		 * @description The widget that this route belongs to
+		 */
 		_widget: null,
 
+		/**
+		 * @field
+		 * @name rishson.router.Route._displayFn
+		 * @type {Function}
+		 * @description A function that displays the widget to the end user
+		 */
 		_displayFn: null,
 
+		/**
+		 * @field
+		 * @name rishson.router.Route._routeName
+		 * @type {String}
+		 * @description Used in the URL to define the path to this widget
+		 */
 		_routeName: null,
 
+		/**
+		 * @field
+		 * @name rishson.router.Route._parent
+		 * @type {rishson.widget._Widget}
+		 * @description The parent widget for the widget that this route represents
+		 */
 		_parent: null,
 
+		/**
+		 * @field
+		 * @name rishson.router.Route._options
+		 * @type {Object}
+		 * @description A hash of options for this route
+		 */
 		_options: null,
 
+		/**
+		 * @field
+		 * @name rishson.router.Route._parameterCriteria
+		 * @type {Array}
+		 * @description The criteria for any corresponding query string parameters
+		 */
 		_parameterCriteria: null,
 
 		/**
@@ -49,6 +86,15 @@ define([
 			}
 		},
 
+		/**
+		 * @function
+		 * @name rishson.router.Route.display
+		 * @param {Object} routeParameters Any programmatically passed parameters
+		 * @description Called whenever a widget needs displaying to the end user.
+		 * Before running the native display function, the current route is checked for a child
+		 * of this widget, if found, we call display on it first.
+		 * @return {?} Any return values that are returned by the native display function.
+		 */
 		display: function (routeParameters) {
 			// Check if there is a child in the URL
 			if (parser.hasChild(this._widget)) {
@@ -83,22 +129,63 @@ define([
 				}
 			}
 
-			// Finally we call the users display function to actually display the widget
-			// Called in the parents scope to eliminate the need for scope hitching
+			// If validation passed, or we don't need to validate
 			if (this._options.suppressValidation || this._validate(routeParameters)) {
+				// Call the users display function to actually display the widget
 				return this._displayFn.call(this._parent, routeParameters, this._widget);
+			} else if (!this._options.suppressValidation) {
+				// Validation failed
+				console.error("Route: " + parser.resolveRoute(this._widget) +
+					" was passed parameters: ", routeParameters,
+					" but expected criteria: ", this._parameterCriteria);
 			}
 		},
 
+		/**
+		 * @function
+		 * @name rishson.router.Route._validate
+		 * @private
+		 * @param {Object} routeParameters The parameters to validate
+		 * @description Validates the routeParameters.
+		 * @return {Boolean} Denotes whether validation has passed or failed.
+		 */
 		_validate: function (routeParameters) {
-			if (!this._parameterCriteria) {
+			if (this._parameterCriteria && routeParameters) {
+				var validator = new Validator(this._stripNonRequiredCriteria(this._parameterCriteria));
+				return validator.validate(routeParameters);
+			} else if (!this._parameterCriteria) {
 				return true;
-			} else if (this._parameterCriteria && routeParameters) {
-				return new Validator(this._parameterCriteria).validate(routeParameters);
 			}
 			return false;
 		},
 
+		/**
+		 * @function
+		 * @name rishson.router.Route._stripNonRequiredCriteria
+		 * @private
+		 * @param {Array} criteria The parameter criteria
+		 * @description Helper function which strips any non-required items. This is used
+		 * when validating parameters as we are only concerned with those that are required
+		 * @return {Array} The stripped criteria.
+		 */
+		_stripNonRequiredCriteria: function (criteria) {
+			var required = [];
+
+			arrayUtil.forEach(criteria, function (criteriaItem) {
+				if (criteriaItem.required) {
+					required.push(criteriaItem);
+				}
+			});
+			return required;
+		},
+
+		/**
+		 * @function
+		 * @name rishson.router.Route.getRouteName
+		 * @private
+		 * @description Returns the route name for this route.
+		 * @return {String} The route name.
+		 */
 		getRouteName: function () {
 			return this._routeName;
 		}
