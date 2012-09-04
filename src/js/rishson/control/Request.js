@@ -59,18 +59,15 @@ define([
 		 */
 		constructor: function (params) {
 			//see if the request contains a callback
-			var criteria = [],
+			var criteria = [{paramName: 'callback', paramType: 'function'},
+				{paramName: 'callbackScope', paramType: 'object'}],
 				validator = new ObjectValidator(criteria);
-
-			criteria.push({paramName: 'callback', paramType: 'function'});
-			criteria.push({paramName: 'callbackScope', paramType: 'object'});
 
 			if (validator.validate(params)) {
 				lang.mixin(this, params);
 			} else {
 				//see if the request contains a topic
-				criteria = [];
-				criteria.push({paramName: 'topic', paramType: 'string'});
+				criteria = [{paramName: 'topic', paramType: 'string'}];
 				validator = new ObjectValidator(criteria);
 
 				if (validator.validate(params)) {

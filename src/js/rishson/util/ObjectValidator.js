@@ -3,7 +3,6 @@ define([
 	"dojo/_base/lang", // isString, etc.
 	"dojo/_base/array" // forEach
 ], function (declare, lang, arrayUtil) {
-
 	/**
 	 * @class
 	 * @name rishson.util.ObjectValidator
@@ -18,15 +17,26 @@ define([
 		 * @description contains all the validation criteria to examine
 		 * Criteria are in the form:
 		 *  {name : type}
-		 *  where type can be [string|array|function|object]
+		 *  where type can be [string|array|function|object|boolean|criteria]
 		 */
 		validationCriteria: null,
+
+		/**
+		 * @field
+		 * @name rishson.util.ObjectValidator.lastParam
+		 * @type {string}
+		 * @description contains the last param evaluated
+		 */
+		lastParam: '',
 
 		/**
 		 * @constructor
 		 * @param {Array} validationCriteria contains all the validation criteria to examine
 		 */
 		constructor: function (validationCriteria) {
+			if (!validationCriteria || !lang.isArray(validationCriteria) || validationCriteria.length < 1) {
+				throw ('Invalid criteria passed to constructor');
+			}
 			this.validationCriteria = validationCriteria;
 		},
 
@@ -110,23 +120,51 @@ define([
 		 */
 		_validateParam: function (param, criteria) {
 			var paramValue = param[criteria.paramName],
-				paramType = criteria.paramType;
+				paramType = criteria.paramType,
+				allItemsValid = true;
 
-			if (paramType === 'string') {
-				return lang.isString(paramValue);
-			} else if (paramType === 'array') {
-				return lang.isArray(paramValue);
-			} else if (paramType === 'function') {
-				return lang.isFunction(paramValue);
-			} else if (paramType === 'object') {
-				return lang.isObject(paramValue);
-			} else if (paramType === 'boolean') {
-				return paramValue && (paramValue instanceof Boolean || typeof paramValue === "boolean");
-			} else if (paramType === 'criteria') {
-				return this._validate(criteria.criteria, paramValue);
-			} else {
-				return false;
+			try {
+				this.lastParam = 'Param: ' + criteria.paramName + ' has value: ' + paramValue;
+				if (paramType === 'string') {
+					if (criteria.strict) {
+						return lang.isString(paramValue) && paramValue.length > 0;
+					} else {
+						return lang.isString(paramValue);
+					}
+				} else if (paramType === 'array') {
+					if (criteria.criteria) {	//if a criteria is specified then validate all the items in the array
+						arrayUtil.forEach(paramValue, function (arrayItem) {
+							if (!this._validate(criteria.criteria, arrayItem)) {
+								allItemsValid = false;
+							}
+						}, this);
+						return allItemsValid;
+					} else {
+						if (criteria.strict) {
+							return lang.isArray(paramValue) && paramValue.length > 0;
+						} else {
+							return lang.isArray(paramValue);
+						}
+					}
+				} else if (paramType === 'function') {
+					return lang.isFunction(paramValue);
+				} else if (paramType === 'object') {
+					if (criteria.moduleName) {
+						return criteria.moduleName === paramValue.declaredClass;
+					} else {
+						return lang.isObject(paramValue);
+					}
+				} else if (paramType === 'boolean') {
+					return paramValue !== null && paramValue !== undefined && (paramValue instanceof Boolean || typeof paramValue === "boolean");
+				} else if (paramType === 'criteria') {
+					return this._validate(criteria.criteria, paramValue);
+				} else {
+					return false;
+				}
+			} catch (e) {
+				console.error('Invalid param check: ' + this.lastParam);
 			}
+			
 		}
 	});
 });

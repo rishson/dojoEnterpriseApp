@@ -4,10 +4,10 @@ set -P
 
 # Default versions
 # These can/will be overridden in $PROJECT_DIR/configuration
-DOJO_VERSION=1.7.2
-WHEN_VERSION=0.10.4
-AOP_VERSION=0.5.2
-WIRE_VERSION=0.7.6
+DOJO_VERSION=1.8.0
+WHEN_VERSION=1.4.2
+AOP_VERSION=0.5.3
+WIRE_VERSION=0.8.2
 LESS_VERSION=csnover
 RISHSON_VERSION=master
 

@@ -1,13 +1,13 @@
 define([
 	"rishson/Globals",
+	"rishson/control/LoginResponse",
 	"rishson/util/ObjectValidator",	//validate
-	"dojo/_base/lang", // mixin, hitch
-	"dojo/_base/array", // indexOf, forEach
-	"dojo/_base/declare", // declare
-	"dojo/topic", // publish/subscribe
-	"dojox/rpc/Service"	//constructor
-], function (Globals, ObjectValidator, lang, arrayUtil, declare, topic, Service) {
-
+	"rishson/control/PushHandler",
+	"dojo/_base/lang",	// mixin, hitch
+	"dojo/_base/array",	// indexOf, forEach
+	"dojo/_base/declare",	// declare
+	"dojo/topic"	// publish/subscribe
+], function (Globals, LoginResponse, ObjectValidator, PushHandler, lang, arrayUtil, declare, topic) {
 	/**
 	 * @class
 	 * @name rishson.control.Dispatcher
@@ -22,14 +22,6 @@ define([
 		 * @description an implementation of rishson.control.Transport
 		 */
 		transport: null,
-
-		/**
-		 * @field
-		 * @name rishson.control.Dispatcher.serviceRegistry
-		 * @type {Array}
-		 * @description an array of dojox.RpcService(s). This is populated from a list of SMD definitions
-		 */
-		serviceRegistry: null,
 
 		/**
 		 * @field
@@ -58,53 +50,32 @@ define([
 		_topicNamespace: Globals.TOPIC_NAMESPACE,
 
 		/**
+		 * @field
+		 * @name rishson.control.Dispatcher._haveProcessedLoginResponse
+		 * @type {boolean}
+		 * @private
+		 * @description Have we processed a LoginResponse
+		 */
+		_haveProcessedLoginResponse : false,
+
+		/**
 		 * @constructor
 		 * @param {rishson.control.Transport} transport an implementation of rishson.control.Transport
-		 * @param {Object} validLoginResponse object of bootstrap properties
 		 */
-		constructor: function (transport, validLoginResponse) {
-			/*validLoginResponse should be in the form:
-			 {serviceRegistry : [SMD Objects],
-			 grantedAuthorities : [Authority Objects]}
-			 */
+		constructor: function (transport) {
 			var criteria = [
-					{paramName: 'transport', paramType: 'object'},
-					{paramName: 'validLoginResponse', paramType: 'criteria', criteria: [
-						{paramName: 'serviceRegistry', paramType: 'array'},
-						{paramName: 'grantedAuthorities', paramType: 'array'}
-						]
-					}
+					{paramName: 'transport', paramType: 'object'}
 				],
 				validator = new ObjectValidator(criteria),
-				params = {'transport': transport, 'validLoginResponse': validLoginResponse},
-				unwrappedParams,
-				index;
+				params = {'transport': transport},
+				unwrappedParams;
 
 			//collect up the params and validate
 			if (validator.validate(params)) {
 				//unwrap the object contents for validation and to do a mixin
-				unwrappedParams = {'transport': transport,
-					'serviceRegistry': validLoginResponse.serviceRegistry,
-					'grantedAuthorities': validLoginResponse.grantedAuthorities};
+				unwrappedParams = {'transport': transport};
 
 				lang.mixin(this, unwrappedParams);
-
-				//this is optional so should not be included in the criteria validation
-				if (validLoginResponse.returnRequest) {
-					this.returnRequest = true;
-				}
-
-				//convert authorities to lower case so we can do case-insensitive search for authorities
-				arrayUtil.forEach(this.grantedAuthorities, function (authority) {
-					if (lang.isString(authority)) {
-						authority = authority.toLowerCase();
-					} else {
-						//remove invalid permissions that are not strings
-						console.error("Invalid authority passed to Controller: " + authority);
-						index = arrayUtil.indexOf(authority);
-						this.grantedAuthorities.splice(index, 1);
-					}
-				}, this);
 
 				//decorate the transport with the response and error handling functions in this class (need hitching)
 				this.transport.addResponseFunctions(lang.hitch(this, this.handleResponse),
@@ -113,7 +84,7 @@ define([
 				//listen out for other classes wanting to send requests to the server
 				topic.subscribe(Globals.SEND_REQUEST, lang.hitch(this, "send"));
 			} else {
-				validator.logErrorToConsole(params, 'Invalid params passed to the Controller.');
+				validator.logErrorToConsole(params, 'Invalid params passed to the Dispatcher.');
 				throw ('Invalid params passed to the Controller.');
 			}
 		},
@@ -122,13 +93,14 @@ define([
 		 * @function
 		 * @name rishson.control.Dispatcher.send
 		 * @param {rishson.control.Request} request to send to the server
+		 * @param {string} appId the id of an application making the request - optional
 		 * @description Issues the provided <code>rishson.control.Request</code> in an asynchronous manner
 		 * This function delegates the actual sending of the Request to the injected Transport implementation.
 		 * rishson.control.Dispatcher.handleRequest will be called for valid responses.
 		 * rishson.control.Dispatcher.handleError will be called if an error occurred during the send.
 		 */
-		send: function (request) {
-			this.transport.send(request);
+		send: function (request, appId) {
+			this.transport.send(request, appId);
 			//auditing, analytics etc can be enabled here
 		},
 
@@ -141,7 +113,17 @@ define([
 		 */
 		handleResponse: function (request, response) {
 			var scopedCallback,
-				topicData;
+				topicData,
+				apps;
+
+			if (!this._haveProcessedLoginResponse) {
+				if (this._isSuccessfulLoginResponse(response)) {
+					response = this._processSuccessfulLoginResponse(response);
+					apps = this._setupApplicationUrls(response.apps);
+					this.transport.bindApplicationUrls(apps);
+					this._haveProcessedLoginResponse = true;	//we only need to do this once
+				}
+			}
 
 			//if the request has a topic specified then publish the response to the topic
 			if (request.topic) {
@@ -150,14 +132,14 @@ define([
 				if (this.returnRequest) {
 					topicData.push(request);
 				}
-				//dojo/topic's publish doesn't take an array, so send arguments in series
-				topic.publish.apply(topic, topicData);
+				//dojo/topic's publish doesn't take an array, so use apply to pass args
+				topic.publish.apply(topicData);
 			} else {
 				//call the request's provided callback with the response - but hitch it's scope first if needs be
 				if (request.callbackScope) {
 					scopedCallback = lang.hitch(request.callbackScope, request.callback);
 				} else {
-					scopedCallback = request.callback;  //if no scope is specified then assume the callback must already be scoped
+					scopedCallback = request.callback;  //no scope specified so assume the callback is already scoped
 				}
 
 				//return the original request along with the response if required
@@ -172,7 +154,7 @@ define([
 		/**
 		 * @function
 		 * @name rishson.control.Dispatcher.handleError
-		 * @param {Object} request an object that is the original reuest to the server
+		 * @param {Object} request an object that is the original request to the server
 		 * @param {Object} err an object that is the server error response
 		 * @description Handles an unexpected (runtime) error response from a transport.
 		 */
@@ -195,40 +177,98 @@ define([
 
 		/**
 		 * @function
+		 * @name rishson.control.Dispatcher._isSuccessfulLoginResponse
+		 * @param {rishson.control.Response} response a server response
+		 * @description Checks to see if a response is a login response
 		 * @private
-		 * @name rishson.control.Dispatcher._instantiateServiceRegistry
-		 * @description convert all the given SMDs into dojox.rpc.Service instances.
 		 */
-		_instantiateServiceRegistry: function () {
-			var serviceArr = [];
-			arrayUtil.forEach(this.serviceRegistry, function (SMD) {
-				try {
-					serviceArr.push(new Service(SMD));
-				} catch (e) {
-					console.error("Invalid SMD definition: " + SMD);
-				}
-			}, this);
-			this.serviceRegistry = serviceArr;	//swap in the service registry
+		_isSuccessfulLoginResponse : function (response) {
+			// TODO: not sure if this should look for payload in this way. It is pretty horrific.
+			return !response.isUnauthorised
+				&& response.payload
+				&& response.payload.apps
+				&& response.payload.grantedAuthorities
+				&& response.payload.username;
 		},
 
 		/**
 		 * @function
+		 * @name rishson.control.Dispatcher._processSuccessfulLoginResponse
+		 * @param {rishson.control.Response} response a server response
+		 * @description Checks to see if a response is a login response
 		 * @private
-		 * @name rishson.control.Dispatcher._validateServices
-		 * @description Call the validation function for all services.
-		 * Each service should have a pre-defined test function (__validate) that can be called to validate that the service is up.
 		 */
-		_validateServices: function () {
-			arrayUtil.forEach(this.serviceRegistry, function (service) {
-				try {
-					//call the test function
-					//service.__validate();
-				} catch (e) {
-					console.error("Invalid SMD definition: " + service);
-				}
-			}, this);
-			//this.serviceRegistry = serviceArr;	//swap in the service registry
-		}
+		_processSuccessfulLoginResponse : function (response) {
+			var anyAppHasWebsocketEnabled = false,
+				loginResponse,
+				mixinObj = {},
+				index;
 
+			try {
+				loginResponse = new LoginResponse(response);
+				mixinObj = {
+					grantedAuthorities: loginResponse.grantedAuthorities,
+					returnRequest: loginResponse.returnRequest
+				};
+				lang.mixin(this, mixinObj);
+
+				//check if any app needs to use websocket and if so initialise cometd
+				arrayUtil.some(loginResponse.apps, function (app) {
+					if (app.websocket){
+						anyAppHasWebsocketEnabled = true;
+					}
+				}, this);
+
+				if (anyAppHasWebsocketEnabled) {
+					this._pushHandler = new PushHandler(this.transport.baseUrl);
+				}
+
+				//convert authorities to lower case so we can do case-insensitive search for authorities
+				arrayUtil.forEach(this.grantedAuthorities, function (authority) {
+					if (lang.isString(authority)) {
+						authority = authority.toLowerCase();
+					} else {
+						//remove invalid permissions that are not strings
+						console.error("Invalid authority passed to Dispatcher: " + authority);
+						index = arrayUtil.indexOf(authority);
+						this.grantedAuthorities.splice(index, 1);
+					}
+				}, this);
+				return loginResponse;
+			} catch (e) {
+				console.error('Invalid creation of LoginResponse', e);
+				return response;	//just return the original response if creation of LoginResponse failed
+			}
+		},
+
+		/**
+		 * @function
+		 * @name rishson.control.Dispatcher._setupApplicationUrls
+		 * @description Subscribe to request/send events for child applications from loginResponse.
+		 * @param {object} apps a list of application objects
+		 * @return {object} the list of apps with all but the name and baseUrl removed
+		 * @private
+		 */
+		_setupApplicationUrls: function (apps) {
+			var i = 0,
+				l = apps.length,
+				sendTopicSuffix = '/request/send',
+				app,
+				appId,
+				url,
+				appObj = {};
+
+			for  (i; i < l; i += 1) {
+				app = apps[i];
+				appId = app.id.toLowerCase();
+				//create a tag value entry on the appObj where the key is the application id and the value the baseUrl
+				appObj[appId] = app.baseUrl;
+				url = '/' + appId + sendTopicSuffix;
+				topic.subscribe(url, lang.hitch(this, function _send (appId, request) {
+					this.send(request, appId);
+				}, appId));
+			}
+			return appObj;
+		}
 	});
 });

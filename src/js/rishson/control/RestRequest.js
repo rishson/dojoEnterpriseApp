@@ -25,17 +25,24 @@ define([
 		verb: null,
 
 		/**
+		 * @field
+		 * @name rishson.control.ServiceRequest.VERBS
+		 * @type {object{string: string}}
+		 * @description the list of accepted REST verbs. This is class level rather than instance level.
+		 * Can be delete, get, post or put.
+		 */
+		VERBS : {get: 'Get', post: 'Post', 'delete': 'Delete', put: 'Put'},
+
+		/**
 		 * @constructor
 		 * @param {{service: string, method: string}} params Must contain the following:
 		 *  service {string} the name of a service to call
 		 *  method {string} the name of a service method to call
 		 */
 		constructor: function (params) {
-			var criteria = [],
+			var criteria = [{paramName: 'service', paramType: 'string'},
+				{paramName: 'verb', paramType: 'string'}],
 				validator = new ObjectValidator(criteria);
-
-			criteria.push({paramName: 'service', paramType: 'string'});
-			criteria.push({paramName: 'verb', paramType: 'string'});
 
 			if (validator.validate(params)) {
 				lang.mixin(this, params);

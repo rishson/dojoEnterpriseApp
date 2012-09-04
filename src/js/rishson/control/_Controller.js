@@ -4,8 +4,9 @@ define([
 	"rishson/Globals", //TOPIC_NAMESPACE
 	"dojo/_base/array", // forEach
 	"dojo/_base/lang", // hitch
+	"rishson/base/lang",
 	"dojo/topic" // publish, subscribe
-], function (declare, Base, Globals, arrayUtil, lang, topic) {
+], function (declare, Base, Globals, arrayUtil, lang, rishsonLang, topic) {
 	/**
 	 * @class
 	 * @name rishson.control._Controller
@@ -44,12 +45,9 @@ define([
 			this._id = this.declaredClass;
 
 			this.subList = this.subList || {};
-
-			this.views = {};
-			this.loadingGroups = {
-				toLoad: [],
-				loaded: []
-			};
+			// An array of topic name / subscription handle pairs
+			// Needed for when the controller wants to unsubscribe from topics
+			this.subListHandles = this.subListHandles || {};
 		},
 
 		/**
@@ -68,6 +66,31 @@ define([
 					this._wireSinglePub(child.pubList[topicObj]);
 				}
 			}
+		},
+
+		/**
+		 * @function
+		 * @name rishson.control._Controller._unAutoWireControllerPubs
+		 * @description Un-subscribes this controller from subscriptions to the supplied widget
+		 * @param {Object} The widget containing a list of published items
+		 */
+		_unAutoWirePubs: function (widget) {
+			var pubList = widget.pubList || (widget.content || {}).pubList, // We want the actual widget if this widget is a ContentPane
+				topicNamespace = this._topicNamespace;
+
+			// Loop through the child widgets pubList
+			rishsonLang.forEachObjProperty(pubList, function (pubHandleName) {
+				// If the current controllers namespace appears within this widgets pubList item
+				if (pubHandleName.indexOf(topicNamespace) !== -1) {
+					var handle = this.subListHandles[pubHandleName];
+
+					// If a handle was found then remove the subscription
+					if (handle) {
+						this.unsubscribe(handle);
+						delete this.subListHandles[pubHandleName];
+					}
+				}
+			}, this);
 		},
 
 		/**
@@ -105,8 +128,10 @@ define([
 
 			//the implementing class needs to have _handle[topicName] functions by convention
 			handlerFunc = this[handlerFuncName];
+
 			if (handlerFuncName && handlerFunc) {
-				topic.subscribe(topicName, lang.hitch(this, handlerFunc));
+				// Subscribe to topic and keep a reference to the handle for unsubscribing
+				this.subListHandles[topicName] = this.subscribe(topicName, lang.hitch(this, handlerFunc));
 			} else {
 				console.error('Autowire failure for topic: ' + topicName + '. No handler: ' + handlerFuncName);
 			}
@@ -147,21 +172,6 @@ define([
 
 			this._autowirePubs(child);
 			return child;
-		},
-
-		/**
-		 * @name rishson.control._Controller.attachWidgetsToLayout
-		 * @description Call the attachwidgets method on the layout.
-		 * TODO: this should be moved to the individual controllers so they can take more control of what layout methods
-		 * attach widgets.
-		 * @param {Array} widgets
-		 */
-		attachWidgetsToLayout: function (widgets) {
-			// Attach child widgets to layout
-			this.views.layout.attachWidgets({
-				widgets: widgets
-			});
-			this.views.layout.startup();
 		}
 	});
 });

@@ -45,6 +45,15 @@ define([
 		handleErrorFunc: null,
 
 		/**
+		 * @field
+		 * @name rishson.Transport.apps
+		 * @type {Object}
+		 * @description The apps and baseUrls for determining send request urls per application.
+		 * Set by the Transport layer
+		 */
+		apps: {},
+
+		/**
 		 * @function
 		 * @name rishson.Transport.addResponseFunctions
 		 * @description adds response functions to the Transport.
@@ -63,7 +72,7 @@ define([
 		 * This function will call rishson.control.ControlLayer.handleError if an error occurred during the send.
 		 * @param {rishson.control.Request} request to send to the server
 		 */
-		send: function (request) {
+		send: function (request, appId) {
 			console.error('Send must be implemented by derived Transport implementations.');
 		},
 
@@ -89,6 +98,16 @@ define([
 				lang.mixin(postContent, param);
 			});
 			return postContent;
+		},
+
+		/**
+		 * @function
+		 * @name rishson.Transport.bindApplicationUrls
+		 * @description Bind the apps and baseUrls for determining send request urls per application
+		 * @param {object} apps
+		 */
+		bindApplicationUrls: function (apps) {
+			this.apps = apps;
 		}
 	});
 });
