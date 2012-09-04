@@ -133,7 +133,7 @@ define([
 					topicData.push(request);
 				}
 				//dojo/topic's publish doesn't take an array, so use apply to pass args
-				topic.publish.apply(topicData);
+				topic.publish.apply(this, topicData);
 			} else {
 				//call the request's provided callback with the response - but hitch it's scope first if needs be
 				if (request.callbackScope) {
