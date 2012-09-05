@@ -10,7 +10,7 @@ define([
 	 * @class
 	 * @name rishson.widget._Widget
 	 * @description This is the base class for all widgets.<p>
-	 * We mixin Phil Higgin's memory leak mitigation solution that is implemented in Base.<p>
+	 * We mixin Phil Higgin's memory leak mitigation solution that is implemented in _WidgetInWidgetMixin.<p>
 	 * This base class also adds very generic event pub/sub abilities so that widgets can be completely self-contained and
 	 * not have to know about their runtime invocation container or understand context concerns such as Ajax request.
 	 */

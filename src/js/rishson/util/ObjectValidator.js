@@ -156,6 +156,8 @@ define([
 					}
 				} else if (paramType === 'boolean') {
 					return paramValue !== null && paramValue !== undefined && (paramValue instanceof Boolean || typeof paramValue === "boolean");
+				} else if (paramType === 'number') {
+					return toString.call(paramValue) == '[object Number]';
 				} else if (paramType === 'criteria') {
 					return this._validate(criteria.criteria, paramValue);
 				} else {

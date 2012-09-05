@@ -58,6 +58,8 @@ define([
 				if (!this._supportingWidgets) {
 					this._supportingWidgets = [];	//anything that does not derive from _Widget will not have this
 				}
+
+				this.addTopic('INITIALISED', Globals.CHILD_INTIALISED_TOPIC_NAME);
 			}
 		},
 
@@ -199,6 +201,22 @@ define([
 					//ignore errors thrown by IE when doing teardown of Grids whose domNode's get removed early
 				}
 			}
+		},
+
+		/**
+		 * @function
+		 * @name rishson.Base.destroyDescendants
+		 * @description Calls orphan on any children of the widget
+		 **/
+		destroyDescendants: function () {
+			this._beingDestroyed = true;
+
+			// Determine children to orphan
+			var children = rishsonLang.unionArrays(this._supportingWidgets, this.getChildren());
+
+			arrayUtil.forEach(children, lang.hitch(this, function (widget) {
+				this.orphan(widget, true);
+			}));
 		}
 	});
 });
