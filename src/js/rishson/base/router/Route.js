@@ -91,8 +91,8 @@ define([
 		 * @name rishson.base.router.Route.display
 		 * @param {Object} routeParameters Any programmatically passed parameters
 		 * @description Called whenever a widget needs displaying to the end user.
-		 * Before running the native display function, the current route is checked for a child
-		 * of this widget, if found, we call display on it first.
+		 * Before running the users actual display function, the current route is checked for a child.
+		 * If a child is found then display is called on it first.
 		 * @return {?} Any return values that are returned by the native display function.
 		 */
 		display: function (routeParameters) {
@@ -186,7 +186,7 @@ define([
 					}
 				});
 				// If we have not already pushed this criteriaItem item
-				// Yet it is *must* be required then we need to validate it
+				// Yet it 'required' then we need to validate it
 				if (!pushed && criteriaItem.required) {
 					required.push(criteriaItem);
 				}
