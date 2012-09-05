@@ -11,5 +11,4 @@ define([
 	"rishson/tests/doh/util/TestObjectValidator"
 ], function (doh, require) {
 	doh.registerUrl("AppContainer tests", require.toUrl("./view/TestAppContainer.html"), 10000);
-	doh.registerUrl("Router tests", require.toUrl("./base/router/TestRouter.html"), 10000);
 });
