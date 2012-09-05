@@ -5,8 +5,9 @@ define([
 	"rishson/widget/_Widget", //mixin
 	"rishson/control/_Controller", //mixin
 	"dojo/_base/lang", //isArray
-	"dojo/store/Observable"	//constructor
-], function (declare, topic, Base, _Widget, _Controller, lang, Observable) {
+	"dojo/store/Observable",	//constructor
+	"rishson/base/router/Route"
+], function (declare, topic, Base, _Widget, _Controller, lang, Observable, Route) {
 	/**
 	 * @class
 	 * @name rishson.control.ControllerWidget
@@ -42,12 +43,21 @@ define([
 		controllers: null,
 
 		/**
+		 * @field
+		 * @name rishson.control.ControllerWidget.routes
+		 * @type {Object}
+		 * @description a collection of all child routes for this controller
+		 */
+		routes:  null,
+
+		/**
 		 * @constructor
 		 */
 		constructor: function () {
 			this.models = {};
 			this.views = {};
 			this.controllers = {};
+			this.routes = {};
 		},
 
 		/**
@@ -62,10 +72,15 @@ define([
 		/**
 		 * @function
 		 * @name rishson.control.ControllerWidget.addView
-		 * @param {Object|rishson.widget._Widget} view a widget
+		 * @param {String} The name of the view
+		 * @param {Object} The view widget
 		 */
-		addView : function (view, name) {
+		addView: function (name, view) {
 			this.views[name] = view;
+		},
+
+		removeView: function (name) {
+			delete this.views[name];
 		},
 
 		/**
@@ -76,7 +91,7 @@ define([
 		 * @param {string} topicName the name of a topic to subscribe to
 		 * @description create placeholder for a model and register handler for listener callbacks.
 		 */
-		addModel : function (name, model, topicName) {
+		addModel: function (name, model, topicName) {
 			var myModel = this.models[name] = model;	//lookup shortcut
 			myModel.listeners = [];
 			myModel.loaded = false;
@@ -89,6 +104,21 @@ define([
 					addListener.call(myModel, myModel);	//just call the listener as the model has data
 				}
 			}));
+		},
+
+		/**
+		 * @function
+		 * @name rishson.control.ControllerWidget.addRoute
+		 * @param {string} routeName The route name, used in the URL
+		 * @param {Object} params A hash of parameters to construct the route
+		 * @description Creates a new route for a given widget
+		 */
+		addRoute: function (routeName, params) {
+			// Patch up the params object
+			params.parent = params.parent || this;
+			params.routeName = routeName;
+
+			this.routes[params.routeName] = this.adopt(Route, params);
 		},
 
 		/**
@@ -116,7 +146,7 @@ define([
 		 * to add to this controller
 		 * @param {string} name the name of the controller
 		 */
-		addController: function (controller, name) {
+		addController: function (name, controller) {
 			this.controllers[name] = controller;
 		}
 	});
