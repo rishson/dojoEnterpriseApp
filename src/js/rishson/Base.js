@@ -58,8 +58,6 @@ define([
 				if (!this._supportingWidgets) {
 					this._supportingWidgets = [];	//anything that does not derive from _Widget will not have this
 				}
-
-				this.addTopic('INITIALISED', Globals.CHILD_INTIALISED_TOPIC_NAME);
 			}
 		},
 
@@ -206,11 +204,10 @@ define([
 		/**
 		 * @function
 		 * @name rishson.Base.destroyDescendants
-		 * @description Calls orphan on any children of the widget
+		 * @description Override for dijit._WidgetBase.destroyDescendants to orphan all supporting
+		 * widgets and children for objects that inherit from rishon.Base
 		 **/
 		destroyDescendants: function () {
-			this._beingDestroyed = true;
-
 			// Determine children to orphan
 			var children = rishsonLang.unionArrays(this._supportingWidgets, this.getChildren());
 
