@@ -151,7 +151,8 @@ define([
 		 */
 		_validate: function (routeParameters) {
 			if (this._parameterCriteria && routeParameters) {
-				var validator = new Validator(this._stripNonRequiredCriteria(this._parameterCriteria));
+				var validatorCriteria = this._stripNonRequiredCriteria(routeParameters, this._parameterCriteria),
+					validator = new Validator(validatorCriteria);
 				return validator.validate(routeParameters);
 			} else if (!this._parameterCriteria) {
 				return true;
@@ -163,16 +164,30 @@ define([
 		 * @function
 		 * @name rishson.router.Route._stripNonRequiredCriteria
 		 * @private
+		 * @param {Object} parameters The key value parameter pairs
 		 * @param {Array} criteria The parameter criteria
-		 * @description Helper function which strips any non-required items. This is used
-		 * when validating parameters as we are only concerned with those that are required
+		 * @description Helper function that strips any criteria which do not have matching
+		 * parameter items and are not forcibly required. The result is passed to the ObjectValidator
 		 * @return {Array} The stripped criteria.
 		 */
-		_stripNonRequiredCriteria: function (criteria) {
+		_stripNonRequiredCriteria: function (parameters, criteria) {
 			var required = [];
 
+			// Loop through criteria items
 			arrayUtil.forEach(criteria, function (criteriaItem) {
-				if (criteriaItem.required) {
+				var pushed = false;
+				// Find matching parameter
+				rishsonLang.forEachObjProperty(parameters, function (param, paramName) {
+					// If we have a parameter for this criteria
+					// Then we need to validate it
+					if (criteriaItem.paramName === paramName) {
+						required.push(criteriaItem);
+						pushed = true;
+					}
+				});
+				// If we have not already pushed this criteriaItem item
+				// Yet it is *must* be required then we need to validate it
+				if (!pushed && criteriaItem.required) {
 					required.push(criteriaItem);
 				}
 			});

@@ -79,6 +79,10 @@ define([
 				this._lastRoute = route;
 				parser.set(route);
 			}));
+		},
+
+		testParser: function () {
+			return parser.getChild(0);
 		}
 	});
 });

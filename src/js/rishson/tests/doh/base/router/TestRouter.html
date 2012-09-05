@@ -1,9 +1,11 @@
 define([
 	"doh",
 	"dojo/_base/lang",
+	"rishson/base/lang",
+	"dojo/_base/array",
 	"dojo/topic",
 	"rishson/base/router/Router"
-], function (doh, lang, topic, Router) {
+], function (doh, lang, rishsonLang, arrayUtil, topic, Router) {
 	doh.register("Router tests", [
 		{
 			name: "Can instantiate with valid constructor parameters",
@@ -29,29 +31,11 @@ define([
 			}
 		},
 		{
-			name: "start subscribes to route change event and executes callback on route change",
+			name: "Dependency injection test",
 			runTest: function () {
-				// Arrange
-				var mockChange = "changeEvent",
-					deferred = new doh.Deferred(),
-					called = false,
-					router = new Router({
-						onRouteChange: lang.hitch(this, function () {
-							called = true;
-						})
-					});
-				router._routeChangeEvent = mockChange;
-
-				// Act
-				router.start();
-				topic.publish(mockChange);
-
-				// Assert
-				setTimeout(deferred.getTestCallback(function () {
-					doh.assertTrue(called);
-				}), 125);
-
-				return deferred;
+				var router = new Router({
+					onRouteChange: function () {}
+				});
 			}
 		}
 	]);
