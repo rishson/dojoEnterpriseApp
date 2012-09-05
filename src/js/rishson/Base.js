@@ -199,6 +199,21 @@ define([
 					//ignore errors thrown by IE when doing teardown of Grids whose domNode's get removed early
 				}
 			}
+		},
+
+		/**
+		 * @function
+		 * @name rishson.Base.destroyDescendants
+		 * @description Override for dijit._WidgetBase.destroyDescendants to orphan all supporting
+		 * widgets and children for objects that inherit from rishon.Base
+		 **/
+		destroyDescendants: function () {
+			// Determine children to orphan
+			var children = rishsonLang.unionArrays(this._supportingWidgets, this.getChildren());
+
+			arrayUtil.forEach(children, lang.hitch(this, function (widget) {
+				this.orphan(widget, true);
+			}));
 		}
 	});
 });
