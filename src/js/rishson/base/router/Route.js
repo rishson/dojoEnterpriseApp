@@ -15,7 +15,7 @@ define([
 	return declare('rishson.base.router.Route', null, {
 		/**
 		 * @field
-		 * @name rishson.router.Route._widget
+		 * @name rishson.base.router.Route._widget
 		 * @type {rishson.widget._Widget}
 		 * @description The widget that this route belongs to
 		 */
@@ -23,7 +23,7 @@ define([
 
 		/**
 		 * @field
-		 * @name rishson.router.Route._displayFn
+		 * @name rishson.base.router.Route._displayFn
 		 * @type {Function}
 		 * @description A function that displays the widget to the end user
 		 */
@@ -31,7 +31,7 @@ define([
 
 		/**
 		 * @field
-		 * @name rishson.router.Route._routeName
+		 * @name rishson.base.router.Route._routeName
 		 * @type {String}
 		 * @description Used in the URL to define the path to this widget
 		 */
@@ -39,7 +39,7 @@ define([
 
 		/**
 		 * @field
-		 * @name rishson.router.Route._parent
+		 * @name rishson.base.router.Route._parent
 		 * @type {rishson.widget._Widget}
 		 * @description The parent widget for the widget that this route represents
 		 */
@@ -47,7 +47,7 @@ define([
 
 		/**
 		 * @field
-		 * @name rishson.router.Route._options
+		 * @name rishson.base.router.Route._options
 		 * @type {Object}
 		 * @description A hash of options for this route
 		 */
@@ -55,7 +55,7 @@ define([
 
 		/**
 		 * @field
-		 * @name rishson.router.Route._parameterCriteria
+		 * @name rishson.base.router.Route._parameterCriteria
 		 * @type {Array}
 		 * @description The criteria for any corresponding query string parameters
 		 */
@@ -88,7 +88,7 @@ define([
 
 		/**
 		 * @function
-		 * @name rishson.router.Route.display
+		 * @name rishson.base.router.Route.display
 		 * @param {Object} routeParameters Any programmatically passed parameters
 		 * @description Called whenever a widget needs displaying to the end user.
 		 * Before running the native display function, the current route is checked for a child
@@ -143,7 +143,7 @@ define([
 
 		/**
 		 * @function
-		 * @name rishson.router.Route._validate
+		 * @name rishson.base.router.Route._validate
 		 * @private
 		 * @param {Object} routeParameters The parameters to validate
 		 * @description Validates the routeParameters.
@@ -162,7 +162,7 @@ define([
 
 		/**
 		 * @function
-		 * @name rishson.router.Route._stripNonRequiredCriteria
+		 * @name rishson.base.router.Route._stripNonRequiredCriteria
 		 * @private
 		 * @param {Object} parameters The key value parameter pairs
 		 * @param {Array} criteria The parameter criteria
@@ -196,7 +196,7 @@ define([
 
 		/**
 		 * @function
-		 * @name rishson.router.Route.getRouteName
+		 * @name rishson.base.router.Route.getRouteName
 		 * @private
 		 * @description Returns the route name for this route.
 		 * @return {String} The route name.

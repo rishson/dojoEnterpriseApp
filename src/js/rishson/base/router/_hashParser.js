@@ -16,7 +16,7 @@ define([
 	return {
 		/**
 		 * @field
-		 * @name rishson.router._hashParser._delimiter
+		 * @name rishson.base.router._hashParser._delimiter
 		 * @type {String}
 		 * @description The delimiter between hash items
 		 */
@@ -24,7 +24,7 @@ define([
 
 		/**
 		 * @field
-		 * @name rishson.router._hashParser._paramSplitter
+		 * @name rishson.base.router._hashParser._paramSplitter
 		 * @type {String}
 		 * @description The delimiter between the hash item and parameters
 		 */
@@ -32,7 +32,7 @@ define([
 
 		/**
 		 * @field
-		 * @name rishson.router._hashParser._paramItemSplitter
+		 * @name rishson.base.router._hashParser._paramItemSplitter
 		 * @type {String}
 		 * @description The delimiter between the individual parameter items
 		 */
@@ -118,7 +118,7 @@ define([
 
 		/**
 		 * @function
-		 * @name rishson.router._hashParser.getChild
+		 * @name rishson.base.router._hashParser.getChild
 		 * @param {Number} index A zero based index denoting the child to retrieve
 		 * @description Returns the name of a hashItem child at a given index.
 		 */
@@ -131,7 +131,7 @@ define([
 
 		/**
 		 * @function
-		 * @name rishson.router._hashParser.getChildName
+		 * @name rishson.base.router._hashParser.getChildName
 		 * @param {rishson.widget._Widget} widget A widget
 		 * @description Gets the name of a hashItem child of a given widget.
 		 */
@@ -144,7 +144,7 @@ define([
 
 		/**
 		 * @function
-		 * @name rishson.router._hashParser.resolveRoute
+		 * @name rishson.base.router._hashParser.resolveRoute
 		 * @param {rishson.widget._Widget} widget A widget
 		 * @description Constructs a complete hash that routes to the given widget.
 		 * @return {String} The route string.
@@ -171,7 +171,7 @@ define([
 
 		/**
 		 * @function
-		 * @name rishson.router._hashParser.getQueryParameters
+		 * @name rishson.base.router._hashParser.getQueryParameters
 		 * @param {rishson.widget._Widget} widget A widget
 		 * @param {Array} criteria The criteria used to parse the hash items
 		 * @description Parses any query string parameters for a given widget and casts
@@ -199,7 +199,7 @@ define([
 
 		/**
 		 * @function
-		 * @name rishson.router._hashParser.set
+		 * @name rishson.base.router._hashParser.set
 		 * @param {String} newHash The new hash
 		 * @description Updates the hash in the browser.
 		 */
