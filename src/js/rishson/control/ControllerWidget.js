@@ -140,7 +140,7 @@ define([
 		 * to add to this controller
 		 * @param {string} name the name of the controller
 		 */
-		addController: function (controller, name) {
+		addController: function (name, controller) {
 			this.controllers[name] = controller;
 		}
 	});
