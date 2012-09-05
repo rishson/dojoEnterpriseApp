@@ -5,14 +5,14 @@ define([], function () {
 	 * @description A collection of language functions that can be mixed into other modules
 	 */
 
-	/**
-	 * @function
-	 * @name rishson.Base.lang._unionArrays
-	 * @description Creates the union of two arrays
-	 * @param {Array} x First array
-	 * @param {Array} y Second array
-	 * @return {Array} Merged array
-	 **/
+		/**
+		 * @function
+		 * @name rishson.Base.lang._unionArrays
+		 * @description Creates the union of two arrays
+		 * @param {Array} x First array
+		 * @param {Array} y Second array
+		 * @return {Array} Merged array
+		 **/
 	var unionArrays = function (x, y) {
 			var i,
 				k,
@@ -43,7 +43,7 @@ define([], function () {
 		 * @param {Function} func Callback function to be executed on each iteration
 		 * @return {Object} scope The scope to execute the callback within
 		 **/
-			forEachObjProperty = function (obj, func, scope) {
+		forEachObjProperty = function (obj, func, scope) {
 			var key;
 
 			for (key in obj) {
@@ -60,7 +60,7 @@ define([], function () {
 		 * @param {Function} func The function to be called
 		 * @param {Object} scope Optional scope for the function to be called within
 		 **/
-			defer = function (func, scope) {
+		defer = function (func, scope) {
 			return setTimeout(function () {
 				return func.apply(scope);
 			}, 0);
