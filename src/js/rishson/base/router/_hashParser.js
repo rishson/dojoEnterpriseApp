@@ -8,10 +8,10 @@ define([
 ], function (declare, lang, hash, ioQuery, rishsonLang, arrayUtil) {
 	/**
 	 * @class
-	 * @name rishson.util._hashParser
+	 * @name rishson.base.router._hashParser
 	 * @description Provides utility functions for reading and setting the hash.
-	 * The general idea of the parser is that it provide an API that deals with
-	 * widgets and not raw strings
+	 * The general idea of the parser is that it provides an API to deal with
+	 * Widgets as opposed to Strings.
 	 */
 	return {
 		/**

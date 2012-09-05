@@ -10,7 +10,7 @@ define([
 	/**
 	 * @class
 	 * @name rishson.base.router.Route
-	 * @description A route object that wraps a widget
+	 * @description Defines a single route for a widget
 	 */
 	return declare('rishson.base.router.Route', null, {
 		/**

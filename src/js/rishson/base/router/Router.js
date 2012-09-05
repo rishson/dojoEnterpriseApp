@@ -7,7 +7,8 @@ define([
 	/**
 	 * @class
 	 * @name rishson.base.router.Router
-	 * @description Router
+	 * @description Used to start the router for an implementing class. There must be only
+	 * one instance of Router per application.
 	 */
 	return declare('rishson.base.router.Router', null, {
 		/**
@@ -43,7 +44,9 @@ define([
 		 * @name rishson.base.router.Router._onRouteChange
 		 * @type {Function}
 		 * @private
-		 * @description A function executed every time the route changes
+		 * @description A function executed every time the route changes manually. This must be passed in
+		 * to the constructor. The function should kick start the routing change by calling display on the
+		 * first item in the new route.
 		 */
 		_onRouteChange: null,
 
@@ -61,7 +64,8 @@ define([
 		/**
 		 * @function
 		 * @name rishson.base.router.Router.start
-		 * @description autowire the published topics from the child widget to event handlers on the controller widget.
+		 * @description Starts up the router listening on the silent route update and route changed topics.
+		 * This should be only ever be called once as subscriptions are application-wide.
 		 */
 		start: function () {
 			// On route change
@@ -79,10 +83,6 @@ define([
 				this._lastRoute = route;
 				parser.set(route);
 			}));
-		},
-
-		testParser: function () {
-			return parser.getChild(0);
 		}
 	});
 });
