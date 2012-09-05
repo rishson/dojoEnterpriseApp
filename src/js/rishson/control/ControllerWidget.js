@@ -42,6 +42,12 @@ define([
 		 */
 		controllers: null,
 
+		/**
+		 * @field
+		 * @name rishson.control.ControllerWidget.routes
+		 * @type {Object}
+		 * @description a collection of all child routes for this controller
+		 */
 		routes:  null,
 
 		/**
