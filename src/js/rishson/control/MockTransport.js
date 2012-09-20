@@ -29,6 +29,15 @@ define([
 
 		/**
 		 * @field
+		 * @name rishson.control.MockTransport.delay
+		 * @type {number}
+		 * @description The number of milliseconds to delay a REST response for, useful in testing
+		 * to fake a slow server call
+		 */
+		delay: 0,
+
+		/**
+		 * @field
 		 * @name rishson.control.MockTransport.namespace
 		 * @type {string}
 		 * @description Namespace where the test .
@@ -41,6 +50,16 @@ define([
 		 */
 		constructor: function (params) {
 			lang.mixin(this, params);
+		},
+
+		/**
+		 * @function
+		 * @name rishson.control.MockTransport.setDelayAttr
+		 * @param {number} delay The delay value in milliseconds
+		 * @description Setter for this.delay
+		 */
+		setDelayAttr: function (delay) {
+			this.delay = delay;
 		},
 
 		/**
@@ -86,18 +105,20 @@ define([
 				namespace.charAt(indexOfClassName).toUpperCase() + namespace.slice(indexOfClassName + 1);
 
 			//get the TestModule
-			require([namespace], function (TestModule) {
-				testMethodClass = new TestModule(); //create an instance of the TestMethod class
-				methodParams = self.createBasePostParams(request);
-				mockResponse = testMethodClass[testFuncName](methodParams);	//call the test method
+			require([namespace], lang.hitch(this, function (TestModule) {
+				setTimeout(function () {
+					testMethodClass = new TestModule(); //create an instance of the TestMethod class
+					methodParams = self.createBasePostParams(request);
+					mockResponse = testMethodClass[testFuncName](methodParams);	//call the test method
 
-				wrappedResponse = new Response(mockResponse.payload, request.type === 'rest', mockResponse.ioArgs);
-				if (arrayUtil.indexOf(wrappedResponse.mappedStatusCodes, mockResponse.ioArgs.xhr.status) === -1) {
-					self.handleErrorFunc(request, wrappedResponse);
-				} else {
-					self.handleResponseFunc(request, wrappedResponse);
-				}
-			});
+					wrappedResponse = new Response(mockResponse.payload, request.type === 'rest', mockResponse.ioArgs);
+					if (arrayUtil.indexOf(wrappedResponse.mappedStatusCodes, mockResponse.ioArgs.xhr.status) === -1) {
+						self.handleErrorFunc(request, wrappedResponse);
+					} else {
+						self.handleResponseFunc(request, wrappedResponse);
+					}
+				}, this.delay);
+			}));
 		}
 	});
 });
