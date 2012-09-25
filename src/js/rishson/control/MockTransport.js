@@ -99,7 +99,8 @@ define([
 				if (namespace.indexOf("?") !== -1) {
 					namespace = namespace.split("?");
 					queryString = namespace[1].split("/");
-					namespace = namespace[0] + "/" + queryString[1] + "?" + queryString[0];
+					// Use an underscore instead of a question mark for OS that cannot support it.
+					namespace = namespace[0] + "/" + queryString[1] + "_" + queryString[0];
 				}
 			} else {
 				throw ('Unknown request type supplied: ' + request.declaredClass);
