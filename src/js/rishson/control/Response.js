@@ -50,6 +50,14 @@ define([
 
 		/**
 		 * @field
+		 * @name rishson.control.Request.isServerError
+		 * @type {boolean}
+		 * @description is the response indicating that the request was a server error. This equates to HTTP status code 500.
+		 */
+		isServerError: false,
+
+		/**
+		 * @field
 		 * @name rishson.control.Request.payload
 		 * @type {object}
 		 * @description the contents of the server response.
@@ -63,7 +71,7 @@ define([
 		 * @type {Array.<number>}
 		 * @description The status codes that are handled in a rishson.control.Response.
 		 */
-		mappedStatusCodes: [200, 400, 403, 409],
+		mappedStatusCodes: [200, 400, 403, 409, 500],
 
 		/**
 		 * @constructor
@@ -106,6 +114,9 @@ define([
 				break;
 			case 409:
 				this.isConflicted = true;
+				break;
+			case 500:
+				this.isServerError = true;
 				break;
 			default:
 				throw ('Unknown status code passed to Response constructor: ' + ioArgs.xhr.status);

@@ -84,7 +84,8 @@ define([
 				testMethodClass,
 				methodParams,
 				mockResponse,
-				wrappedResponse;
+				wrappedResponse,
+				queryString;
 
 			//if an app is specified in the send, then get the application specific url
 			if (appId) {
@@ -95,6 +96,12 @@ define([
 				namespace += 'serviceResponses/' + request.toUrl();
 			} else if (request.declaredClass === 'rishson.control.RestRequest') {
 				namespace += 'restResponses/' + request.toUrl() + '/' + request.verb;
+				if (namespace.indexOf("?") !== -1) {
+					namespace = namespace.split("?");
+					queryString = namespace[1].split("/");
+					// Use an underscore instead of a question mark for OS that cannot support it.
+					namespace = namespace[0] + "/" + queryString[1] + "_" + queryString[0];
+				}
 			} else {
 				throw ('Unknown request type supplied: ' + request.declaredClass);
 			}
