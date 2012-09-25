@@ -71,7 +71,7 @@ define([
 		 * @type {Array.<number>}
 		 * @description The status codes that are handled in a rishson.control.Response.
 		 */
-		mappedStatusCodes: [200, 400, 403, 404, 409, 500],
+		mappedStatusCodes: [200, 400, 403, 409, 500],
 
 		/**
 		 * @constructor
@@ -111,8 +111,6 @@ define([
 				break;
 			case 403:
 				this.isUnauthorised = true;
-				break;
-			case 404:
 				break;
 			case 409:
 				this.isConflicted = true;
