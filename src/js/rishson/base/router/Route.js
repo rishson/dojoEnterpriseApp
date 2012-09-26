@@ -121,6 +121,11 @@ define([
 						}
 					}, this);
 				} else {
+					// Stash the current hash as a parameter if we need to
+					if (this._options.stashExisting && parser.get()) {
+						routeParameters = routeParameters || {};
+						routeParameters.redirectTo = parser.get();
+					}
 					// Nothing more to do, update the route
 					topic.publish("route/update", {
 						widget: this._widget,
