@@ -205,6 +205,15 @@ define([
 		 */
 		set: function (newHash) {
 			hash(newHash);
+		},
+
+		/**
+		 * @function
+		 * @name rishson.base.router._hashParser.get
+		 * @description Returns the hash.
+		 */
+		get: function () {
+			return hash();
 		}
 	};
 });
